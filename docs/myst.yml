@@ -1,0 +1,29 @@
+# See docs at: https://mystmd.org/guide/frontmatter
+version: 1
+project:
+  id: thermo-hec-tutorial
+  title: The thermo-hec integration tutorial
+  github: https://github.com/gregcaporaso/thermo-hec-tutorial/
+
+  references:
+    rachis-glossary-target: https://news.rachis.org/en/latest/
+    rachis-library-target: https://library.qiime2.org
+
+  plugins:
+    - type: executable
+      path: q2doc-plug.py
+
+  toc:
+    - file: intro.md
+    - file: tutorial.md
+    - file: data-preparation.md
+
+  downloads:
+    - file: _static/environment.yml
+      title: Extras environment file (applied on top of the qiime2 distribution's development environment)
+
+site:
+  template: book-theme
+  options:
+      folders: true
+      pretty_urls: false
