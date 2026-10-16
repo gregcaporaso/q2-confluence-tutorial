@@ -1,24 +1,20 @@
-# What the tutorial site needs on top of the QIIME 2 "qiime2" distribution's
-# development environment: the documentation toolchain (q2doc's dev branch,
-# jupyter-book, nodejs), sylph and sylph-tax (the sylph plugin runs them),
+# What the tutorial needs on top of the QIIME 2 "qiime2" distribution's
+# development environment: sylph and sylph-tax (the sylph plugin runs them)
 # and the two plugins the tutorial uses, installed from GitHub at pinned
 # commits. The base environment comes from the distribution's
 # dev/latest/passed environment file for the platform, as in
 # https://develop.qiime2.org/en/stable/plugins/how-to-guides/set-up-development-environment.html;
 # this file is applied to it with `conda env update` (README, "Create the
-# environment"; .readthedocs.yaml does the same with the linux-64 file).
+# environment").
 # Both plugin repositories are private at the time of writing, so the pip
 # installs below need GitHub credentials until they are made public.
 channels:
 - conda-forge
 - bioconda
 dependencies:
-  - nodejs
   - sylph=1.0.0
   - sylph-tax=1.9.2
   - pip
   - pip:
-    - q2doc@git+https://github.com/qiime2/q2doc@dev
-    - jupyter-book
     - q2-confluence@git+https://github.com/gregcaporaso/q2-confluence@92f4995cafb624ad171771957e80ae5a9980ac48
     - mosh-sylph@git+https://github.com/gregcaporaso/mosh-sylph@42248380d14d322c3690a95d2c826de73a483383
