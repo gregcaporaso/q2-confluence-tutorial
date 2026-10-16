@@ -1,0 +1,11 @@
+# Build output of jupyter-book / mystmd
+docs/_build/
+# q2doc's generated plugin reference and bibliography
+docs/references/plugin-reference
+docs/references/q2doc.bib
+# Copy of the extras environment file staged for the site's download link (Makefile)
+docs/_static/environment.yml
+# Executed-build outputs (make html)
+docs/data/
+.locks/
+.DS_Store

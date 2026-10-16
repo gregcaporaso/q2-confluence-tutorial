@@ -1,0 +1,29 @@
+# Read the Docs configuration file
+# See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
+#
+# The build renders the tutorial in preview mode (Q2DOC_PREVIEW, `make
+# preview`): every usage example is rendered for each interface, none is
+# executed (executing them downloads about 30 GB and runs sylph). The
+# environment is the qiime2 distribution's development environment (linux-64)
+# with environment-files/thermo-hec-tutorial-extras.yml layered on, which
+# installs both plugins from GitHub at pinned commits.
+
+version: 2
+
+build:
+  os: ubuntu-24.04
+  tools:
+    python: "mambaforge-latest"
+  jobs:
+    create_environment:
+      - conda env create -p .env/ --file https://raw.githubusercontent.com/qiime2/distributions/dev/latest/passed/rachis-qiime2-linux-64-conda.yml
+      - conda env update -p .env/ --file environment-files/thermo-hec-tutorial-extras.yml
+    build:
+      html:
+        - PATH=$(pwd)/.env/bin/:$PATH q2doc refresh-cache
+        - PATH=$(pwd)/.env/bin/:$PATH make preview
+        - mkdir -p $READTHEDOCS_OUTPUT
+        - cp -a docs/_build/* $READTHEDOCS_OUTPUT/
+
+conda:
+  environment: environment-files/thermo-hec-tutorial-extras.yml
