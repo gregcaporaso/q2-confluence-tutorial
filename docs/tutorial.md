@@ -8,7 +8,12 @@ Every command is a usage example rendered for each interface; the data is the
 thermo-hec tutorial subset (ten compost samples with both 16S V4 amplicon and
 shotgun metagenome data, GTDB r232). How the data and the reference artifacts
 were prepared is on the [data preparation](data-preparation.md) page.
-Drive IDs are those of the 2026-10-16 upload (tutorial-data/README.md in the parent project). -->
+Drive IDs are those of the 2026-10-16 upload (tutorial-data/README.md in the parent project);
+the md5s and UUIDs in the download table come from there, from the Zenodo record's
+file checksums and SILVA's .md5 file (classifier UUIDs read from the artifacts'
+zip directories). The download section exists because q2doc renders the
+from-url blocks as downloads from the site's own data/ directory, which a
+preview build never fills (q2doc issue filed 2026-10-16). -->
 
 This tutorial integrates a 16S rRNA amplicon profile and a shotgun metagenome profile of the same samples on one GTDB release, with the `confluence` plugin, the `sylph` plugin (mosh-sylph) for the metagenome profile, and stock QIIME 2 actions.
 It covers what you run on your own data: classifying and filtering the amplicon features, profiling the metagenome reads, integrating both at one taxonomic level, and comparing the two profile types on the samples they share.
@@ -26,6 +31,47 @@ Create a directory for the tutorial and change into it; every file below is writ
 mkdir confluence-tutorial
 cd confluence-tutorial
 ```
+
+## Downloading the data
+
+Every file the tutorial uses, in one place: the study data (the sample metadata as a TSV and as an `ImmutableMetadata` artifact, the ASV table and sequences, the 10% subset of the shotgun reads, 4.8 GB) and the reference artifacts (the GTDB r232 trees collapsed to genus and to family, the GTDB r232 classifier from the rachis Zenodo record, the SILVA 144 V4 classifier from SILVA).
+The sylph database is fetched by an action below, not by `wget`.
+The sections that follow download each file again where it is first used; skip those downloads if you ran this block.
+
+```shell
+wget -O sample-metadata.tsv \
+  'https://drive.usercontent.google.com/download?export=download&confirm=t&id=1atS6Xt5npYZv0YBLrWiXVGMb4YO0u0RT'
+wget -O study-metadata.qza \
+  'https://drive.usercontent.google.com/download?export=download&confirm=t&id=1PJQOCPLgOJ_Jeb-_ZmEN1enFzqLhbH5S'
+wget -O asv-table.qza \
+  'https://drive.usercontent.google.com/download?export=download&confirm=t&id=1-HH4892h693WAQ37YvrBjV_3P7xA3UgF'
+wget -O asv-sequences.qza \
+  'https://drive.usercontent.google.com/download?export=download&confirm=t&id=1LzOioUEnzP4nbOsV9v75VGaqfgseagbi'
+wget -O wgs-subset-reads.qza \
+  'https://drive.usercontent.google.com/download?export=download&confirm=t&id=1fkzsYoWAIeGOJDQrdqGcf5k5rNfoFR7E'
+wget -O gtdb-r232-genus-tree.qza \
+  'https://drive.usercontent.google.com/download?export=download&confirm=t&id=1sgwhDnhSXIbliFb-Fdi3o1u2NExqbovD'
+wget -O gtdb-r232-family-tree.qza \
+  'https://drive.usercontent.google.com/download?export=download&confirm=t&id=1MM2gsJFqSF-Ec7nHcqvKVGReliEjDM_R'
+wget -O gtdb-r232-classifier.qza \
+  'https://zenodo.org/records/21619532/files/gtdb-r232.0-2026.7.0-classifier.qza?download=1'
+wget -O silva-144-v4-classifier.qza \
+  'https://www.arb-silva.de/fileadmin/silva_databases/current/QIIME2/2026.7/SSU/V4-515f-806r/uniform/SILVA_144_SSURef_NR99_uniform_classifier_V4-515f-806r.qza'
+```
+
+Check the downloads against their md5 sums (`md5sum <file>`; `md5 <file>` on macOS); the UUID identifies each artifact in provenance.
+
+| File | md5 | Artifact UUID |
+|---|---|---|
+| `sample-metadata.tsv` | `a23cf3720d9827c3f51b66b209114fc2` |  |
+| `study-metadata.qza` | `e4fef78aee0d5653cd8534a8a2d35edd` | `cb523277-d47a-4c61-bb01-0a377962a0f2` |
+| `asv-table.qza` | `c7313d6efe664c559104120d23291010` | `e02ea2d0-16a7-457b-8009-03ed2874216c` |
+| `asv-sequences.qza` | `a4173850ea0e9cc3220cede19cec6a30` | `ce58ed07-5639-49d0-acdd-37a56f5a4476` |
+| `wgs-subset-reads.qza` | `884d47f6948d010356cde49594238b3f` | `09901ee0-9bca-4825-b94a-20c953d97cef` |
+| `gtdb-r232-genus-tree.qza` | `7b7b1b596fb3808d5c43aa2f26a3b253` | `3d56c42b-6847-474e-8b85-1f7558341ddf` |
+| `gtdb-r232-family-tree.qza` | `503e594f77bd53afeaa093cebc0e0afe` | `09dc4a92-9ff8-4c16-9353-6cfc958551f5` |
+| `gtdb-r232-classifier.qza` | `1a39a83bcf9394809b13a2d758297270` | `75d340c4-dff1-4790-b6b6-04ea8217ab84` |
+| `silva-144-v4-classifier.qza` | `683a71dcd81ce90d724add22d2ad4d0f` | `76237f8f-87e0-4d1e-93b9-970bb7603cf0` |
 
 ## Sample metadata
 
