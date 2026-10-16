@@ -57,6 +57,8 @@ make serve
 ```
 
 `make preview` renders every usage example for each interface without executing it; this is what ReadTheDocs builds (`.readthedocs.yaml`).
+Known limitation (q2doc, reported 2026-10-16): q2doc renders every `init_artifact_from_url` and `init_metadata_from_url` input as a download from the site's own `data/` directory, which only an executed build fills, so in a preview build those download commands point at files the site does not have.
+The tutorial's opening download section lists the real URLs until q2doc renders them itself.
 `make html` executes the examples: it downloads about 30 GB and runs sylph, so it is the tutorial's test run rather than a routine build.
 The thermo-hec project's `slurm/tutorial.sbatch` is the other test of the page: it renders the usage examples to command-line commands with the CLI usage driver and runs them on a server.
 
