@@ -1,23 +1,29 @@
-(tutorial)=
 # Integrating 16S and shotgun metagenome profiles: the tutorial
 
 <!-- Draft by Claude, pending @gregcaporaso's rewrite (no prose of theirs yet).
-Moved unchanged from q2-confluence (docs/tutorial.md at commit 92f4995) into
-this repository on 2026-10-16; only this comment changed.
-Every command is a usage example rendered for each interface; the data is the
-thermo-hec tutorial subset (ten compost samples with both 16S V4 amplicon and
-shotgun metagenome data, GTDB r232). How the data and the reference artifacts
-were prepared is on the [data preparation](data-preparation.md) page.
-Drive IDs are those of the 2026-10-16 upload (tutorial-data/README.md in the parent project);
-the md5s and UUIDs in the download table come from there, from the Zenodo record's
-file checksums and SILVA's .md5 file (classifier UUIDs read from the artifacts'
-zip directories). The download section exists because q2doc renders the
-from-url blocks as downloads from the site's own data/ directory, which a
-preview build never fills (q2doc issue filed 2026-10-16). -->
+Plain Markdown since 2026-10-16, when @gregcaporaso set the q2doc/MyST
+usage-example site aside. Every ```shell block on this page is a command a
+reader runs, in order, in the directory the first block creates; the
+thermo-hec project's slurm/tutorial.sbatch extracts those blocks and runs
+them verbatim as the test of the page. No block on this page is
+documentation-only: how the hosted data was prepared is on
+data-preparation.md, which is never run.
+The commands are those of the shell-block page that passed on bacon as jobs
+308 and 309 (q2-confluence docs/workflow.md at 3d9bed1), brought to the state
+of the usage-example page they replace (bacon job 311): the 2026-10-16 Drive
+upload with its md5 table, the hosted collapsed trees in place of the GTDB
+download and gtdb-tree-collapse, the sample-metadata artifact in place of an
+import, the metagenome profile through the sylph plugin (mosh-sylph), the
+Bacteria filter on both sides, integrate's current outputs (profile-type
+column), paired-report's four outputs, and a mkdir for every output
+directory (q2cli does not create them). The md5s and UUIDs in the download
+table come from tutorial-data/README.md in the parent project, from the
+Zenodo record's file checksums and from SILVA's .md5 file. -->
 
 This tutorial integrates a 16S rRNA amplicon profile and a shotgun metagenome profile of the same samples on one GTDB release, with the `confluence` plugin, the `sylph` plugin (mosh-sylph) for the metagenome profile, and stock QIIME 2 actions.
 It covers what you run on your own data: classifying and filtering the amplicon features, profiling the metagenome reads, integrating both at one taxonomic level, and comparing the two profile types on the samples they share.
 [How the tutorial data and the reference artifacts were prepared](data-preparation.md) is a separate page.
+The commands assume an environment with both plugins installed ([README](README.md)).
 
 <!-- @gregcaporaso, reminder for the prose: say that the abundance-weighted results on this 10% subset equal the full-depth run (bacon job 308 versus jobs 300 to 307: weighted UniFrac pseudo-F 2.61 against 2.62, Bray-Curtis 3.21 against 3.20) while the presence-based metrics and the feature counts move (unweighted UniFrac 4.62 against 3.83, Jaccard 4.93 against 4.58, 2,020 against 2,385 features) because sylph detects fewer genomes at this depth. -->
 
@@ -26,119 +32,69 @@ It covers what you run on your own data: classifying and filtering the amplicon 
 ## Working directory
 
 Create a directory for the tutorial and change into it; every file below is written there.
+The amplicon, metagenome and reference files get a subdirectory each, and so does every integration level, because QIIME 2 does not create the directory of an output.
 
 ```shell
 mkdir confluence-tutorial
 cd confluence-tutorial
+mkdir 16S wgs reference genus family
 ```
 
 ## Downloading the data
 
-Every file the tutorial uses, in one place: the study data (the sample metadata as a TSV and as an `ImmutableMetadata` artifact, the ASV table and sequences, the 10% subset of the shotgun reads, 4.8 GB) and the reference artifacts (the GTDB r232 trees collapsed to genus and to family, the GTDB r232 classifier from the rachis Zenodo record, the SILVA 144 V4 classifier from SILVA).
+Every file the tutorial uses: the study data (the sample metadata as a TSV and as an `ImmutableMetadata` artifact, the ASV table and sequences, the 10% subset of the shotgun reads, 4.8 GB) and the reference artifacts (the GTDB r232 trees collapsed to genus and to family, the GTDB r232 classifier from the rachis Zenodo record, the SILVA 144 V4 classifier from SILVA).
 The sylph database is fetched by an action below, not by `wget`.
-The sections that follow download each file again where it is first used; skip those downloads if you ran this block.
 
 ```shell
-wget -O sample-metadata.tsv \
-  'https://drive.usercontent.google.com/download?export=download&confirm=t&id=1atS6Xt5npYZv0YBLrWiXVGMb4YO0u0RT'
-wget -O study-metadata.qza \
-  'https://drive.usercontent.google.com/download?export=download&confirm=t&id=1PJQOCPLgOJ_Jeb-_ZmEN1enFzqLhbH5S'
-wget -O asv-table.qza \
-  'https://drive.usercontent.google.com/download?export=download&confirm=t&id=1-HH4892h693WAQ37YvrBjV_3P7xA3UgF'
-wget -O asv-sequences.qza \
-  'https://drive.usercontent.google.com/download?export=download&confirm=t&id=1LzOioUEnzP4nbOsV9v75VGaqfgseagbi'
-wget -O wgs-subset-reads.qza \
-  'https://drive.usercontent.google.com/download?export=download&confirm=t&id=1fkzsYoWAIeGOJDQrdqGcf5k5rNfoFR7E'
-wget -O gtdb-r232-genus-tree.qza \
-  'https://drive.usercontent.google.com/download?export=download&confirm=t&id=1sgwhDnhSXIbliFb-Fdi3o1u2NExqbovD'
-wget -O gtdb-r232-family-tree.qza \
-  'https://drive.usercontent.google.com/download?export=download&confirm=t&id=1MM2gsJFqSF-Ec7nHcqvKVGReliEjDM_R'
-wget -O gtdb-r232-classifier.qza \
-  'https://zenodo.org/records/21619532/files/gtdb-r232.0-2026.7.0-classifier.qza?download=1'
-wget -O silva-144-v4-classifier.qza \
-  'https://www.arb-silva.de/fileadmin/silva_databases/current/QIIME2/2026.7/SSU/V4-515f-806r/uniform/SILVA_144_SSURef_NR99_uniform_classifier_V4-515f-806r.qza'
+D='https://drive.usercontent.google.com/download?export=download&confirm=t&id='
+wget -O sample-metadata.tsv "${D}1atS6Xt5npYZv0YBLrWiXVGMb4YO0u0RT"
+wget -O study-metadata.qza "${D}1PJQOCPLgOJ_Jeb-_ZmEN1enFzqLhbH5S"
+wget -O 16S/asv-table.qza "${D}1-HH4892h693WAQ37YvrBjV_3P7xA3UgF"
+wget -O 16S/asv-sequences.qza "${D}1LzOioUEnzP4nbOsV9v75VGaqfgseagbi"
+wget -O wgs/wgs-subset-reads.qza "${D}1fkzsYoWAIeGOJDQrdqGcf5k5rNfoFR7E"
+wget -O reference/gtdb-r232-genus-tree.qza "${D}1sgwhDnhSXIbliFb-Fdi3o1u2NExqbovD"
+wget -O reference/gtdb-r232-family-tree.qza "${D}1MM2gsJFqSF-Ec7nHcqvKVGReliEjDM_R"
+wget -O reference/gtdb-r232-classifier.qza 'https://zenodo.org/records/21619532/files/gtdb-r232.0-2026.7.0-classifier.qza?download=1'
+wget -O reference/silva-144-v4-classifier.qza 'https://www.arb-silva.de/fileadmin/silva_databases/current/QIIME2/2026.7/SSU/V4-515f-806r/uniform/SILVA_144_SSURef_NR99_uniform_classifier_V4-515f-806r.qza'
+md5sum sample-metadata.tsv study-metadata.qza 16S/*.qza wgs/*.qza reference/*.qza
 ```
 
-Check the downloads against their md5 sums (`md5sum <file>`; `md5 <file>` on macOS); the UUID identifies each artifact in provenance.
+The md5 sums should match the table; the UUID identifies each artifact in provenance (`qiime tools peek <file>`).
 
 | File | md5 | Artifact UUID |
 |---|---|---|
 | `sample-metadata.tsv` | `a23cf3720d9827c3f51b66b209114fc2` |  |
 | `study-metadata.qza` | `e4fef78aee0d5653cd8534a8a2d35edd` | `cb523277-d47a-4c61-bb01-0a377962a0f2` |
-| `asv-table.qza` | `c7313d6efe664c559104120d23291010` | `e02ea2d0-16a7-457b-8009-03ed2874216c` |
-| `asv-sequences.qza` | `a4173850ea0e9cc3220cede19cec6a30` | `ce58ed07-5639-49d0-acdd-37a56f5a4476` |
-| `wgs-subset-reads.qza` | `884d47f6948d010356cde49594238b3f` | `09901ee0-9bca-4825-b94a-20c953d97cef` |
-| `gtdb-r232-genus-tree.qza` | `7b7b1b596fb3808d5c43aa2f26a3b253` | `3d56c42b-6847-474e-8b85-1f7558341ddf` |
-| `gtdb-r232-family-tree.qza` | `503e594f77bd53afeaa093cebc0e0afe` | `09dc4a92-9ff8-4c16-9353-6cfc958551f5` |
-| `gtdb-r232-classifier.qza` | `1a39a83bcf9394809b13a2d758297270` | `75d340c4-dff1-4790-b6b6-04ea8217ab84` |
-| `silva-144-v4-classifier.qza` | `683a71dcd81ce90d724add22d2ad4d0f` | `76237f8f-87e0-4d1e-93b9-970bb7603cf0` |
+| `16S/asv-table.qza` | `c7313d6efe664c559104120d23291010` | `e02ea2d0-16a7-457b-8009-03ed2874216c` |
+| `16S/asv-sequences.qza` | `a4173850ea0e9cc3220cede19cec6a30` | `ce58ed07-5639-49d0-acdd-37a56f5a4476` |
+| `wgs/wgs-subset-reads.qza` | `884d47f6948d010356cde49594238b3f` | `09901ee0-9bca-4825-b94a-20c953d97cef` |
+| `reference/gtdb-r232-genus-tree.qza` | `7b7b1b596fb3808d5c43aa2f26a3b253` | `3d56c42b-6847-474e-8b85-1f7558341ddf` |
+| `reference/gtdb-r232-family-tree.qza` | `503e594f77bd53afeaa093cebc0e0afe` | `09dc4a92-9ff8-4c16-9353-6cfc958551f5` |
+| `reference/gtdb-r232-classifier.qza` | `1a39a83bcf9394809b13a2d758297270` | `75d340c4-dff1-4790-b6b6-04ea8217ab84` |
+| `reference/silva-144-v4-classifier.qza` | `683a71dcd81ce90d724add22d2ad4d0f` | `76237f8f-87e0-4d1e-93b9-970bb7603cf0` |
 
 ## Sample metadata
 
 The sample metadata of the ten tutorial samples: bin location, sample type, composting time point, core temperature in °C, and the sample UUID.
 
-:::{describe-usage}
-:scope: confluence-tutorial
+```shell
+qiime metadata tabulate \
+  --m-input-file sample-metadata.tsv \
+  --o-visualization sample-metadata.qzv
+```
 
-sample_metadata = use.init_metadata_from_url(
-    'sample-metadata',
-    'https://drive.usercontent.google.com/download?export=download&confirm=t&id=1atS6Xt5npYZv0YBLrWiXVGMb4YO0u0RT')
-:::
-
-:::{describe-usage}
-use.action(
-    use.UsageAction(plugin_id='metadata', action_id='tabulate'),
-    use.UsageInputs(input=sample_metadata),
-    use.UsageOutputNames(visualization='sample-metadata'))
-:::
-
-The integration actions take the study metadata as an `ImmutableMetadata` artifact, so the same table is also provided imported.
-
-:::{describe-usage}
-study_metadata = use.init_artifact_from_url(
-    'study-metadata',
-    'https://drive.usercontent.google.com/download?export=download&confirm=t&id=1PJQOCPLgOJ_Jeb-_ZmEN1enFzqLhbH5S')
-:::
+The integration actions take the study metadata as an `ImmutableMetadata` artifact, so the same table is also provided imported, as `study-metadata.qza` ([how](data-preparation.md#sample-metadata)).
 
 ## Reference data
 
 Both profile types are placed on GTDB r232.
-The GTDB bacterial tree collapsed to one tip per genus was prepared once for the release ([how](data-preparation.md#reference)); the amplicon classifiers come from their publishers, and the sylph database from the sylph authors.
-
-:::{describe-usage}
-genus_tree = use.init_artifact_from_url(
-    'gtdb-r232-genus-tree',
-    'https://drive.usercontent.google.com/download?export=download&confirm=t&id=1sgwhDnhSXIbliFb-Fdi3o1u2NExqbovD')
-
-gtdb_classifier = use.init_artifact_from_url(
-    'gtdb-r232-classifier',
-    'https://zenodo.org/records/21619532/files/gtdb-r232.0-2026.7.0-classifier.qza?download=1')
-
-silva_classifier = use.init_artifact_from_url(
-    'silva-144-v4-classifier',
-    'https://www.arb-silva.de/fileadmin/silva_databases/current/QIIME2/2026.7/SSU/V4-515f-806r/uniform/SILVA_144_SSURef_NR99_uniform_classifier_V4-515f-806r.qza')
-:::
+The GTDB bacterial tree collapsed to one tip per genus and per family was prepared once for the release ([how](data-preparation.md#reference)); the amplicon classifiers come from their publishers, and the sylph database from the sylph authors.
 
 The metagenome reads are profiled with sylph through the `sylph` plugin (mosh-sylph), thin wrappers around sylph and sylph-tax.
-The sylph database of the GTDB r232 species representatives is about 20 GB; `fetch-database` downloads the authors' pre-built database, and `tax-download` the matching sylph-tax taxonomy.
-
-:::{describe-usage}
-sylph_database, = use.action(
-    use.UsageAction(plugin_id='sylph', action_id='fetch_database'),
-    use.UsageInputs(release='232'),
-    use.UsageOutputNames(database='sylph-gtdb-r232'))
-
-sylph_taxonomy, = use.action(
-    use.UsageAction(plugin_id='sylph', action_id='tax_download'),
-    use.UsageInputs(taxonomy='GTDB_r232'),
-    use.UsageOutputNames(sylph_taxonomy='sylph-tax-gtdb-r232'))
-:::
-
-:::{tip} An artifact cache for the large artifacts
-:class: dropdown
-Every action that reads a `.qza` file unzips it first, and the sylph database is 20 GB.
-An [artifact cache](https://use.qiime2.org/en/stable/tutorials/use-the-artifact-cache/) keeps artifacts unzipped under a key, referenced as `cache:key` in place of a file path, so the database is written once and never zipped or unzipped again.
-On the command line, the alternative to the two commands above is:
+The sylph database of the GTDB r232 species representatives is about 20 GB, and every action that reads a `.qza` file unzips it first.
+An [artifact cache](https://use.qiime2.org/en/stable/tutorials/use-the-artifact-cache/) keeps artifacts unzipped under a key, referenced as `cache:key` in place of a file path, so the large artifacts are written once and never zipped or unzipped again.
+The commands below keep the database, its taxonomy and the read sketches in a cache called `cache` inside the tutorial directory and pass `--use-cache cache` to the actions that read or write them; the tutorial's own data stays in `.qza` files, with its provenance.
+`fetch-database` downloads the authors' pre-built database, and `tax-download` the matching sylph-tax taxonomy.
 
 ```shell
 qiime tools cache-create --cache cache
@@ -154,113 +110,58 @@ qiime sylph tax-download \
   --o-sylph-taxonomy cache:sylph-tax-gtdb-r232
 ```
 
-Then pass `cache:sylph-gtdb-r232` and `cache:sylph-tax-gtdb-r232` with `--use-cache cache` wherever the database and the taxonomy are used below.
-The tutorial's own data stays in `.qza` files, with its provenance.
-:::
-
 ## Amplicon data
 
-The amplicon side starts from the denoised ASV table and sequences of the ten samples.
-
-:::{describe-usage}
-asv_table = use.init_artifact_from_url(
-    'asv-table',
-    'https://drive.usercontent.google.com/download?export=download&confirm=t&id=1-HH4892h693WAQ37YvrBjV_3P7xA3UgF')
-
-asv_sequences = use.init_artifact_from_url(
-    'asv-sequences',
-    'https://drive.usercontent.google.com/download?export=download&confirm=t&id=1LzOioUEnzP4nbOsV9v75VGaqfgseagbi')
-:::
-
+The amplicon side starts from the denoised ASV table and sequences of the ten samples ([how](data-preparation.md#amplicon-data)).
 The GTDB classifier gives every ASV a GTDB taxonomy; the SILVA classifier is used only to find organelle sequences (mitochondria, chloroplasts), which GTDB cannot name.
 
-:::{describe-usage}
-asv_taxonomy_gtdb, = use.action(
-    use.UsageAction(plugin_id='feature_classifier', action_id='classify_sklearn'),
-    use.UsageInputs(classifier=gtdb_classifier, reads=asv_sequences, n_jobs=8),
-    use.UsageOutputNames(classification='asv-taxonomy-gtdb'))
+```shell
+qiime feature-classifier classify-sklearn \
+  --i-classifier reference/gtdb-r232-classifier.qza \
+  --i-reads 16S/asv-sequences.qza \
+  --p-n-jobs 8 \
+  --o-classification 16S/asv-taxonomy-gtdb.qza
 
-asv_taxonomy_silva, = use.action(
-    use.UsageAction(plugin_id='feature_classifier', action_id='classify_sklearn'),
-    use.UsageInputs(classifier=silva_classifier, reads=asv_sequences, n_jobs=8),
-    use.UsageOutputNames(classification='asv-taxonomy-silva'))
-:::
+qiime feature-classifier classify-sklearn \
+  --i-classifier reference/silva-144-v4-classifier.qza \
+  --i-reads 16S/asv-sequences.qza \
+  --p-n-jobs 8 \
+  --o-classification 16S/asv-taxonomy-silva.qza
+```
 
 Organelles are removed with the SILVA taxonomy, then the table is restricted to Bacteria with the GTDB taxonomy, because the reference tree is the bacterial GTDB tree and `integrate` refuses features that are not tips of it.
 
-:::{describe-usage}
-asv_table_noorganelles, = use.action(
-    use.UsageAction(plugin_id='taxa', action_id='filter_table'),
-    use.UsageInputs(table=asv_table, taxonomy=asv_taxonomy_silva,
-                    exclude='f__Mitochondria,o__Chloroplast,d__Eukaryota',
-                    mode='contains'),
-    use.UsageOutputNames(filtered_table='asv-table-noorganelles'))
+```shell
+qiime taxa filter-table \
+  --i-table 16S/asv-table.qza \
+  --i-taxonomy 16S/asv-taxonomy-silva.qza \
+  --p-exclude f__Mitochondria,o__Chloroplast,d__Eukaryota \
+  --p-mode contains \
+  --o-filtered-table 16S/asv-table-noorganelles.qza
 
-asv_table_bacteria, = use.action(
-    use.UsageAction(plugin_id='taxa', action_id='filter_table'),
-    use.UsageInputs(table=asv_table_noorganelles, taxonomy=asv_taxonomy_gtdb,
-                    include='d__Bacteria', mode='contains'),
-    use.UsageOutputNames(filtered_table='asv-table-bacteria'))
-:::
+qiime taxa filter-table \
+  --i-table 16S/asv-table-noorganelles.qza \
+  --i-taxonomy 16S/asv-taxonomy-gtdb.qza \
+  --p-include d__Bacteria \
+  --p-mode contains \
+  --o-filtered-table 16S/asv-table-bacteria.qza
+```
 
 ## Metagenome data
 
-The metagenome side starts from paired-end reads that are already trimmed, free of control samples and human reads, and subsampled to 10% ([how](data-preparation.md#metagenome)).
-
-:::{describe-usage}
-reads = use.init_artifact_from_url(
-    'wgs-subset-reads',
-    'https://drive.usercontent.google.com/download?export=download&confirm=t&id=1fkzsYoWAIeGOJDQrdqGcf5k5rNfoFR7E')
-:::
-
-sylph sketches the reads once per sample; the sketches serve every profile or query against any database.
-
-:::{describe-usage}
-sketches, = use.action(
-    use.UsageAction(plugin_id='sylph', action_id='sketch'),
-    use.UsageInputs(reads=reads, threads=16),
-    use.UsageOutputNames(sketches='sketches'))
-:::
-
-:::{tip} Sketches in the cache
-:class: dropdown
-The sketches are a few GB; the cache form of the step above is:
+The metagenome side starts from paired-end reads that are already trimmed, free of control samples and human reads, and subsampled to 10% ([how](data-preparation.md#metagenome-data)).
+sylph sketches the reads once per sample; the sketches serve every profile or query against any database, so they go into the cache too.
 
 ```shell
 qiime sylph sketch \
-  --i-reads wgs-subset-reads.qza \
+  --i-reads wgs/wgs-subset-reads.qza \
   --p-threads 16 \
   --use-cache cache \
   --o-sketches cache:sketches
 ```
-:::
 
-`profile` runs sylph profile against the database; `estimate_unknown` asks sylph to estimate, per sample, the share of reads from no genome in the database.
+`profile` runs sylph profile against the database; `--p-estimate-unknown` asks sylph to estimate, per sample, the share of reads from no genome in the database.
 `taxprof` attaches the taxonomy with sylph-tax, and `taxprof-to-tables` turns the per-sample profiles into QIIME 2 tables: the share of each detected genome corrected for genome size (the taxonomic abundance, the measure to integrate), the share of reads (the sequence abundance), the genome-keyed taxonomy, and per-sample statistics (genomes and genera detected, median ANI, unknown share).
-
-:::{describe-usage}
-sylph_profile, = use.action(
-    use.UsageAction(plugin_id='sylph', action_id='profile'),
-    use.UsageInputs(sketches=sketches, database=sylph_database, threads=16,
-                    estimate_unknown=True),
-    use.UsageOutputNames(profile='sylph-profile'))
-
-sylph_tax_profiles, = use.action(
-    use.UsageAction(plugin_id='sylph', action_id='taxprof'),
-    use.UsageInputs(profile=sylph_profile, sylph_taxonomy=sylph_taxonomy),
-    use.UsageOutputNames(taxonomic_profiles='sylph-taxonomic-profiles'))
-
-sylph_taxonomic_abundance, sylph_sequence_abundance, sylph_genome_taxonomy, sylph_stats = use.action(
-    use.UsageAction(plugin_id='sylph', action_id='taxprof_to_tables'),
-    use.UsageInputs(taxonomic_profiles=sylph_tax_profiles, sketches=sketches),
-    use.UsageOutputNames(taxonomic_abundance='sylph-taxonomic-abundance',
-                         sequence_abundance='sylph-sequence-abundance',
-                         taxonomy='sylph-genome-taxonomy', stats='sylph-stats'))
-:::
-
-:::{tip} Profiling from the cache
-:class: dropdown
-With the database, the taxonomy and the sketches in the cache:
 
 ```shell
 qiime sylph profile \
@@ -269,90 +170,114 @@ qiime sylph profile \
   --p-threads 16 \
   --p-estimate-unknown \
   --use-cache cache \
-  --o-profile sylph-profile.qza
+  --o-profile wgs/sylph-profile.qza
 
 qiime sylph taxprof \
-  --i-profile sylph-profile.qza \
+  --i-profile wgs/sylph-profile.qza \
   --i-sylph-taxonomy cache:sylph-tax-gtdb-r232 \
   --use-cache cache \
-  --o-taxonomic-profiles sylph-taxonomic-profiles.qza
+  --o-taxonomic-profiles wgs/sylph-taxonomic-profiles.qza
 
 qiime sylph taxprof-to-tables \
-  --i-taxonomic-profiles sylph-taxonomic-profiles.qza \
+  --i-taxonomic-profiles wgs/sylph-taxonomic-profiles.qza \
   --i-sketches cache:sketches \
   --use-cache cache \
-  --o-taxonomic-abundance sylph-taxonomic-abundance.qza \
-  --o-sequence-abundance sylph-sequence-abundance.qza \
-  --o-taxonomy sylph-genome-taxonomy.qza \
-  --o-stats sylph-stats.qza
+  --o-taxonomic-abundance wgs/sylph-taxonomic-abundance.qza \
+  --o-sequence-abundance wgs/sylph-sequence-abundance.qza \
+  --o-taxonomy wgs/sylph-genome-taxonomy.qza \
+  --o-stats wgs/sylph-stats.qza
 ```
-:::
 
 The per-sample statistics are metadata and tabulate like any other.
 
-:::{describe-usage}
-use.action(
-    use.UsageAction(plugin_id='metadata', action_id='tabulate'),
-    use.UsageInputs(input=use.view_as_metadata('sylph-stats-md', sylph_stats)),
-    use.UsageOutputNames(visualization='sylph-stats'))
-:::
+```shell
+qiime metadata tabulate \
+  --m-input-file wgs/sylph-stats.qza \
+  --o-visualization wgs/sylph-stats.qzv
+```
 
 As on the amplicon side, the profile is restricted to Bacteria.
 
-:::{describe-usage}
-sylph_bacteria, = use.action(
-    use.UsageAction(plugin_id='taxa', action_id='filter_table'),
-    use.UsageInputs(table=sylph_taxonomic_abundance, taxonomy=sylph_genome_taxonomy,
-                    include='d__Bacteria', mode='contains'),
-    use.UsageOutputNames(filtered_table='sylph-bacteria'))
-:::
+```shell
+qiime taxa filter-table \
+  --i-table wgs/sylph-taxonomic-abundance.qza \
+  --i-taxonomy wgs/sylph-genome-taxonomy.qza \
+  --p-include d__Bacteria \
+  --p-mode contains \
+  --o-filtered-table wgs/sylph-bacteria.qza
+```
 
 ## Integration
 
-The two profiles enter as collections keyed by a label that names the profile type in every output.
+The two profiles enter as collections: each member is given as `key:path`, and the key names the profile type in every output.
 `summarize-inputs` shows which sample IDs the profiles and the metadata share before anything is merged.
 
-:::{describe-usage}
-tables = use.construct_artifact_collection(
-    'tables', {'amplicon': asv_table_bacteria, 'metagenome': sylph_bacteria})
-taxonomies = use.construct_artifact_collection(
-    'taxonomies', {'amplicon': asv_taxonomy_gtdb, 'metagenome': sylph_genome_taxonomy})
-metadata = use.construct_artifact_collection(
-    'metadata', {'study': study_metadata})
-
-use.action(
-    use.UsageAction(plugin_id='confluence', action_id='summarize_inputs'),
-    use.UsageInputs(tables=tables, metadata=metadata),
-    use.UsageOutputNames(visualization='inputs-summary'))
-:::
+```shell
+qiime confluence summarize-inputs \
+  --i-tables amplicon:16S/asv-table-bacteria.qza metagenome:wgs/sylph-bacteria.qza \
+  --i-metadata study:study-metadata.qza \
+  --o-visualization inputs-summary.qzv
+```
 
 `integrate` collapses each profile to the chosen level (6 is genus with the seven GTDB ranks; 5 is family), drops the features without a name at that level, renormalizes each profile to proportions, and merges them.
 Merged samples are named `<sample-id>-<key>`; the integrated metadata records `original-sample-id`, `profile-type` and `unassigned-share` beside the study metadata.
 
-:::{describe-usage}
-relative_table, taxonomy, integrated_metadata = use.action(
-    use.UsageAction(plugin_id='confluence', action_id='integrate'),
-    use.UsageInputs(tables=tables, taxonomies=taxonomies, tree=genus_tree,
-                    metadata=metadata, level=6),
-    use.UsageOutputNames(relative_table='genus-relative-table',
-                         taxonomy='genus-taxonomy',
-                         integrated_metadata='genus-metadata'))
-:::
+```shell
+qiime confluence integrate \
+  --i-tables amplicon:16S/asv-table-bacteria.qza metagenome:wgs/sylph-bacteria.qza \
+  --i-taxonomies amplicon:16S/asv-taxonomy-gtdb.qza metagenome:wgs/sylph-genome-taxonomy.qza \
+  --i-tree reference/gtdb-r232-genus-tree.qza \
+  --i-metadata study:study-metadata.qza \
+  --p-level 6 \
+  --o-relative-table genus/relative-table.qza \
+  --o-taxonomy genus/taxonomy.qza \
+  --o-integrated-metadata genus/metadata.qza
+```
 
 ## Paired-sample report
 
 On the samples both profile types cover, `paired-report` computes Bray-Curtis, Jaccard, unweighted and weighted UniFrac on the proportions as they are (no rarefaction), with PERMANOVA by profile type and a PCoA scatter plot for each; a random forest classifying the profile type with nested cross-validation; and a per-feature summary, tabulated over every feature and also returned as metadata.
 
-:::{describe-usage}
-use.action(
-    use.UsageAction(plugin_id='confluence', action_id='paired_report'),
-    use.UsageInputs(table=relative_table, tree=genus_tree,
-                    metadata=integrated_metadata,
-                    permutations=999, cv=10, n_estimators=500, n_jobs=8),
-    use.UsageOutputNames(report='genus-paired-report',
-                         distance_matrices='genus-distance-matrices',
-                         feature_importance='genus-feature-importance',
-                         feature_summary='genus-feature-summary'))
-:::
+```shell
+qiime confluence paired-report \
+  --i-table genus/relative-table.qza \
+  --i-tree reference/gtdb-r232-genus-tree.qza \
+  --i-metadata genus/metadata.qza \
+  --p-permutations 999 \
+  --p-cv 10 \
+  --p-n-estimators 500 \
+  --p-n-jobs 8 \
+  --o-report genus/paired-report.qzv \
+  --o-distance-matrices genus/distance-matrices/ \
+  --o-feature-importance genus/feature-importance.qza \
+  --o-feature-summary genus/feature-summary.qza
+```
 
-For the family-level view, repeat the integration and the report with `level=5` and the family tree, prepared like the genus tree: `https://drive.usercontent.google.com/download?export=download&confirm=t&id=1MM2gsJFqSF-Ec7nHcqvKVGReliEjDM_R`.
+## The family-level view
+
+The same integration and report at family: level 5 and the family tree.
+
+```shell
+qiime confluence integrate \
+  --i-tables amplicon:16S/asv-table-bacteria.qza metagenome:wgs/sylph-bacteria.qza \
+  --i-taxonomies amplicon:16S/asv-taxonomy-gtdb.qza metagenome:wgs/sylph-genome-taxonomy.qza \
+  --i-tree reference/gtdb-r232-family-tree.qza \
+  --i-metadata study:study-metadata.qza \
+  --p-level 5 \
+  --o-relative-table family/relative-table.qza \
+  --o-taxonomy family/taxonomy.qza \
+  --o-integrated-metadata family/metadata.qza
+
+qiime confluence paired-report \
+  --i-table family/relative-table.qza \
+  --i-tree reference/gtdb-r232-family-tree.qza \
+  --i-metadata family/metadata.qza \
+  --p-permutations 999 \
+  --p-cv 10 \
+  --p-n-estimators 500 \
+  --p-n-jobs 8 \
+  --o-report family/paired-report.qzv \
+  --o-distance-matrices family/distance-matrices/ \
+  --o-feature-importance family/feature-importance.qza \
+  --o-feature-summary family/feature-summary.qza
+```
