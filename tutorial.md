@@ -42,12 +42,11 @@ mkdir 16S wgs reference genus family
 
 ## Downloading the data
 
-Every file the tutorial uses: the study data (the sample metadata as a TSV and as an `ImmutableMetadata` artifact, the ASV table and sequences, the 10% subset of the shotgun reads, 4.8 GB) and the reference artifacts (the GTDB r232 trees collapsed to genus and to family, the GTDB r232 classifier from the rachis Zenodo record, the SILVA 144 V4 classifier from SILVA).
+Every file the tutorial uses: the study data (the sample metadata as an `ImmutableMetadata` artifact, the ASV table and sequences, the 10% subset of the shotgun reads, 4.8 GB) and the reference artifacts (the GTDB r232 trees collapsed to genus and to family, the GTDB r232 classifier from the rachis Zenodo record, the SILVA 144 V4 classifier from SILVA).
 The sylph database is fetched by an action below, not by `wget`.
 
 ```shell
 D='https://drive.usercontent.google.com/download?export=download&confirm=t&id='
-wget -O sample-metadata.tsv "${D}1atS6Xt5npYZv0YBLrWiXVGMb4YO0u0RT"
 wget -O study-metadata.qza "${D}1PJQOCPLgOJ_Jeb-_ZmEN1enFzqLhbH5S"
 wget -O 16S/asv-table.qza "${D}1-HH4892h693WAQ37YvrBjV_3P7xA3UgF"
 wget -O 16S/asv-sequences.qza "${D}1LzOioUEnzP4nbOsV9v75VGaqfgseagbi"
@@ -56,14 +55,13 @@ wget -O reference/gtdb-r232-genus-tree.qza "${D}1sgwhDnhSXIbliFb-Fdi3o1u2NExqbov
 wget -O reference/gtdb-r232-family-tree.qza "${D}1MM2gsJFqSF-Ec7nHcqvKVGReliEjDM_R"
 wget -O reference/gtdb-r232-classifier.qza 'https://zenodo.org/records/21619532/files/gtdb-r232.0-2026.7.0-classifier.qza?download=1'
 wget -O reference/silva-144-v4-classifier.qza 'https://www.arb-silva.de/fileadmin/silva_databases/current/QIIME2/2026.7/SSU/V4-515f-806r/uniform/SILVA_144_SSURef_NR99_uniform_classifier_V4-515f-806r.qza'
-md5sum sample-metadata.tsv study-metadata.qza 16S/*.qza wgs/*.qza reference/*.qza
+md5sum study-metadata.qza 16S/*.qza wgs/*.qza reference/*.qza
 ```
 
 The md5 sums should match the table; the UUID identifies each artifact in provenance (`qiime tools peek <file>`).
 
 | File | md5 | Artifact UUID |
 |---|---|---|
-| `sample-metadata.tsv` | `9a4db039e5ce67db09a3ebc370a9e180` |  |
 | `study-metadata.qza` | `8ed73161d2d70d9a9499d531401bd725` | `7d0ae7fb-1f89-4b1f-b475-ff6f0263d492` |
 | `16S/asv-table.qza` | `c7313d6efe664c559104120d23291010` | `e02ea2d0-16a7-457b-8009-03ed2874216c` |
 | `16S/asv-sequences.qza` | `a4173850ea0e9cc3220cede19cec6a30` | `ce58ed07-5639-49d0-acdd-37a56f5a4476` |
@@ -76,14 +74,19 @@ The md5 sums should match the table; the UUID identifies each artifact in proven
 ## Sample metadata
 
 The sample metadata of the ten tutorial samples: bin location, sample type, composting time point and core temperature in °C (both empty for the two samples that were not composting, the fresh excrement and the soil), and the sample UUID.
+It is provided as an `ImmutableMetadata` artifact, `study-metadata.qza`, which any action that takes metadata accepts in place of a TSV.
 
 ```shell
 qiime metadata tabulate \
-  --m-input-file sample-metadata.tsv \
+  --m-input-file study-metadata.qza \
   --o-visualization sample-metadata.qzv
 ```
 
-The integration actions take the study metadata as an `ImmutableMetadata` artifact, so the same table is also provided imported, as `study-metadata.qza` ([how](data-preparation.md#sample-metadata)).
+> [!TIP]
+> For your own data, import the sample metadata TSV into an `ImmutableMetadata` artifact once (the import command is on the [data preparation page](data-preparation.md#sample-metadata)) and pass the artifact everywhere the TSV would go.
+> The artifact has a UUID, so provenance records which version of the metadata each result was made from; a TSV passed directly is recorded only by its contents.
+> Either way, the metadata contents are written into the provenance of every downstream result, so a metadata file must not hold anything that cannot travel with the artifacts.
+> Metadata in QIIME 2, including the artifact form, is described in the [metadata reference](https://use.qiime2.org/en/latest/references/metadata/).
 
 ## Reference data
 
@@ -113,7 +116,7 @@ qiime sylph tax-download \
 ## Amplicon data
 
 The amplicon side starts from the denoised ASV table and sequences of the ten samples ([how](data-preparation.md#amplicon-data)).
-The GTDB classifier gives every ASV a GTDB taxonomy; the SILVA classifier is used only to find organelle sequences (mitochondria, chloroplasts), which GTDB cannot name.
+The GTDB classifier gives every ASV a GTDB taxonomy; the SILVA classifier is used only to find organelle (mitochondria, chloroplasts) and other eukaryotic sequences, which GTDB cannot name.
 
 ```shell
 qiime feature-classifier classify-sklearn \
@@ -129,7 +132,7 @@ qiime feature-classifier classify-sklearn \
   --o-classification 16S/asv-taxonomy-silva.qza
 ```
 
-Organelles are removed with the SILVA taxonomy, then the table is restricted to Bacteria with the GTDB taxonomy, because the reference tree is the bacterial GTDB tree and `integrate` refuses features that are not tips of it.
+Organelles and eukaryotic sequences are removed with the SILVA taxonomy, then the table is restricted to Bacteria with the GTDB taxonomy, because the reference tree is the bacterial GTDB tree and `integrate` refuses features that are not tips of it.
 
 ```shell
 qiime taxa filter-table \
@@ -161,6 +164,7 @@ qiime sylph sketch \
 ```
 
 `profile` runs sylph profile against the database; `--p-estimate-unknown` asks sylph to estimate, per sample, the share of reads from no genome in the database.
+Reading `cache:` inputs needs no extra option; `--use-cache` above mattered only where an output was written into the cache, so that the action built it there instead of in the default temporary cache.
 `taxprof` attaches the taxonomy with sylph-tax, and `taxprof-to-tables` turns the per-sample profiles into QIIME 2 tables: the share of each detected genome corrected for genome size (the taxonomic abundance, the measure to integrate), the share of reads (the sequence abundance), the genome-keyed taxonomy, and per-sample statistics (genomes and genera detected, median ANI, unknown share).
 
 ```shell
@@ -169,30 +173,28 @@ qiime sylph profile \
   --i-database cache:sylph-gtdb-r232 \
   --p-threads 16 \
   --p-estimate-unknown \
-  --use-cache cache \
   --o-profile wgs/sylph-profile.qza
 
 qiime sylph taxprof \
   --i-profile wgs/sylph-profile.qza \
   --i-sylph-taxonomy cache:sylph-tax-gtdb-r232 \
-  --use-cache cache \
   --o-taxonomic-profiles wgs/sylph-taxonomic-profiles.qza
 
 qiime sylph taxprof-to-tables \
   --i-taxonomic-profiles wgs/sylph-taxonomic-profiles.qza \
   --i-sketches cache:sketches \
-  --use-cache cache \
   --o-taxonomic-abundance wgs/sylph-taxonomic-abundance.qza \
   --o-sequence-abundance wgs/sylph-sequence-abundance.qza \
   --o-taxonomy wgs/sylph-genome-taxonomy.qza \
   --o-stats wgs/sylph-stats.qza
 ```
 
-The per-sample statistics are metadata and tabulate like any other.
+The per-sample statistics are metadata and tabulate like any other; the study metadata is given last, so its columns follow the statistics in the table.
 
 ```shell
 qiime metadata tabulate \
   --m-input-file wgs/sylph-stats.qza \
+  --m-input-file study-metadata.qza \
   --o-visualization wgs/sylph-stats.qzv
 ```
 

@@ -96,4 +96,11 @@ The human pangenome index downloads GRCh38 and the HPRC pangenome and takes hour
 ## Sample metadata
 
 The study's sample sheet was reduced to the ten tutorial samples and to five columns, renamed in kebab-case: `bin-location`, `sample-type`, `composting-time-point` and `core-temp-c` (the compost core temperature in °C; both are empty for the two samples that were not composting, the fresh excrement and the soil) and `sample-uuid`.
-The same table is hosted as a TSV and imported as an `ImmutableMetadata` artifact for the integration actions.
+The table is hosted as an `ImmutableMetadata` artifact, imported from the TSV; the artifact is what the tutorial downloads and passes to every action that takes metadata.
+
+```shell
+qiime tools import \
+  --type ImmutableMetadata \
+  --input-path sample-metadata.tsv \
+  --output-path sample-metadata.qza
+```
