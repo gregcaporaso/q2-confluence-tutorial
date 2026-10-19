@@ -47,8 +47,8 @@ The sylph database is fetched by an action below, not by `wget`.
 
 ```shell
 D='https://drive.usercontent.google.com/download?export=download&confirm=t&id='
-wget -O sample-metadata.tsv "${D}1atS6Xt5npYZv0YBLrWiXVGMb4YO0u0RT"
-wget -O study-metadata.qza "${D}1PJQOCPLgOJ_Jeb-_ZmEN1enFzqLhbH5S"
+wget -O sample-metadata.tsv "${D}DRIVE-ID-SAMPLE-METADATA-TSV"
+wget -O study-metadata.qza "${D}DRIVE-ID-SAMPLE-METADATA-QZA"
 wget -O 16S/asv-table.qza "${D}1-HH4892h693WAQ37YvrBjV_3P7xA3UgF"
 wget -O 16S/asv-sequences.qza "${D}1LzOioUEnzP4nbOsV9v75VGaqfgseagbi"
 wget -O wgs/wgs-subset-reads.qza "${D}1fkzsYoWAIeGOJDQrdqGcf5k5rNfoFR7E"
@@ -63,8 +63,8 @@ The md5 sums should match the table; the UUID identifies each artifact in proven
 
 | File | md5 | Artifact UUID |
 |---|---|---|
-| `sample-metadata.tsv` | `a23cf3720d9827c3f51b66b209114fc2` |  |
-| `study-metadata.qza` | `e4fef78aee0d5653cd8534a8a2d35edd` | `cb523277-d47a-4c61-bb01-0a377962a0f2` |
+| `sample-metadata.tsv` | `9a4db039e5ce67db09a3ebc370a9e180` |  |
+| `study-metadata.qza` | `8ed73161d2d70d9a9499d531401bd725` | `7d0ae7fb-1f89-4b1f-b475-ff6f0263d492` |
 | `16S/asv-table.qza` | `c7313d6efe664c559104120d23291010` | `e02ea2d0-16a7-457b-8009-03ed2874216c` |
 | `16S/asv-sequences.qza` | `a4173850ea0e9cc3220cede19cec6a30` | `ce58ed07-5639-49d0-acdd-37a56f5a4476` |
 | `wgs/wgs-subset-reads.qza` | `884d47f6948d010356cde49594238b3f` | `09901ee0-9bca-4825-b94a-20c953d97cef` |
@@ -75,7 +75,7 @@ The md5 sums should match the table; the UUID identifies each artifact in proven
 
 ## Sample metadata
 
-The sample metadata of the ten tutorial samples: bin location, sample type, composting time point, core temperature in °C, and the sample UUID.
+The sample metadata of the ten tutorial samples: bin location, sample type, composting time point and core temperature in °C (both empty for the two samples that were not composting, the fresh excrement and the soil), and the sample UUID.
 
 ```shell
 qiime metadata tabulate \

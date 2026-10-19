@@ -95,5 +95,5 @@ The human pangenome index downloads GRCh38 and the HPRC pangenome and takes hour
 
 ## Sample metadata
 
-The study's sample sheet was reduced to the ten tutorial samples and to five columns, renamed in kebab-case: `bin-location`, `sample-type`, `composting-time-point`, `core-temp-c` (the compost core temperature in °C; two samples, the fresh excrement and the soil, have none) and `sample-uuid`.
+The study's sample sheet was reduced to the ten tutorial samples and to five columns, renamed in kebab-case: `bin-location`, `sample-type`, `composting-time-point` and `core-temp-c` (the compost core temperature in °C; both are empty for the two samples that were not composting, the fresh excrement and the soil) and `sample-uuid`.
 The same table is hosted as a TSV and imported as an `ImmutableMetadata` artifact for the integration actions.
