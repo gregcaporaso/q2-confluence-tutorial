@@ -47,8 +47,8 @@ The sylph database is fetched by an action below, not by `wget`.
 
 ```shell
 D='https://drive.usercontent.google.com/download?export=download&confirm=t&id='
-wget -O sample-metadata.tsv "${D}DRIVE-ID-SAMPLE-METADATA-TSV"
-wget -O study-metadata.qza "${D}DRIVE-ID-SAMPLE-METADATA-QZA"
+wget -O sample-metadata.tsv "${D}1atS6Xt5npYZv0YBLrWiXVGMb4YO0u0RT"
+wget -O study-metadata.qza "${D}1PJQOCPLgOJ_Jeb-_ZmEN1enFzqLhbH5S"
 wget -O 16S/asv-table.qza "${D}1-HH4892h693WAQ37YvrBjV_3P7xA3UgF"
 wget -O 16S/asv-sequences.qza "${D}1LzOioUEnzP4nbOsV9v75VGaqfgseagbi"
 wget -O wgs/wgs-subset-reads.qza "${D}1fkzsYoWAIeGOJDQrdqGcf5k5rNfoFR7E"
