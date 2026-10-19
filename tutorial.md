@@ -236,6 +236,33 @@ qiime confluence integrate \
   --o-integrated-metadata genus/metadata.qza
 ```
 
+## Comparing the profile types without paired samples
+
+Nothing up to this point needs paired samples.
+`integrate` renames every sample of every profile type to `<sample-id>-<key>` whether or not the other type has a sample of the same ID, so two studies with no sample IDs in common integrate just the same, and `original-sample-id` keeps the input ID.
+The merged relative table and the integrated metadata then go into any stock action that takes them: here Bray-Curtis and weighted UniFrac distances between all merged samples, and a PERMANOVA of the profile types on the latter.
+
+```shell
+qiime diversity beta \
+  --i-table genus/relative-table.qza \
+  --p-metric braycurtis \
+  --o-distance-matrix genus/bray-curtis.qza
+
+qiime diversity beta-phylogenetic \
+  --i-table genus/relative-table.qza \
+  --i-phylogeny reference/gtdb-r232-genus-tree.qza \
+  --p-metric weighted_unifrac \
+  --o-distance-matrix genus/weighted-unifrac.qza
+
+qiime diversity beta-group-significance \
+  --i-distance-matrix genus/weighted-unifrac.qza \
+  --m-metadata-file genus/metadata.qza \
+  --m-metadata-column profile-type \
+  --o-visualization genus/weighted-unifrac-profile-type.qzv
+```
+
+The paired report below is what paired samples buy on top: it keeps only the samples both profile types cover, so the comparison is between two profiles of the same material rather than between two sets of samples.
+
 ## Paired-sample report
 
 On the samples both profile types cover, `paired-report` computes Bray-Curtis, Jaccard, unweighted and weighted UniFrac on the proportions as they are (no rarefaction), with PERMANOVA by profile type and a PCoA scatter plot for each; a random forest classifying the profile type with nested cross-validation; and a per-feature summary, tabulated over every feature and also returned as metadata.
