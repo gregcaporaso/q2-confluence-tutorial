@@ -240,7 +240,7 @@ qiime confluence integrate \
 
 Nothing up to this point needs paired samples.
 `integrate` renames every sample of every profile type to `<sample-id>-<key>` whether or not the other type has a sample of the same ID, so two studies with no sample IDs in common integrate just the same, and `original-sample-id` keeps the input ID.
-The merged relative table and the integrated metadata then go into any stock action that takes them: here Bray-Curtis and weighted UniFrac distances between all merged samples, and a PERMANOVA of the profile types on the latter.
+The merged relative table and the integrated metadata then go into any stock action that takes them: here Bray-Curtis and weighted UniFrac distances between all merged samples, a PERMANOVA of the profile types on the latter, and its ordination as a PCoA scatter plot coloured by profile type (the PCoA result is metadata, so it merges with the integrated metadata on the command line).
 
 ```shell
 qiime diversity beta \
@@ -259,6 +259,19 @@ qiime diversity beta-group-significance \
   --m-metadata-file genus/metadata.qza \
   --m-metadata-column profile-type \
   --o-visualization genus/weighted-unifrac-profile-type.qzv
+
+qiime diversity pcoa \
+  --i-distance-matrix genus/weighted-unifrac.qza \
+  --o-pcoa genus/weighted-unifrac-pcoa.qza
+
+qiime vizard scatterplot-2d \
+  --m-metadata-file genus/weighted-unifrac-pcoa.qza \
+  --m-metadata-file genus/metadata.qza \
+  --p-x-measure 'Axis 1' \
+  --p-y-measure 'Axis 2' \
+  --p-color-by profile-type \
+  --p-title 'Weighted UniFrac PCoA, genus level' \
+  --o-visualization genus/weighted-unifrac-pcoa.qzv
 ```
 
 The paired report below is what paired samples buy on top: it keeps only the samples both profile types cover, so the comparison is between two profiles of the same material rather than between two sets of samples.
