@@ -222,7 +222,7 @@ qiime confluence summarize-inputs \
 ```
 
 `integrate` collapses each profile to the chosen level (6 is genus with the seven GTDB ranks; 5 is family), drops the features without a name at that level, renormalizes each profile to proportions, and merges them.
-Merged samples are named `<sample-id>-<key>`; the integrated metadata records `original-sample-id`, `profile-type` and `unassigned-share` beside the study metadata.
+Merged samples are named `<sample-id>-<key>`; the integrated metadata records `original-sample-id` and `profile-type` beside the study metadata.
 
 ```shell
 qiime confluence integrate \
@@ -240,7 +240,7 @@ qiime confluence integrate \
 
 Nothing up to this point needs paired samples.
 `integrate` renames every sample of every profile type to `<sample-id>-<key>` whether or not the other type has a sample of the same ID, so two studies with no sample IDs in common integrate just the same, and `original-sample-id` keeps the input ID.
-The merged relative table and the integrated metadata then go into any stock action that takes them: here Bray-Curtis and weighted UniFrac distances between all merged samples, a PERMANOVA of the profile types on the latter, and its ordination as a PCoA scatter plot coloured by profile type (the PCoA result is metadata, so it merges with the integrated metadata on the command line).
+The merged relative table and the integrated metadata then go into any stock action that takes them: here Bray-Curtis and weighted UniFrac distances between all merged samples, a PERMANOVA of the profile types on the latter, its ordination as a PCoA scatter plot coloured by profile type (the PCoA result is metadata, so it merges with the integrated metadata on the command line), and a taxa bar plot of the merged table, which can be sorted and coloured by the integrated metadata.
 
 ```shell
 qiime diversity beta \
@@ -272,6 +272,12 @@ qiime vizard scatterplot-2d \
   --p-color-by profile-type \
   --p-title 'Weighted UniFrac PCoA, genus level' \
   --o-visualization genus/weighted-unifrac-pcoa.qzv
+
+qiime taxa barplot2 \
+  --i-table genus/relative-table.qza \
+  --i-taxonomy genus/taxonomy.qza \
+  --m-metadata-file genus/metadata.qza \
+  --o-visualization genus/taxa-barplot.qzv
 ```
 
 The paired report below is what paired samples buy on top: it keeps only the samples both profile types cover, so the comparison is between two profiles of the same material rather than between two sets of samples.
