@@ -17,6 +17,11 @@ The GTDB r232 bacterial tree and genome taxonomy, from GTDB, imported and collap
 The collapsed trees are the hosted reference artifacts the tutorial downloads.
 On r232 each collapse takes about ten seconds: 34,834 genera, 6,048 families.
 
+Importing the tree is where it becomes a `Phylogeny[Rooted]`, so that is where its rooting is recorded: a Note annotation on the imported artifact, which every artifact derived from it carries along (the collapsed trees below inherit the Note).
+GTDB places the root arbitrarily and advises treating its reference trees as unrooted; the Note says so, with the references.
+
+> **TODO: Greg to review citations and text in annotation text.**
+
 ```shell
 wget https://data.gtdb.ecogenomic.org/releases/release232/232.0/bac120_r232.tree
 wget https://data.gtdb.ecogenomic.org/releases/release232/232.0/bac120_taxonomy_r232.tsv.gz
@@ -26,6 +31,22 @@ qiime tools import \
   --type 'Phylogeny[Rooted]' \
   --input-path bac120_r232.tree \
   --output-path gtdb-r232-bac120-tree.qza
+
+qiime tools annotation-create \
+  --input-path gtdb-r232-bac120-tree.qza \
+  --annotation-type Note \
+  --name rooting \
+  --text "This tree keeps the root of the GTDB r232 bac120 reference tree, \
+which GTDB places arbitrarily: in the distributed tree it sits on the branch \
+to the phylum Spirochaetota, splitting that branch into two equal halves. \
+GTDB advises that its reference trees should be treated as unrooted \
+(D. Parks, GTDB forum, 2021-07-12, \
+https://forum.gtdb.ecogenomic.org/t/root-of-bacterial-tree/161), and its \
+rank normalization averages over many plausible rootings because the rooting \
+of the bacterial tree remains controversial (Parks et al. 2018, Nat \
+Biotechnol 36:996, doi:10.1038/nbt.4229). The root is therefore not \
+biologically meaningful; results that depend on root placement should be \
+read with that in mind."
 
 qiime tools import \
   --type 'FeatureData[Taxonomy]' \
@@ -45,6 +66,8 @@ qiime confluence gtdb-tree-collapse \
   --p-level 5 \
   --o-collapsed-tree gtdb-r232-family-tree.qza
 ```
+
+`qiime tools annotation-list --input-path gtdb-r232-genus-tree.qza` shows the inherited Note, and `qiime tools annotation-fetch --name rooting --verbose` prints its text.
 
 The amplicon classifiers and the sylph database are not re-hosted: the tutorial fetches the GTDB r232 naive Bayes classifier from the rachis Zenodo record, the SILVA 144 V4 uniform classifier from SILVA, and the sylph database and taxonomy from the sylph authors with the `sylph` plugin's `fetch-database` and `tax-download`.
 

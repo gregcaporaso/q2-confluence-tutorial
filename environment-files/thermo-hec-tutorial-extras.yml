@@ -16,5 +16,5 @@ dependencies:
   - sylph-tax=1.9.2
   - pip
   - pip:
-    - q2-confluence@git+https://github.com/gregcaporaso/q2-confluence@57518ff7ef07561e5f318f9ac6ac3e8de542efe4
+    - q2-confluence@git+https://github.com/gregcaporaso/q2-confluence@9737e1408c59f4495f4b94fa85793067fb707101
     - mosh-sylph@git+https://github.com/gregcaporaso/mosh-sylph@c2cbbe14abc9da0629a33ea2f9b663bc7698f62f
