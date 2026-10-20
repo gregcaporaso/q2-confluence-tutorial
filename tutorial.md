@@ -99,6 +99,11 @@ An [artifact cache](https://use.qiime2.org/en/stable/tutorials/use-the-artifact-
 The commands below keep the database, its taxonomy and the read sketches in a cache called `cache` inside the tutorial directory and pass `--use-cache cache` to the actions that read or write them; the tutorial's own data stays in `.qza` files, with its provenance.
 `fetch-database` downloads the authors' pre-built database, and `tax-download` the matching sylph-tax taxonomy.
 
+The plugin accepts only sylph's two-stage database format (`.syl2db`), which the sylph authors publish for GTDB r226 and r232; those are the releases `fetch-database` offers.
+[GlobDB](https://globdb.org) publishes sylph databases for its r226 and r232 releases as well, but in the single-stage format so far; `fetch-database` will offer them when two-stage builds become available.
+Until then, a GlobDB database can be used by downloading it, converting it with `sylph convert-db-two-screen`, and importing the result (`qiime tools import --type SylphDatabase --input-format SylphDatabaseFormat`); `tax-download --p-taxonomy GlobDB_r232` fetches the matching taxonomy.
+The [mosh-sylph README](https://github.com/gregcaporaso/mosh-sylph#types-and-formats) has the commands.
+
 ```shell
 qiime tools cache-create --cache cache
 
