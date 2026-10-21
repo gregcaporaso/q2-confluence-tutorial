@@ -1,4 +1,4 @@
-# How the tutorial data and the reference artifacts were prepared
+# How the tutorial data were prepared
 
 <!-- Draft by Claude, pending @gregcaporaso's rewrite. Plain Markdown since
 2026-10-16 (the MyST labels left; the links are GitHub heading anchors).
@@ -6,79 +6,37 @@ These steps are the record of what produced the hosted artifacts; a reader
 of the tutorial does not run them, and the thermo-hec project's
 slurm/tutorial.sbatch never extracts this page. The subsetting of the
 amplicon data to the ten tutorial samples is not shown: it is in the
-artifacts' provenance. -->
+artifacts' provenance. 2026-10-21: the reference section shrank when the
+tutorial moved to the genome space; the GTDB tree and taxonomy are now
+imported on the tutorial page itself, and no collapsed tree is hosted. -->
 
-None of this is part of the tutorial: it records how the artifacts the [tutorial](tutorial.md) downloads were produced, so that the same can be done for another GTDB release or another data set.
+None of this is part of the tutorial: it records how the artifacts the [tutorial](tutorial.md) downloads were produced, so that the same can be done for another data set.
 Every step is also in the provenance of the artifacts themselves.
 
 ## Reference
 
-The GTDB r232 bacterial tree and genome taxonomy, from GTDB, imported and collapsed to one tip per genus (level 6 of the seven GTDB ranks) and per family (level 5) with `gtdb-tree-collapse`.
-The collapsed trees are the hosted reference artifacts the tutorial downloads.
-On r232 each collapse takes about ten seconds: 34,834 genera, 6,048 families.
+No reference artifact is re-hosted: the tutorial fetches GTDB's r232 bacterial tree and genome taxonomy from GTDB and imports them itself, the GTDB r232 16S reference sequences and taxonomy from the rachis Zenodo record (the training data of that record's GTDB classifier), the SILVA 144 V4 uniform classifier from SILVA, and the sylph database from the sylph authors with the `sylph` plugin's `fetch-database`.
 
-Importing the tree is where it becomes a `Phylogeny[Rooted]`, so that is where its rooting is recorded: a Note annotation on the imported artifact, which every artifact derived from it carries along (the collapsed trees below inherit the Note).
-GTDB places the root arbitrarily and advises treating its reference trees as unrooted; the Note says so, with the references.
+The tree is imported through the `confluence` plugin's `GTDBNewickFormat`, which drops the quoted root label without a branch length that GTDB's Newick file ends in (`'100:d__Bacteria'`), because UniFrac's parser aborts on it; the GTDB file itself is unchanged and its md5 is in the artifact's provenance.
+The rooting of the tree is documented on the imported artifact with a Note annotation (the command is on the tutorial page), which every artifact derived from it carries along; `qiime tools annotation-list --input-path <artifact>` shows it and `qiime tools annotation-fetch --name rooting --verbose` prints its text.
 
-> **TODO: Greg to review citations and text in annotation text.**
+For integration at a taxonomic level rather than in the genome space (`integrate --p-level`), the tree is collapsed once per release and level with `gtdb-tree-collapse`, on the tree imported as above; on r232 each collapse takes about ten seconds (34,834 genera, 6,048 families).
+Each collapse log is feature metadata keyed by the collapsed tip names: the node's name in the GTDB tree, the number of genomes it stands for and their accessions (`qiime metadata tabulate` views it).
 
 ```shell
-wget https://data.gtdb.ecogenomic.org/releases/release232/232.0/bac120_r232.tree
-wget https://data.gtdb.ecogenomic.org/releases/release232/232.0/bac120_taxonomy_r232.tsv.gz
-gunzip -k bac120_taxonomy_r232.tsv.gz
-
-qiime tools import \
-  --type 'Phylogeny[Rooted]' \
-  --input-path bac120_r232.tree \
-  --output-path gtdb-r232-bac120-tree.qza
-
-qiime tools annotation-create \
-  --input-path gtdb-r232-bac120-tree.qza \
-  --annotation-type Note \
-  --name rooting \
-  --text "This tree keeps the root of the GTDB r232 bac120 reference tree, \
-which GTDB places arbitrarily: in the distributed tree it sits on the branch \
-to the phylum Spirochaetota, splitting that branch into two equal halves. \
-GTDB advises that its reference trees should be treated as unrooted \
-(D. Parks, GTDB forum, 2021-07-12, \
-https://forum.gtdb.ecogenomic.org/t/root-of-bacterial-tree/161), and its \
-rank normalization averages over many plausible rootings because the rooting \
-of the bacterial tree remains controversial (Parks et al. 2018, Nat \
-Biotechnol 36:996, doi:10.1038/nbt.4229). The root is therefore not \
-biologically meaningful; results that depend on root placement should be \
-read with that in mind."
-
-qiime tools import \
-  --type 'FeatureData[Taxonomy]' \
-  --input-format HeaderlessTSVTaxonomyFormat \
-  --input-path bac120_taxonomy_r232.tsv \
-  --output-path gtdb-r232-bac120-taxonomy.qza
-
 qiime confluence gtdb-tree-collapse \
   --i-tree gtdb-r232-bac120-tree.qza \
   --i-taxonomy gtdb-r232-bac120-taxonomy.qza \
   --p-level 6 \
   --o-collapsed-tree gtdb-r232-genus-tree.qza \
   --o-collapse-log gtdb-r232-genus-tree-collapse-log.qza
-
-qiime confluence gtdb-tree-collapse \
-  --i-tree gtdb-r232-bac120-tree.qza \
-  --i-taxonomy gtdb-r232-bac120-taxonomy.qza \
-  --p-level 5 \
-  --o-collapsed-tree gtdb-r232-family-tree.qza \
-  --o-collapse-log gtdb-r232-family-tree-collapse-log.qza
 ```
-
-`qiime tools annotation-list --input-path gtdb-r232-genus-tree.qza` shows the inherited Note, and `qiime tools annotation-fetch --name rooting --verbose` prints its text.
-Each collapse log is feature metadata keyed by the collapsed tip names: the node's name in the GTDB tree, the number of genomes it stands for and their accessions (`qiime metadata tabulate` views it).
-
-The amplicon classifiers and the sylph database are not re-hosted: the tutorial fetches the GTDB r232 naive Bayes classifier from the rachis Zenodo record, the SILVA 144 V4 uniform classifier from SILVA, and the sylph database and taxonomy from the sylph authors with the `sylph` plugin's `fetch-database` and `tax-download`.
 
 ## Amplicon data
 
 The 16S rRNA V4 amplicons (515F/806R) of the study were sequenced on an Illumina run of 199 samples and denoised with DADA2 in the QIIME 2 amplicon distribution, giving the ASV table and the ASV sequences.
 The tutorial artifacts are those outputs restricted to the ten samples with a metagenome profile (`feature-table filter-samples` and `filter-seqs`; the step is in their provenance).
-Classification, the organelle filter and the Bacteria filter are part of the tutorial, because they are what a reader runs on their own data.
+The organelle filter, the closed-reference clustering and the Bacteria filter are part of the tutorial, because they are what a reader runs on their own data.
 
 ## Metagenome data
 
