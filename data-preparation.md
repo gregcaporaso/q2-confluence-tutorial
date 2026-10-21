@@ -58,16 +58,19 @@ qiime confluence gtdb-tree-collapse \
   --i-tree gtdb-r232-bac120-tree.qza \
   --i-taxonomy gtdb-r232-bac120-taxonomy.qza \
   --p-level 6 \
-  --o-collapsed-tree gtdb-r232-genus-tree.qza
+  --o-collapsed-tree gtdb-r232-genus-tree.qza \
+  --o-collapse-log gtdb-r232-genus-tree-collapse-log.qza
 
 qiime confluence gtdb-tree-collapse \
   --i-tree gtdb-r232-bac120-tree.qza \
   --i-taxonomy gtdb-r232-bac120-taxonomy.qza \
   --p-level 5 \
-  --o-collapsed-tree gtdb-r232-family-tree.qza
+  --o-collapsed-tree gtdb-r232-family-tree.qza \
+  --o-collapse-log gtdb-r232-family-tree-collapse-log.qza
 ```
 
 `qiime tools annotation-list --input-path gtdb-r232-genus-tree.qza` shows the inherited Note, and `qiime tools annotation-fetch --name rooting --verbose` prints its text.
+Each collapse log is feature metadata keyed by the collapsed tip names: the node's name in the GTDB tree, the number of genomes it stands for and their accessions (`qiime metadata tabulate` views it).
 
 The amplicon classifiers and the sylph database are not re-hosted: the tutorial fetches the GTDB r232 naive Bayes classifier from the rachis Zenodo record, the SILVA 144 V4 uniform classifier from SILVA, and the sylph database and taxonomy from the sylph authors with the `sylph` plugin's `fetch-database` and `tax-download`.
 
