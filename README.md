@@ -46,7 +46,7 @@ The dev environment files are rebuilt as the distribution's packages change; rec
 
 ## Testing the tutorial
 
-The thermo-hec project's `slurm/tutorial.sbatch` extracts every shell block of `tutorial.md`, in order, and runs them verbatim on a server with both plugins installed, downloads included (about 25 GB, most of it the sylph database; the SILVA classification is the memory peak).
+The thermo-hec project's `slurm/tutorial.sbatch` extracts every shell block of `tutorial.md`, in order, and runs them verbatim on a server with both plugins installed, downloads included (about 25 GB, most of it the sylph database; 31 min and 4.4 GB peak memory on a 16-core server on 2026-10-21, half of it the sylph database download and the read sketching).
 A change to a command on the page is tested there before it is committed as passing.
 
 ## Pinned plugin commits
