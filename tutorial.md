@@ -365,8 +365,8 @@ qiime confluence paired-report \
 
 On the tutorial data at 97%, weighted UniFrac does not separate the two profile types (PERMANOVA pseudo-F 1.7, p 0.15), while Bray-Curtis, Jaccard and unweighted UniFrac do, and the random forest tells them apart: restricted to the genomes the reference covers, the abundance-weighted phylogenetic profiles of the two assays agree, but the particular genomes each assay calls differ (the summary's `direction` column: 3,190 genomes seen by the amplicon profile only, 393 by both, 920 by the metagenome profile only, of which 590 have no 16S in the reference).
 
-## Integrating at a taxonomic level instead
+## A taxonomic level instead of genomes
 
 The genome space is one choice of feature space.
-`integrate` can also collapse both profiles to a taxonomic level with `--p-level` (6 is genus with the seven GTDB ranks, 5 family), given per-feature taxonomies at that resolution (for the amplicon side, a GTDB taxonomy from `feature-classifier classify-sklearn` with the GTDB classifier of the same Zenodo record) and the GTDB tree collapsed to the same level with `gtdb-tree-collapse`; `paired-report` then runs on that table and tree unchanged.
-At genus, the two profile types of this data set separate by weighted UniFrac (pseudo-F 2.6, p 0.01); the species level through the classifier names only 42% of the reads and separates them further (3.8).
+The merged table and its taxonomy also collapse to any rank with `taxa collapse` (6 is genus with the seven GTDB ranks, 5 family), and `gtdb-tree-collapse` gives the GTDB tree collapsed to the same rank, with one tip per taxon named like the collapsed features; the stock diversity actions then run on that table and tree.
+At genus, the two profile types of this data set separate by weighted UniFrac (PERMANOVA pseudo-F 2.6, p 0.01) where the genome space at 97% does not.

@@ -15,7 +15,7 @@ Their prose is @gregcaporaso's; until they rewrite them, the two pages are Claud
 
 ## Create the environment
 
-The plugins target the unreleased 2026.10 epoch, so the base environment is the `qiime2` distribution's development environment, created as in the [QIIME 2 development environment guide](https://develop.qiime2.org/en/stable/plugins/how-to-guides/set-up-development-environment.html) from the distribution's `dev/latest/passed` environment file for your platform; the extras file layers on sylph and sylph-tax, and both plugins from GitHub at pinned commits.
+The plugins target the unreleased 2026.10 epoch, so the base environment is the `qiime2` distribution's development environment, created as in the [QIIME 2 development environment guide](https://develop.qiime2.org/en/stable/plugins/how-to-guides/set-up-development-environment.html) from the distribution's `dev/latest/passed` environment file for your platform; the extras file layers on sylph, and both plugins from GitHub at pinned commits.
 
 Linux (x86_64):
 

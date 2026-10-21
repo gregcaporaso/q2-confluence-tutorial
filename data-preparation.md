@@ -20,7 +20,7 @@ No reference artifact is re-hosted: the tutorial fetches GTDB's r232 bacterial t
 The tree is imported through the `confluence` plugin's `GTDBNewickFormat`, which drops the quoted root label without a branch length that GTDB's Newick file ends in (`'100:d__Bacteria'`), because UniFrac's parser aborts on it; the GTDB file itself is unchanged and its md5 is in the artifact's provenance.
 The rooting of the tree is documented on the imported artifact with a Note annotation (the command is on the tutorial page), which every artifact derived from it carries along; `qiime tools annotation-list --input-path <artifact>` shows it and `qiime tools annotation-fetch --name rooting --verbose` prints its text.
 
-For integration at a taxonomic level rather than in the genome space (`integrate --p-level`), the tree is collapsed once per release and level with `gtdb-tree-collapse`, on the tree imported as above; on r232 each collapse takes about ten seconds (34,834 genera, 6,048 families).
+For an analysis at a taxonomic level rather than in the genome space (the merged table collapsed with `taxa collapse`), the tree is collapsed once per release and level with `gtdb-tree-collapse`, on the tree imported as above; on r232 each collapse takes about ten seconds (34,834 genera, 6,048 families).
 Each collapse log is feature metadata keyed by the collapsed tip names: the node's name in the GTDB tree, the number of genomes it stands for and their accessions (`qiime metadata tabulate` views it).
 
 ```shell
