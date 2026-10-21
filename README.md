@@ -20,22 +20,33 @@ The plugins target the unreleased 2026.10 epoch, so the base environment is the 
 Linux (x86_64):
 
 ```shell
-conda env create -n thermo-hec-tutorial --file https://raw.githubusercontent.com/qiime2/distributions/dev/latest/passed/rachis-qiime2-linux-64-conda.yml
+conda env create \
+  -n thermo-hec-tutorial \
+  --file https://raw.githubusercontent.com/qiime2/distributions/dev/latest/passed/rachis-qiime2-linux-64-conda.yml
 ```
 
 macOS on Apple Silicon (the distribution has no arm64 build; the osx-64 build runs under Rosetta):
 
 ```shell
-CONDA_SUBDIR=osx-64 conda env create -n thermo-hec-tutorial --file https://raw.githubusercontent.com/qiime2/distributions/dev/latest/passed/rachis-qiime2-osx-64-conda.yml
+CONDA_SUBDIR=osx-64 conda env create \
+  -n thermo-hec-tutorial \
+  --file https://raw.githubusercontent.com/qiime2/distributions/dev/latest/passed/rachis-qiime2-osx-64-conda.yml
+
 conda activate thermo-hec-tutorial
-conda config --env --set subdir osx-64
+
+conda config \
+  --env \
+  --set subdir osx-64
 ```
 
 macOS on Intel uses the same osx-64 file without `CONDA_SUBDIR`.
 Then, in the activated environment, from this directory:
 
 ```shell
-conda env update -n thermo-hec-tutorial --file environment-files/thermo-hec-tutorial-extras.yml
+conda env update \
+  -n thermo-hec-tutorial \
+  --file environment-files/thermo-hec-tutorial-extras.yml
+
 qiime dev refresh-cache
 qiime confluence --help
 qiime sylph --help

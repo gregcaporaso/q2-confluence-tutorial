@@ -283,7 +283,7 @@ qiime confluence summarize-inputs \
 ```
 
 `integrate` renormalizes each profile to proportions, merges them, checks that every genome is a tip of the tree, and builds the taxonomy of the merged genomes from the two reference taxonomies (both GTDB r232, so they agree on the genomes they share).
-Without `--p-level` nothing is collapsed: the feature space is the genomes themselves.
+Nothing is collapsed: the feature space is the genomes themselves, and a taxonomic level is a separate step ([last section](#a-taxonomic-level-instead-of-genomes)).
 Merged samples are named `<sample-id>-<key>`; the integrated metadata records `original-sample-id` and `profile-type` beside the study metadata.
 
 ```shell
@@ -368,5 +368,5 @@ On the tutorial data at 97%, weighted UniFrac does not separate the two profile 
 ## A taxonomic level instead of genomes
 
 The genome space is one choice of feature space.
-The merged table and its taxonomy also collapse to any rank with `taxa collapse` (6 is genus with the seven GTDB ranks, 5 family), and `gtdb-tree-collapse` gives the GTDB tree collapsed to the same rank, with one tip per taxon named like the collapsed features; the stock diversity actions then run on that table and tree.
-At genus, the two profile types of this data set separate by weighted UniFrac (PERMANOVA pseudo-F 2.6, p 0.01) where the genome space at 97% does not.
+The merged table and its taxonomy also collapse to any rank with `taxa collapse` (6 is genus with the seven GTDB ranks, 5 family), and `gtdb-tree-collapse` on the imported GTDB tree and genome taxonomy gives the tree collapsed to the same rank, with one tip per taxon named like the collapsed features (about ten seconds per level on r232, with a log of what each tip stands for); the stock diversity actions then run on that table and tree.
+An earlier version of this tutorial integrated at genus level, with the amplicon features named by a GTDB classifier rather than mapped to genomes; on that route the two profile types of this data set separate by weighted UniFrac (PERMANOVA pseudo-F 2.6, p 0.01) where the genome space at 97% does not.
