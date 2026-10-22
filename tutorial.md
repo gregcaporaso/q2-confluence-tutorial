@@ -140,7 +140,7 @@ The commands below keep the database and the read sketches in a cache called `ca
 
 The plugin accepts only sylph's two-stage database format (`.syl2db`), which the sylph authors publish for GTDB r226 and r232; those are the releases `fetch-database` offers.
 [GlobDB](https://globdb.org) publishes sylph databases for its r226 and r232 releases as well, but in the single-stage format so far; `fetch-database` will offer them when two-stage builds become available.
-Until then, a GlobDB database can be used by downloading it, converting it with `sylph convert-db-two-screen`, and importing the result (`qiime tools import --type SylphDatabase --input-format SylphDatabaseFormat`); its genomes are not NCBI assemblies, so `profile-to-tables` below would run with `--p-no-gtdb-ids`, and the taxonomy and tree would be GlobDB's.
+Until then, a GlobDB database can be used by downloading it, converting it with `sylph convert-db-two-screen`, and importing the result (`qiime tools import --type SylphTwoStageDatabase --input-format SylphTwoStageDatabaseFormat`); its genomes are not NCBI assemblies, so `profile-to-tables` below would run with `--p-no-gtdb-ids`, and the taxonomy and tree would be GlobDB's.
 The [mosh-sylph README](https://github.com/gregcaporaso/mosh-sylph#types-and-formats) has the commands.
 
 ```shell
