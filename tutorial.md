@@ -405,3 +405,31 @@ qiime confluence paired-report \
 
 On the tutorial data (bacon job 320), collapsing the 97% genome table to genus gives 2,231 genera (1,488 seen by the amplicon profile only, 511 by both, 232 by the metagenome profile only) and the same picture as the genome space: weighted UniFrac does not separate the two profile types (PERMANOVA pseudo-F 1.6, p 0.17), while Bray-Curtis (3.0, p 0.003), Jaccard (4.4) and unweighted UniFrac (4.2) do, and the random forest tells them apart (accuracy 0.85).
 An earlier version of this tutorial integrated at genus level with the amplicon features named by a GTDB classifier rather than mapped to genomes; on that route the two profile types separated by weighted UniFrac as well (pseudo-F 2.6, p 0.01), so the difference lies in how the amplicon features reach the genus level, not in the level itself.
+
+## Searching for a taxon
+
+This optional step asks a different question of the same sketches: is a particular organism present, and how close is it to a reference genome?
+`sylph profile` above reports abundances and assigns shared k-mers to one genome; `sylph query` instead reports, for every database genome with enough sampled k-mers in a sample, the coverage-adjusted average nucleotide identity (ANI) of the reads to that genome, so closely related genomes are all listed and nothing is reassigned.
+`query-to-metadata` tabulates the result as metadata, joins GTDB's taxonomy by genome ID, and keeps only the rows whose taxonomy string or genome ID contains one of the given texts; `metadata tabulate` then shows the table.
+Here the search is for *Escherichia coli*; the text matches every GTDB species cluster whose name starts with it (in r232 `s__Escherichia coli`, `s__Escherichia coli_E` and `s__Escherichia coli_F`), so narrow it to one cluster, or widen it to `g__Escherichia`, as the question requires.
+At effective coverage below about 0.1x the adjusted ANI and its 5 to 95 percentile interval overshoot (the 95th percentile can exceed 100); read such rows with the containment index and the naive ANI.
+
+```shell
+qiime sylph query \
+  --i-sketches cache:sketches \
+  --i-database cache:sylph-gtdb-r232 \
+  --p-threads 16 \
+  --o-query wgs/sylph-query.qza
+
+qiime sylph query-to-metadata \
+  --i-query wgs/sylph-query.qza \
+  --i-taxonomy reference/gtdb-r232-bac120-taxonomy.qza \
+  --p-targets 's__Escherichia coli' \
+  --o-query-metadata wgs/escherichia-coli-query.qza
+
+qiime metadata tabulate \
+  --m-input-file wgs/escherichia-coli-query.qza \
+  --o-visualization wgs/escherichia-coli-query.qzv
+```
+
+<!-- @gregcaporaso, reminder for the prose: which samples and clusters the search finds on the tutorial data comes from the first bacon run of this section; query-to-metadata fails if no genome matches the targets. -->
