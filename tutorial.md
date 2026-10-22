@@ -367,6 +367,41 @@ On the tutorial data at 97%, weighted UniFrac does not separate the two profile 
 
 ## A taxonomic level instead of genomes
 
-The genome space is one choice of feature space.
-The merged table and its taxonomy also collapse to any rank with `taxa collapse` (6 is genus with the seven GTDB ranks, 5 family), and `gtdb-tree-collapse` on the imported GTDB tree and genome taxonomy gives the tree collapsed to the same rank, with one tip per taxon named like the collapsed features (about ten seconds per level on r232, with a log of what each tip stands for); the stock diversity actions then run on that table and tree.
-An earlier version of this tutorial integrated at genus level, with the amplicon features named by a GTDB classifier rather than mapped to genomes; on that route the two profile types of this data set separate by weighted UniFrac (PERMANOVA pseudo-F 2.6, p 0.01) where the genome space at 97% does not.
+The genome space is one choice of feature space; the same integrated data can be compared at a taxonomic level instead.
+`taxa collapse` sums the merged table within each taxon of the taxonomy that `integrate` wrote (level 6 is genus with the seven GTDB ranks, 5 family), and `gtdb-tree-collapse` collapses the imported GTDB tree to the same rank, with one tip per taxon named like the collapsed features, so the two still match; its log records which genomes each tip stands for.
+The collapse takes about ten seconds on r232 and keeps GTDB's bootstrap and taxon labels on the remaining internal nodes.
+The integrated metadata is unchanged, because collapsing touches features, not samples, and the collapsed feature IDs are the taxonomy strings themselves, so the report needs no taxonomy.
+The paired report then runs as above, at genus.
+
+```shell
+mkdir genus
+
+qiime taxa collapse \
+  --i-table genome/relative-table.qza \
+  --i-taxonomy genome/taxonomy.qza \
+  --p-level 6 \
+  --o-collapsed-table genus/relative-table.qza
+
+qiime confluence gtdb-tree-collapse \
+  --i-tree reference/gtdb-r232-bac120-tree.qza \
+  --i-taxonomy reference/gtdb-r232-bac120-taxonomy.qza \
+  --p-level 6 \
+  --o-collapsed-tree genus/gtdb-r232-genus-tree.qza \
+  --o-collapse-log genus/gtdb-r232-genus-tree-collapse-log.qza
+
+qiime confluence paired-report \
+  --i-table genus/relative-table.qza \
+  --i-tree genus/gtdb-r232-genus-tree.qza \
+  --i-metadata genome/metadata.qza \
+  --p-permutations 999 \
+  --p-cv 10 \
+  --p-n-estimators 500 \
+  --p-n-jobs 8 \
+  --o-report genus/paired-report.qzv \
+  --o-distance-matrices genus/distance-matrices/ \
+  --o-feature-importance genus/feature-importance.qza \
+  --o-feature-summary genus/feature-summary.qza
+```
+
+<!-- @gregcaporaso, reminder for the prose: the genus-level numbers of this route are not known yet; the first bacon run of this section gives them. -->
+An earlier version of this tutorial integrated at genus level with the amplicon features named by a GTDB classifier rather than mapped to genomes; on that route the two profile types of this data set separate by weighted UniFrac (PERMANOVA pseudo-F 2.6, p 0.01) where the genome space at 97% does not.
