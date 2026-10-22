@@ -16,4 +16,4 @@ dependencies:
   - pip
   - pip:
     - q2-confluence@git+https://github.com/gregcaporaso/q2-confluence@aa62c3a06550ce871e90201ce7799476d75e7940
-    - mosh-sylph@git+https://github.com/gregcaporaso/mosh-sylph@37b595f0e15b8ef9a47118484bbbefea746b06b1
+    - mosh-sylph@git+https://github.com/gregcaporaso/mosh-sylph@09fd44281af544c5de47c9e569416d9d28eed7f0
