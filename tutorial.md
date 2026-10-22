@@ -403,5 +403,5 @@ qiime confluence paired-report \
   --o-feature-summary genus/feature-summary.qza
 ```
 
-<!-- @gregcaporaso, reminder for the prose: the genus-level numbers of this route are not known yet; the first bacon run of this section gives them. -->
-An earlier version of this tutorial integrated at genus level with the amplicon features named by a GTDB classifier rather than mapped to genomes; on that route the two profile types of this data set separate by weighted UniFrac (PERMANOVA pseudo-F 2.6, p 0.01) where the genome space at 97% does not.
+On the tutorial data (bacon job 320), collapsing the 97% genome table to genus gives 2,231 genera (1,488 seen by the amplicon profile only, 511 by both, 232 by the metagenome profile only) and the same picture as the genome space: weighted UniFrac does not separate the two profile types (PERMANOVA pseudo-F 1.6, p 0.17), while Bray-Curtis (3.0, p 0.003), Jaccard (4.4) and unweighted UniFrac (4.2) do, and the random forest tells them apart (accuracy 0.85).
+An earlier version of this tutorial integrated at genus level with the amplicon features named by a GTDB classifier rather than mapped to genomes; on that route the two profile types separated by weighted UniFrac as well (pseudo-F 2.6, p 0.01), so the difference lies in how the amplicon features reach the genus level, not in the level itself.
