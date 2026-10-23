@@ -264,7 +264,7 @@ qiime confluence summarize-inputs \
 `integrate` keeps, in each profile, the genomes that are tips of the tree (`phylogeny filter-table`; the archaeal genomes go here), renormalizes the rest to proportions and merges the profiles.
 Nothing is collapsed: the feature space is the genomes themselves, and a taxonomic level is a separate step ([last section](#a-taxonomic-level-instead-of-genomes)).
 No taxonomy is built: GTDB's taxonomy artifact names every genome of the merged table and goes straight into the actions below.
-Merged samples are named `<sample-id>-<key>`; the integrated metadata records `original-sample-id`, `profile-type`, the source's `features-before` and `features-after` the tree filter and their quotient `features-kept-share`, beside the study metadata.
+Merged samples are named `<sample-id>-<key>`; the integrated metadata records `original-sample-id`, `study-id`, the source's `features-before` and `features-after` the tree filter and their quotient `features-kept-share`, beside the study metadata.
 The metadata is given per profile type, under the table's key; one study profiled twice goes in under both keys.
 A profile that loses more than a tenth of its features to the tree filter raises a warning naming the likely causes (archaea against the bacterial tree, or a reference release mismatch); the counts are in the metadata either way.
 
@@ -298,8 +298,8 @@ qiime diversity beta-phylogenetic \
 qiime diversity beta-group-significance \
   --i-distance-matrix genome/weighted-unifrac.qza \
   --m-metadata-file genome/metadata.qza \
-  --m-metadata-column profile-type \
-  --o-visualization genome/weighted-unifrac-profile-type.qzv
+  --m-metadata-column study-id \
+  --o-visualization genome/weighted-unifrac-study-id.qzv
 
 qiime diversity pcoa \
   --i-distance-matrix genome/weighted-unifrac.qza \
@@ -310,7 +310,7 @@ qiime vizard scatterplot-2d \
   --m-metadata-file genome/metadata.qza \
   --p-x-measure 'Axis 1' \
   --p-y-measure 'Axis 2' \
-  --p-color-by profile-type \
+  --p-color-by study-id \
   --p-title 'Weighted UniFrac PCoA, GTDB genomes' \
   --o-visualization genome/weighted-unifrac-pcoa.qzv
 
