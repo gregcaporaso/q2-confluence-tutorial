@@ -40,7 +40,7 @@ The organelle filter and the closed-reference clustering are part of the tutoria
 
 ## Metagenome data
 
-The shotgun reads of the same ten samples were imported from a fastq manifest, trimmed with fastp, cleared of the run's control samples, cleared of human reads with the MOSHPIT human pangenome filter, and subsampled to 10%.
+The metagenome reads of the same ten samples were imported from a fastq manifest, trimmed with fastp, cleared of the run's control samples, cleared of human reads with the MOSHPIT human pangenome filter, and subsampled to 10%.
 The subset holds 2.4 to 4.8 million read pairs per sample (median 4.1 million); at that depth the sylph profile is indistinguishable from the full depth by weighted and unweighted UniFrac.
 The hosted reads artifact carries the provenance of every step.
 

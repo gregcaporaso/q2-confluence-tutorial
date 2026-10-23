@@ -1,4 +1,4 @@
-# Integrating 16S and shotgun metagenome profiles: the tutorial
+# Integrating 16S and metagenome profiles: the tutorial
 
 <!-- Draft by Claude, pending @gregcaporaso's rewrite (no prose of theirs yet).
 Plain Markdown since 2026-10-16, when @gregcaporaso set the q2doc/MyST
@@ -21,7 +21,7 @@ serves every downstream action. The md5s and UUIDs in the download table come fr
 tutorial-data/README.md in the parent project, from the Zenodo record's file
 checksums, from SILVA's .md5 file and from the GTDB files' local copies. -->
 
-This tutorial integrates a 16S rRNA amplicon profile and a shotgun metagenome profile of the same samples in one feature space: the genomes of one GTDB release.
+This tutorial integrates a 16S rRNA amplicon profile and a metagenome profile of the same samples in one feature space: the genomes of one GTDB release.
 It uses the `confluence` plugin, the `sylph` plugin (mosh-sylph) for the metagenome profile, and stock QIIME 2 actions.
 It covers what you run on your own data: mapping the amplicon features to GTDB genomes, profiling the metagenome reads against the same genomes, integrating both, and comparing the two profile types on the samples they share.
 [How the tutorial data were prepared](data-preparation.md) is a separate page.
@@ -44,7 +44,7 @@ mkdir 16S wgs reference genome
 
 ## Downloading the data
 
-Every file the tutorial uses: the study data (the sample metadata as an `ImmutableMetadata` artifact, the ASV table and sequences, the 10% subset of the shotgun reads, 4.8 GB) and the reference data, each from its publisher (the GTDB r232 bacterial tree and genome taxonomy from GTDB; the GTDB r232 16S reference sequences from the rachis Zenodo record, the data the GTDB classifier of that record was trained on; the SILVA 144 V4 classifier from SILVA).
+Every file the tutorial uses: the study data (the sample metadata as an `ImmutableMetadata` artifact, the ASV table and sequences, the 10% subset of the metagenome reads, 4.8 GB) and the reference data, each from its publisher (the GTDB r232 bacterial tree and genome taxonomy from GTDB; the GTDB r232 16S reference sequences from the rachis Zenodo record, the data the GTDB classifier of that record was trained on; the SILVA 144 V4 classifier from SILVA).
 The sylph database is fetched by an action below, not by `wget`.
 
 ```shell

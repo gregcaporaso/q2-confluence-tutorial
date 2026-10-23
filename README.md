@@ -1,6 +1,6 @@
 # thermo-hec tutorial
 
-Source of the tutorial that integrates a 16S rRNA amplicon profile and a shotgun metagenome profile of the same samples in the feature space of one GTDB release's genomes, with the [q2-confluence](https://github.com/gregcaporaso/q2-confluence) and [mosh-sylph](https://github.com/gregcaporaso/mosh-sylph) QIIME 2 plugins.
+Source of the tutorial that integrates a 16S rRNA amplicon profile and a metagenome profile of the same samples in the feature space of one GTDB release's genomes, with the [q2-confluence](https://github.com/gregcaporaso/q2-confluence) and [mosh-sylph](https://github.com/gregcaporaso/mosh-sylph) QIIME 2 plugins.
 The pages are plain Markdown with command-line commands; they will be published with GitHub Pages later.
 
 ## Layout
