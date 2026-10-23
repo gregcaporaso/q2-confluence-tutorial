@@ -273,7 +273,7 @@ qiime confluence integrate \
   --i-tables amplicon:16S/genome-table.qza metagenome:wgs/sylph-taxonomic-abundance.qza \
   --i-tree reference/gtdb-r232-bac120-tree.qza \
   --i-metadata amplicon:study-metadata.qza metagenome:study-metadata.qza \
-  --o-relative-table genome/relative-table.qza \
+  --o-integrated-table genome/relative-table.qza \
   --o-integrated-metadata genome/metadata.qza
 ```
 
