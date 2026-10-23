@@ -36,7 +36,7 @@ qiime confluence gtdb-tree-collapse \
 
 The 16S rRNA V4 amplicons (515F/806R) of the study were sequenced on an Illumina run of 199 samples and denoised with DADA2 in the QIIME 2 amplicon distribution, giving the ASV table and the ASV sequences.
 The tutorial artifacts are those outputs restricted to the ten samples with a metagenome profile (`feature-table filter-samples` and `filter-seqs`; the step is in their provenance).
-The organelle filter, the closed-reference clustering and the Bacteria filter are part of the tutorial, because they are what a reader runs on their own data.
+The organelle filter and the closed-reference clustering are part of the tutorial, because they are what a reader runs on their own data; the Bacteria filter that preceded `integrate` until 2026-10-23 is gone, since `integrate` keeps only the genomes that are tips of the tree.
 
 ## Metagenome data
 
