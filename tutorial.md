@@ -267,6 +267,7 @@ No taxonomy is built: GTDB's taxonomy artifact names every genome of the merged 
 Merged samples are named `<sample-id>-<key>`; the integrated metadata records `original-sample-id`, `study-id`, the source's `features-before` and `features-after` the tree filter and their quotient `features-kept-share`, beside the study metadata.
 The metadata is given per profile type, under the table's key; one study profiled twice goes in under both keys.
 A profile that loses more than a tenth of its features to the tree filter raises a warning naming the likely causes (archaea against the bacterial tree, or a reference release mismatch); the counts are in the metadata either way.
+On the tutorial data the amplicon profile keeps 3,577 of its 3,611 genomes and the metagenome profile 1,313 of 1,322 (the nine archaea), so no warning is raised.
 
 ```shell
 qiime confluence integrate \
@@ -343,7 +344,7 @@ qiime confluence paired-report \
   --o-feature-summary genome/feature-summary.qza
 ```
 
-On the tutorial data at 97%, weighted UniFrac does not separate the two profile types (PERMANOVA pseudo-F 1.7, p 0.15), while Bray-Curtis, Jaccard and unweighted UniFrac do, and the random forest tells them apart: restricted to the genomes the reference covers, the abundance-weighted phylogenetic profiles of the two assays agree, but the particular genomes each assay calls differ (the summary's `direction` column: 3,190 genomes seen by the amplicon profile only, 393 by both, 920 by the metagenome profile only, of which 590 have no 16S in the reference).
+On the tutorial data at 97%, weighted UniFrac does not separate the two profile types (PERMANOVA pseudo-F 1.7, p 0.13), while Bray-Curtis, Jaccard and unweighted UniFrac do, and the random forest tells them apart: restricted to the genomes the reference covers, the abundance-weighted phylogenetic profiles of the two assays agree, but the particular genomes each assay calls differ (the summary's `direction` column: 3,184 genomes seen by the amplicon profile only, 393 by both, 920 by the metagenome profile only, of which 590 have no 16S in the reference).
 
 ## A taxonomic level instead of genomes
 
@@ -383,7 +384,7 @@ qiime confluence paired-report \
   --o-feature-summary genus/feature-summary.qza
 ```
 
-On the tutorial data (bacon job 320), collapsing the 97% genome table to genus gives 2,231 genera (1,488 seen by the amplicon profile only, 511 by both, 232 by the metagenome profile only) and the same picture as the genome space: weighted UniFrac does not separate the two profile types (PERMANOVA pseudo-F 1.6, p 0.17), while Bray-Curtis (3.0, p 0.003), Jaccard (4.4) and unweighted UniFrac (4.2) do, and the random forest tells them apart (accuracy 0.85).
+On the tutorial data (bacon job 322), collapsing the 97% genome table to genus gives 2,226 genera (1,483 seen by the amplicon profile only, 511 by both, 232 by the metagenome profile only) and the same picture as the genome space: weighted UniFrac does not separate the two profile types (PERMANOVA pseudo-F 1.6, p 0.19), while Bray-Curtis (3.0, p 0.01), Jaccard (4.4) and unweighted UniFrac (4.1) do, and the random forest tells them apart (accuracy 0.9).
 An earlier version of this tutorial integrated at genus level with the amplicon features named by a GTDB classifier rather than mapped to genomes; on that route the two profile types separated by weighted UniFrac as well (pseudo-F 2.6, p 0.01), so the difference lies in how the amplicon features reach the genus level, not in the level itself.
 
 ## Searching for a taxon
