@@ -15,7 +15,7 @@ Every step is also in the provenance of the artifacts themselves.
 
 ## Reference
 
-No reference artifact is re-hosted: the tutorial fetches GTDB's r232 bacterial tree and genome taxonomy from GTDB and imports them itself, the GTDB r232 16S reference sequences and taxonomy from the rachis Zenodo record (the training data of that record's GTDB classifier), the SILVA 144 V4 uniform classifier from SILVA, and the sylph database from the sylph authors with the `sylph` plugin's `fetch-database`.
+No reference artifact is re-hosted: the tutorial fetches GTDB's r232 bacterial tree and genome taxonomy from GTDB and imports them itself, the GTDB r232 16S reference sequences from the rachis Zenodo record (the training data of that record's GTDB classifier), the SILVA 144 V4 uniform classifier from SILVA, and the sylph database from the sylph authors with the `sylph` plugin's `fetch-database`.
 
 The tree is imported through the `confluence` plugin's `GTDBNewickFormat`, which drops the quoted root label without a branch length that GTDB's Newick file ends in (`'100:d__Bacteria'`), because UniFrac's parser aborts on it; the GTDB file itself is unchanged and its md5 is in the artifact's provenance.
 The rooting of the tree is documented on the imported artifact with a Note annotation (the command is on the tutorial page), which every artifact derived from it carries along; `qiime tools annotation-list --input-path <artifact>` shows it and `qiime tools annotation-fetch --name rooting --verbose` prints its text.

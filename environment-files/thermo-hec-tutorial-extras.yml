@@ -15,5 +15,5 @@ dependencies:
   - sylph=1.0.0
   - pip
   - pip:
-    - q2-confluence@git+https://github.com/gregcaporaso/q2-confluence@aa62c3a06550ce871e90201ce7799476d75e7940
+    - q2-confluence@git+https://github.com/gregcaporaso/q2-confluence@5eb84655840b0373164d6be146f4db3b24e0f86c
     - mosh-sylph@git+https://github.com/gregcaporaso/mosh-sylph@09fd44281af544c5de47c9e569416d9d28eed7f0
