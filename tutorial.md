@@ -326,7 +326,7 @@ The paired report below is what paired samples buy on top: it keeps only the sam
 
 ## Paired-sample report
 
-On the samples both profile types cover, `paired-report` computes Bray-Curtis, Jaccard, unweighted and weighted UniFrac on the proportions as they are (no rarefaction), with PERMANOVA by profile type and a PCoA scatter plot for each; a random forest classifying the profile type with nested cross-validation; and a per-feature summary, tabulated over every genome with its taxonomy beside it and also returned as metadata.
+On the samples both profile types cover, `paired-report` computes Bray-Curtis and weighted UniFrac on the proportions as they are (no rarefaction, so no presence-based metric), with PERMANOVA by profile type and a PCoA scatter plot for each; a random forest classifying the profile type with nested cross-validation; and a per-feature summary, tabulated over every genome with its taxonomy beside it and also returned as metadata.
 
 ```shell
 qiime confluence paired-report \
@@ -344,7 +344,7 @@ qiime confluence paired-report \
   --o-feature-summary genome/feature-summary.qza
 ```
 
-On the tutorial data at 97%, weighted UniFrac does not separate the two profile types (PERMANOVA pseudo-F 1.7, p 0.13), while Bray-Curtis, Jaccard and unweighted UniFrac do, and the random forest tells them apart: restricted to the genomes the reference covers, the abundance-weighted phylogenetic profiles of the two assays agree, but the particular genomes each assay calls differ (the summary's `direction` column: 3,184 genomes seen by the amplicon profile only, 393 by both, 920 by the metagenome profile only, of which 590 have no 16S in the reference).
+On the tutorial data at 97%, weighted UniFrac does not separate the two profile types (PERMANOVA pseudo-F 1.7, p 0.13), while Bray-Curtis does, and the random forest tells them apart: restricted to the genomes the reference covers, the abundance-weighted phylogenetic profiles of the two assays agree, but the particular genomes each assay calls differ (the summary's `direction` column: 3,184 genomes seen by the amplicon profile only, 393 by both, 920 by the metagenome profile only, of which 590 have no 16S in the reference).
 
 ## A taxonomic level instead of genomes
 
@@ -384,7 +384,7 @@ qiime confluence paired-report \
   --o-feature-summary genus/feature-summary.qza
 ```
 
-On the tutorial data (bacon job 322), collapsing the 97% genome table to genus gives 2,226 genera (1,483 seen by the amplicon profile only, 511 by both, 232 by the metagenome profile only) and the same picture as the genome space: weighted UniFrac does not separate the two profile types (PERMANOVA pseudo-F 1.6, p 0.19), while Bray-Curtis (3.0, p 0.01), Jaccard (4.4) and unweighted UniFrac (4.1) do, and the random forest tells them apart (accuracy 0.9).
+On the tutorial data (bacon job 322), collapsing the 97% genome table to genus gives 2,226 genera (1,483 seen by the amplicon profile only, 511 by both, 232 by the metagenome profile only) and the same picture as the genome space: weighted UniFrac does not separate the two profile types (PERMANOVA pseudo-F 1.6, p 0.19), while Bray-Curtis (3.0, p 0.01) does, and the random forest tells them apart (accuracy 0.9).
 An earlier version of this tutorial integrated at genus level with the amplicon features named by a GTDB classifier rather than mapped to genomes; on that route the two profile types separated by weighted UniFrac as well (pseudo-F 2.6, p 0.01), so the difference lies in how the amplicon features reach the genus level, not in the level itself.
 
 ## Searching for a taxon
