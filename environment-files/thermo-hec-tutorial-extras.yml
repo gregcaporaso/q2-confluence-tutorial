@@ -1,11 +1,9 @@
-# What the tutorial needs on top of the QIIME 2 "qiime2" distribution's
-# development environment: sylph (the sylph plugin runs it)
-# and the two plugins the tutorial uses, installed from GitHub at pinned
-# commits. The base environment comes from the distribution's
-# dev/latest/passed environment file for the platform, as in
-# https://develop.qiime2.org/en/stable/plugins/how-to-guides/set-up-development-environment.html;
-# this file is applied to it with `conda env update` (README, "Create the
-# environment").
+# What the tutorial needs on top of the QIIME 2 2026.10 distribution
+# installed as https://install.qiime2.org says (the rachis-qiime2-2026.10
+# environment): sylph (the sylph plugin runs it) and the two plugins the
+# tutorial uses, installed from GitHub at pinned commits. Applied with
+# `conda env update -n rachis-qiime2-2026.10 --file <this file>` (README,
+# "Create the environment").
 # Both plugin repositories are private at the time of writing, so the pip
 # installs below need GitHub credentials until they are made public.
 channels:
