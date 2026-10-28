@@ -1,7 +1,8 @@
 # What the tutorial needs on top of the QIIME 2 2026.10 distribution
 # installed as https://install.qiime2.org says (the rachis-qiime2-2026.10
 # environment): sylph (the sylph plugin runs it) and the two plugins the
-# tutorial uses, installed from GitHub at pinned commits. Applied with
+# tutorial uses, installed from GitHub (main; the pins were dropped on
+# 2026-10-28 as the interfaces stabilized). Applied with
 # `conda env update -n rachis-qiime2-2026.10 --file <this file>` (README,
 # "Create the environment").
 # Both plugin repositories are private at the time of writing, so the pip
@@ -13,5 +14,5 @@ dependencies:
   - sylph=1.0.0
   - pip
   - pip:
-    - q2-confluence@git+https://github.com/gregcaporaso/q2-confluence@8c6147ed5497cee2feef38a9b2c8a4139c2b0d44
-    - mosh-sylph@git+https://github.com/gregcaporaso/mosh-sylph@16f107a0128221e4f4becd2057f2493b95586bf4
+    - q2-confluence@git+https://github.com/gregcaporaso/q2-confluence
+    - mosh-sylph@git+https://github.com/gregcaporaso/mosh-sylph
