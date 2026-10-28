@@ -252,12 +252,13 @@ The sylph database holds the archaeal representatives too; as on the amplicon si
 ## Integration
 
 The two profiles enter as collections: each member is given as `key:path`, and the key names the profile type in every output.
-`summarize-inputs` shows which sample IDs the profiles and the metadata share before anything is merged.
+`summarize-inputs` takes the inputs of `integrate` and shows, before anything is merged, which sample IDs the profiles and the metadata share and how many genomes of each profile are tips of the tree.
 
 ```shell
 qiime confluence summarize-inputs \
   --i-tables amplicon:16S/genome-table.qza metagenome:wgs/sylph-taxonomic-abundance.qza \
-  --i-metadata study:study-metadata.qza \
+  --i-tree reference/gtdb-r232-bac120-tree.qza \
+  --i-metadata amplicon:study-metadata.qza metagenome:study-metadata.qza \
   --o-visualization inputs-summary.qzv
 ```
 
