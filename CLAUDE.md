@@ -23,7 +23,7 @@ The repository is nested inside the thermo-hec project (`~/0-projects/2026-09-16
  * In @gregcaporaso's edits, `CLAUDE:` marks a request to Claude (do it and remove the note) and `GREG ...` marks their own place in a review (leave it).
    Text Claude drafts at their request carries a `** GREG TO REVIEW: ... **` line, which they remove once they have reviewed it (the Requirements section of `tutorial.md`, 2026-10-30).
    The `@gregcaporaso, reminder for the prose` HTML comment in `tutorial.md` is a note for the rewrite; the pages hold no other comments (history lives in git).
- * No emoji on the pages: @gregcaporaso tried them and dropped them (2026-10-30).
+ * Claude adds no emoji to the pages: @gregcaporaso tried them and dropped them (2026-10-30); the one in the closing heading is theirs and stays.
  * The first mention on each published page of a term in the [rachis glossary](https://news.rachis.org/en/latest/glossary/) links to its entry (`https://news.rachis.org/en/latest/glossary/#term-<slug>`, lowercase slugs; the site is built with mystmd); only mentions in the rachis sense, never in headings or code, and a first mention already linked elsewhere (rachis.org, qiime2.org, view.rachis.org) keeps its link.
    Ask @gregcaporaso before a linking pass over their prose, as the global `CLAUDE.md` says.
  * Linked anchors: `data-preparation.md#reference`, `#amplicon-data`, `#metagenome-data` and `#sample-metadata`, and `tutorial.md#workflow-limitations`; renaming one of those headings means updating its links.
