@@ -33,8 +33,6 @@ At the bottom of this document [the known limitations](#workflow-limitations) of
 
 ## Requirements
 
-** GREG TO REVIEW: this section was drafted by Claude from the run of this page on bacon on 2026-10-30 (job 327). **
-
 The tutorial was tested on a 16-core Linux server, where all of its commands together took about 30 minutes, about 11 of them downloading the data and the sylph database.
 You'll need:
 
@@ -301,13 +299,13 @@ qiime tools make-report \
   genome/inputs-summary.qzv
 ```
 
-** GREG TO CONTINUE HERE WITH REVIEW **
-
 ## Comparing the profile types without paired samples
 
-Nothing up to this point needs paired samples.
-`integrate` renames every sample of every profile type to `<sample-id>-<key>` whether or not the other type has a sample of the same ID, so two studies with no sample IDs in common integrate just the same, and `original-sample-id` keeps the input ID.
-The merged relative table and the integrated metadata then go into any stock action that takes them: here weighted UniFrac distances between all merged samples, a PERMANOVA of the profile types on them, their ordination as a PCoA scatter plot coloured by profile type (the PCoA result is metadata, so it merges with the integrated metadata on the command line), and a taxa bar plot of the merged table, which GTDB's taxonomy lets you collapse to any rank and which can be sorted and coloured by the integrated metadata.
+Now, we integrate the amplicon and metagenome tables into one relative abundance table.
+
+`integrate` renames every sample of every profile type to `<sample-id>-<key>`.
+The merged relative table and the integrated metadata then go into any stock action that takes them.
+Here, after integration, as an example we compute weighted UniFrac distances between all samples, a PERMANOVA of the profile types based on the weighted UniFrac distances, their ordination as a PCoA scatter plot coloured by profile type (the PCoA result is metadata, so it merges with the integrated metadata on the command line), and a taxa bar plot of the merged table, which GTDB's taxonomy lets you collapse to any rank and which can be sorted and coloured by the integrated metadata.
 
 ```shell
 # run time estimate: < 1 minute
@@ -360,15 +358,16 @@ qiime tools make-report \
   genome/taxa-barplot.qzv
 ```
 
-<!-- @gregcaporaso, reminder for the prose: explain why a reader's numbers differ slightly from the ones shown. The PERMANOVA p-values are permutation estimates and the random forest draws its folds and trees afresh each run, so p-values wobble in the third decimal and the accuracy by a sample or two; the pseudo-F values and the feature summary are deterministic. No random seed is set on purpose: copied commands would reuse it. -->
-
 `genome/downstream-report.qzv` collects the three [visualizations](https://news.rachis.org/en/latest/glossary/#term-visualization) of this section in one report.
 
-The paired report below is what paired samples buy on top: it keeps only the samples both profile types cover, so the comparison is between two profiles of the same material rather than between two sets of samples.
+When you're simply integrating your own samples for analysis you're done at this point.
+When you have paired samples (i.e., the same samples sequenced with both 16S and metagenomics) you can continue on to the next step to assess how well they align with each other.
 
 ## Paired-sample report
 
-On the samples both profile types cover, `paired-report` computes Bray-Curtis and weighted UniFrac on the proportions as they are (no [rarefaction](https://news.rachis.org/en/latest/glossary/#term-rarefaction), so no presence-based metric), with PERMANOVA by profile type and a PCoA scatter plot for each; a random forest classifying the profile type with nested cross-validation; and a per-feature summary, tabulated over every genome with its taxonomy beside it and also returned as metadata.
+On the samples both profile types cover, `paired-report` computes Bray-Curtis and weighted UniFrac on the proportions as they are, with PERMANOVA by profile type and a PCoA scatter plot for each; a random forest classifying the profile type with nested cross-validation; and a per-feature summary, tabulated over every genome with its taxonomy beside it and also returned as metadata.
+
+Normalizing the sequencing depth (e.g., with [rarefaction](https://news.rachis.org/en/latest/glossary/#term-rarefaction) is not worked out done yet (see [the known limitations](#workflow-limitations) section below).
 
 ```shell
 # run time estimate: 1 minute
@@ -388,14 +387,15 @@ qiime confluence paired-report \
   --o-feature-summary genome/feature-summary.qza
 ```
 
-On the tutorial data at 97%, weighted UniFrac does not separate the two profile types (PERMANOVA pseudo-F 1.7, p 0.13), while Bray-Curtis does, and the random forest tells them apart: restricted to the genomes the reference covers, the abundance-weighted phylogenetic profiles of the two assays agree, but the particular genomes each assay calls differ (the summary's `direction` column: 3,184 genomes seen by the amplicon profile only, 393 by both, 920 by the metagenome profile only, of which 590 have no 16S in the reference).
+On the tutorial data at 97%, weighted UniFrac does not separate the two profile types (PERMANOVA pseudo-F 1.7, p 0.13), while Bray-Curtis does.
+The random forest tells them apart: restricted to the genomes the reference covers, the abundance-weighted phylogenetic profiles of the two assays agree, but the particular genomes each assay calls differ (the summary's `direction` column: 3,184 genomes seen by the amplicon profile only, 393 by both, 920 by the metagenome profile only, of which 590 have no 16S in the reference - see [the known limitations](#workflow-limitations) section below).
+
+My (@gregcaporaso) perspective is that we shouldn't expect to see no difference between the profile types: they're measuring different things, so we're likely to always see some difference.
 
 ## A taxonomic level instead of genomes
 
 The genome space is one choice of feature space; the same integrated data can be compared at a taxonomic level instead.
-`taxa collapse` sums the merged table within each taxon of GTDB's taxonomy (level 6 is genus with the seven GTDB ranks, 5 family), and `gtdb-tree-collapse` collapses the imported GTDB tree to the same rank, with one tip per taxon named like the collapsed features, so the two still match; its log records which genomes each tip stands for.
-The collapse takes about ten seconds on r232 and keeps GTDB's bootstrap and taxon labels on the remaining internal nodes.
-The integrated metadata is unchanged, because collapsing touches features, not samples, and the collapsed [feature IDs](https://news.rachis.org/en/latest/glossary/#term-feature-identifier) are the taxonomy strings themselves, so the report needs no taxonomy.
+`taxa collapse` sums the merged table within each taxon of GTDB's taxonomy (level 6 is genus with the seven GTDB ranks, 5 family), and `gtdb-tree-collapse` collapses the imported GTDB tree to the same rank, with one tip per taxon named like the collapsed features, so the two still match.
 The paired report then runs as above, at genus.
 
 ```shell
@@ -435,12 +435,54 @@ qiime confluence paired-report \
 ```
 
 On the tutorial data, collapsing the 97% genome table to genus gives 2,226 genera (1,483 seen by the amplicon profile only, 511 by both, 232 by the metagenome profile only) and the same picture as the genome space: weighted UniFrac does not separate the two profile types (PERMANOVA pseudo-F 1.6, p 0.18), while Bray-Curtis (3.0, p 0.002) does, and the random forest tells them apart (accuracy 0.9).
+
 Mapping the ASVs to genomes is not the only way to reach a taxonomic level: the ASVs can instead be classified with the GTDB r232 classifier (from the same Zenodo record as the 16S reference sequences), and both profiles collapsed by taxonomy before they are integrated.
 On the tutorial data that approach agreed less well at genus, where weighted UniFrac separated the two profile types as well (pseudo-F 2.6, p 0.01), so how the amplicon features reach a taxonomic level matters more than the level itself.
 
-## Searching for a taxon (optional)
+
+## Have fun! ⛷️
+
+Ok, that's it for the tutorial for now!
+Don't forget to read the [the known limitations](#workflow-limitations) section below.
+
+Reach out to @gregcaporaso if you have questions, suggestions, or if you notice anything strange!
+
+## Workflow limitations
+
+### Reference coverage
+
+16S analysis can only identify the 88,481 bacterial species-representative genomes that are contained in the 16S reference, while metagenome analysis can identify any of the 189,801 bacterial genomes represented in the GTDB bacterial reference tree.
+Relatedness-based diversity metrics (e.g., UniFrac) help manage these differences by down-weighting differences between similar organisms across samples.
+
+The numbers of bacterial genomes and 16S rRNA sequences grow with each GTDB release (roughly annually):
+
+ * r202 (2021): 45,555 genomes; 31,319 (69%) have 16S references
+ * r207 (2022): 62,291 genomes; 38,474 (62%) have 16S references
+ * r214 (2023): 80,789 genomes; 46,891 (58%) have 16S references
+ * r220 (2024): 107,235 genomes; 58,102 (54%) have 16S references
+ * r226 (2025): 136,646 genomes; 72,862 (53%) have 16S references
+ * r232 (2026): 189,801 genomes; 88,481 (47%) have 16S references
+
+Two limitations of this mapping are worth knowing.
+Only about half of the bacterial species representatives of GTDB r232 have a 16S sequence in the reference (88,481 of 189,801), so an ASV whose genome is among the rest can only land on a relative's genome, at a lower threshold.
+And among references with identical V4 regions, vsearch returns the first one at or above the threshold rather than a best or a consensus hit (`cluster-features-closed-reference` does not expose vsearch's `maxaccepts`), so the particular genome an ASV lands on is arbitrary within such a group; relatedness-based diversity metrics (weighted UniFrac, here) control for that a bit, but the identity-based metrics (Bray-Curtis, here) do not.
+
+### Real-world testing
+
+This workflow has been assessed on one small (n=10) study with paired 16S and metagenome samples to date.
+We will evaluate it on the remaining samples from that study (pending sequencing, n=183 samples).
+
+### Sampling depth
+
+Direct control of [uneven sampling depth](https://news.rachis.org/en/latest/glossary/#term-even-sampling-depth) (e.g., with rarefaction) has not been applied and is an unsolved problem at this time.
+For this reason, we recommend focusing only on abundance-weighted diversity metrics, such as weighted UniFrac and Bray-Curtis.
+Paired with the note above regarding reference coverage, weighted UniFrac is the recommended beta diversity metric for exploring integrated 16S and metagenome data.
+
+## Searching for a taxon in metagenome data (optional)
 
 This optional step asks a different question of the same sketches: is a particular organism present, and how close is it to a reference genome?
+This is more of a mosh-sylph tutorial step than a data integration step, but I don't have a better spot for it right now - just skip this section if it's not something you're interested in.
+
 `sylph profile` above reports abundances and assigns shared k-mers to one genome; `sylph query` instead reports, for every database genome with enough sampled k-mers in a sample, the coverage-adjusted average nucleotide identity (ANI) of the reads to that genome, so closely related genomes are all listed and nothing is reassigned.
 `query-to-metadata` tabulates the result as metadata, joins GTDB's taxonomy by genome ID, and keeps only the rows whose taxonomy string or genome ID contains one of the given texts; `metadata tabulate` then shows the table.
 Here the search is for *Escherichia coli*; the text matches every GTDB species cluster whose name starts with it (in r232 `s__Escherichia coli`, `s__Escherichia coli_E` and `s__Escherichia coli_F`), so narrow it to one cluster, or widen it to `g__Escherichia`, as the question requires.
@@ -474,34 +516,3 @@ qiime metadata tabulate \
 
 On the tutorial data the search returns six rows: the three *Escherichia coli* clusters of r232 (`s__Escherichia coli`, `coli_E` and `coli_F`), each found in the fresh excrement (1135D, adjusted ANI 94 to 98) and in the day-1 compost (DB47D, 94 to 99) at effective coverage of 0.06x to 0.18x, and in none of the eight later or soil samples: *E. coli* arrives with the feedstock and is gone from the compost by day 2.
 `query-to-metadata` fails when no genome matches the targets, so a search for an organism that is absent from every sample stops here rather than tabulating an empty table.
-
-## Workflow limitations
-
-### Reference coverage
-
-16S analysis can only identify the 88,481 bacterial species-representative genomes that are contained in the 16S reference, while metagenome analysis can identify any of the 189,801 bacterial genomes represented in the GTDB bacterial reference tree.
-Relatedness-based diversity metrics (e.g., UniFrac) help manage these differences by down-weighting differences between similar organisms across samples.
-
-The numbers of bacterial genomes and 16S rRNA sequences grow with each GTDB release (roughly annually):
-
- * r202 (2021): 45,555 genomes; 31,319 (69%) have 16S references
- * r207 (2022): 62,291 genomes; 38,474 (62%) have 16S references
- * r214 (2023): 80,789 genomes; 46,891 (58%) have 16S references
- * r220 (2024): 107,235 genomes; 58,102 (54%) have 16S references
- * r226 (2025): 136,646 genomes; 72,862 (53%) have 16S references
- * r232 (2026): 189,801 genomes; 88,481 (47%) have 16S references
-
-Two limitations of this mapping are worth knowing.
-Only about half of the bacterial species representatives of GTDB r232 have a 16S sequence in the reference (88,481 of 189,801), so an ASV whose genome is among the rest can only land on a relative's genome, at a lower threshold.
-And among references with identical V4 regions, vsearch returns the first one at or above the threshold rather than a best or a consensus hit (`cluster-features-closed-reference` does not expose vsearch's `maxaccepts`), so the particular genome an ASV lands on is arbitrary within such a group; relatedness-based diversity metrics (weighted UniFrac, here) control for that a bit, but the identity-based metrics (Bray-Curtis, here) do not.
-
-### Real-world testing
-
-This workflow has been assessed on one small (n=10) study with paired 16S and metagenome samples to date.
-We will evaluate it on the remaining samples from that study (pending sequencing, n=183 samples).
-
-### Sampling depth
-
-Direct control of [uneven sampling depth](https://news.rachis.org/en/latest/glossary/#term-even-sampling-depth) (e.g., with rarefaction) has not been applied and is an unsolved problem at this time.
-For this reason, we recommend focusing only on abundance-weighted diversity metrics, such as weighted UniFrac and Bray-Curtis.
-Paired with the note above regarding reference coverage, weighted UniFrac is the recommended beta diversity metric for exploring integrated 16S and metagenome data.
