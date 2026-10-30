@@ -259,9 +259,9 @@ The two profiles enter as collections: each member is given as `key:path`, and t
 ```shell
 # run time estimate: < 1 minute
 qiime confluence summarize-inputs \
-  --i-tables amplicon:16S/genome-table.qza metagenome:metagenome/sylph-taxonomic-abundance.qza \
+  --i-tables 16S:16S/genome-table.qza metagenome:metagenome/sylph-taxonomic-abundance.qza \
   --i-tree reference/gtdb-r232-bac120-tree.qza \
-  --i-metadata amplicon:sample-metadata.qza metagenome:sample-metadata.qza \
+  --i-metadata 16S:sample-metadata.qza metagenome:sample-metadata.qza \
   --o-visualization genome/inputs-summary.qzv
 ```
 
@@ -276,9 +276,9 @@ On the tutorial data the amplicon profile keeps 3,577 of its 3,611 genomes and t
 ```shell
 # run time estimate: < 1 minute
 qiime confluence integrate \
-  --i-tables amplicon:16S/genome-table.qza metagenome:metagenome/sylph-taxonomic-abundance.qza \
+  --i-tables 16S:16S/genome-table.qza metagenome:metagenome/sylph-taxonomic-abundance.qza \
   --i-tree reference/gtdb-r232-bac120-tree.qza \
-  --i-metadata amplicon:sample-metadata.qza metagenome:sample-metadata.qza \
+  --i-metadata 16S:sample-metadata.qza metagenome:sample-metadata.qza \
   --o-integrated-table genome/relative-table.qza \
   --o-integrated-metadata genome/metadata.qza
 ```
@@ -416,7 +416,7 @@ qiime confluence paired-report \
 On the tutorial data, collapsing the 97% genome table to genus gives 2,226 genera (1,483 seen by the amplicon profile only, 511 by both, 232 by the metagenome profile only) and the same picture as the genome space: weighted UniFrac does not separate the two profile types (PERMANOVA pseudo-F 1.6, p 0.18), while Bray-Curtis (3.0, p 0.002) does, and the random forest tells them apart (accuracy 0.9).
 An earlier version of this tutorial integrated at genus level with the amplicon features named by a GTDB classifier rather than mapped to genomes; on that route the two profile types separated by weighted UniFrac as well (pseudo-F 2.6, p 0.01), so the difference lies in how the amplicon features reach the genus level, not in the level itself.
 
-## Searching for a taxon
+## Searching for a taxon (optional)
 
 This optional step asks a different question of the same sketches: is a particular organism present, and how close is it to a reference genome?
 `sylph profile` above reports abundances and assigns shared k-mers to one genome; `sylph query` instead reports, for every database genome with enough sampled k-mers in a sample, the coverage-adjusted average nucleotide identity (ANI) of the reads to that genome, so closely related genomes are all listed and nothing is reassigned.
