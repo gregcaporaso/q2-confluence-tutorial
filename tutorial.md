@@ -22,7 +22,13 @@ downloaded as artifacts hosted with the study data (made by @gregcaporaso's
 run of this page on bacon); their import moved to data-preparation.md. The
 md5s and UUIDs in the download table come from tutorial-data/README.md in
 the parent project, from the Zenodo record's file checksums, from SILVA's
-.md5 file and, for the two GTDB artifacts, from the uploaded files. -->
+.md5 file and, for the two GTDB artifacts, from the uploaded files.
+2026-10-30: @gregcaporaso ran every command of the page by hand on bacon in
+the released QIIME 2 2026.10 with both plugins from GitHub main
+(q2-confluence 4177690, mosh-sylph 939a531): every output present, every
+md5 and UUID as in the table, every results sentence checked against that
+run (the 99% and 100% figures of the threshold paragraph remain those of
+bacon job 318, which the page does not run). -->
 
 This tutorial integrates a 16S rRNA amplicon profile and a metagenome profile of the same samples in one feature space: the genomes of one GTDB release.
 It uses the `confluence` plugin, the `sylph` plugin (mosh-sylph) for the metagenome profile, and stock QIIME 2 actions.
@@ -187,7 +193,7 @@ qiime feature-table summarize \
 `feature-table summarize` shows how many reads and genomes each sample keeps after the mapping.
 
 The identity threshold trades coverage for agreement.
-On the tutorial data, 97% keeps 75% of the reads (53% of the ASVs, 3,617 genomes), 99% keeps 55% (31%, 2,483 genomes) and 100% keeps 42% (18%, 1,671 genomes); the stricter the threshold, the closer the two profile types come in the comparison below (weighted UniFrac PERMANOVA pseudo-F by profile type 1.7 at 97%, 1.2 at 99% and 100%), because only ASVs whose genome is in the reference remain, and those genomes are what the metagenome profile can see as well.
+On the tutorial data, 97% keeps 75% of the reads (54% of the ASVs, 3,611 genomes), 99% keeps 55% (31%, 2,483 genomes) and 100% keeps 42% (18%, 1,671 genomes); the stricter the threshold, the closer the two profile types come in the comparison below (weighted UniFrac PERMANOVA pseudo-F by profile type 1.7 at 97%, 1.2 at 99% and 100%), because only ASVs whose genome is in the reference remain, and those genomes are what the metagenome profile can see as well.
 The tutorial uses 97% to keep more of the data; raise the threshold for a stricter comparison.
 
 Two limitations of this mapping are worth knowing.
@@ -407,7 +413,7 @@ qiime confluence paired-report \
   --o-feature-summary genus/feature-summary.qza
 ```
 
-On the tutorial data (bacon job 322), collapsing the 97% genome table to genus gives 2,226 genera (1,483 seen by the amplicon profile only, 511 by both, 232 by the metagenome profile only) and the same picture as the genome space: weighted UniFrac does not separate the two profile types (PERMANOVA pseudo-F 1.6, p 0.19), while Bray-Curtis (3.0, p 0.01) does, and the random forest tells them apart (accuracy 0.9).
+On the tutorial data, collapsing the 97% genome table to genus gives 2,226 genera (1,483 seen by the amplicon profile only, 511 by both, 232 by the metagenome profile only) and the same picture as the genome space: weighted UniFrac does not separate the two profile types (PERMANOVA pseudo-F 1.6, p 0.18), while Bray-Curtis (3.0, p 0.002) does, and the random forest tells them apart (accuracy 0.9).
 An earlier version of this tutorial integrated at genus level with the amplicon features named by a GTDB classifier rather than mapped to genomes; on that route the two profile types separated by weighted UniFrac as well (pseudo-F 2.6, p 0.01), so the difference lies in how the amplicon features reach the genus level, not in the level itself.
 
 ## Searching for a taxon
