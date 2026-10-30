@@ -9,7 +9,7 @@
 # it is listed under `include`. CLAUDE.md (instructions for Claude sessions) is
 # excluded, or it would be rendered as a page.
 title: q2-confluence tutorial
-description: "NOTICE PLACEHOLDER: @gregcaporaso writes the one-line notice that the data are shared for evaluation and not yet published."
+description: "Data are shared for evaluation and not yet published."
 theme: jekyll-theme-cayman
 include:
   - README.md
