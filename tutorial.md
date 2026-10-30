@@ -1,35 +1,5 @@
 # Integrating 16S and metagenome profiles: the tutorial
 
-<!-- Draft by Claude, pending @gregcaporaso's rewrite (no prose of theirs yet).
-Plain Markdown since 2026-10-16, when @gregcaporaso set the q2doc/MyST
-usage-example site aside. Every ```shell block on this page is a command a
-reader runs, in order, in the directory the first block creates; the
-thermo-hec project's slurm/tutorial.sbatch extracts those blocks and runs
-them verbatim as the test of the page. No block on this page is
-documentation-only: how the hosted data was prepared is on
-data-preparation.md, which is never run.
-2026-10-21: the page moved from integration at a taxonomic level (genus and
-family, bacon jobs 308 to 315) to integration in the feature space of GTDB
-genomes, after the comparison in the thermo-hec project's
-analyses/genome-space/ (bacon job 318): closed-reference clustering of the
-ASVs against the GTDB SSU reference at 97% identity, sylph's genome table as
-it is, the uncollapsed GTDB tree imported through GTDBNewickFormat, and no
-sylph-tax step. 2026-10-23: integrate filters every source to the tips
-of the tree itself (no Bacteria filters, no SSU taxonomy download), takes
-no taxonomy and keys the metadata per source; GTDB's taxonomy artifact
-serves every downstream action. 2026-10-30: the GTDB tree and taxonomy are
-downloaded as artifacts hosted with the study data (made by @gregcaporaso's
-run of this page on bacon); their import moved to data-preparation.md. The
-md5s and UUIDs in the download table come from tutorial-data/README.md in
-the parent project, from the Zenodo record's file checksums, from SILVA's
-.md5 file and, for the two GTDB artifacts, from the uploaded files.
-2026-10-30: @gregcaporaso ran every command of the page by hand on bacon in
-the released QIIME 2 2026.10 with both plugins from GitHub main
-(q2-confluence 4177690, mosh-sylph 939a531): every output present, every
-md5 and UUID as in the table, every results sentence checked against that
-run (the 99% and 100% figures of the threshold paragraph remain those of
-bacon job 318, which the page does not run). -->
-
 This tutorial integrates a 16S rRNA amplicon profile and a metagenome profile of the same samples in one feature space: the genomes of one GTDB release.
 It uses the `confluence` plugin, the `sylph` plugin (mosh-sylph) for the metagenome profile, and stock QIIME 2 actions.
 It covers what you run on your own data: mapping the amplicon features to GTDB genomes, profiling the metagenome reads against the same genomes, integrating both, and comparing the two profile types on the samples they share.

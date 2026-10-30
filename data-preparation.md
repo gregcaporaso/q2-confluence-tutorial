@@ -1,20 +1,5 @@
 # How the tutorial data were prepared
 
-<!-- Draft by Claude, pending @gregcaporaso's rewrite. Plain Markdown since
-2026-10-16 (the MyST labels left; the links are GitHub heading anchors).
-These steps are the record of what produced the hosted artifacts; a reader
-of the tutorial does not run them, and the thermo-hec project's
-slurm/tutorial.sbatch never extracts this page. The subsetting of the
-amplicon data to the ten tutorial samples is not shown: it is in the
-artifacts' provenance. 2026-10-21: the reference section shrank when the
-tutorial moved to the genome space; the GTDB tree and taxonomy are now
-imported on the tutorial page itself, and no collapsed tree is hosted.
-2026-10-30: the imported tree and taxonomy are hosted with the study data
-and their import is recorded here (@gregcaporaso's decision). The amplicon
-section gained the commands from the import to the hosted artifacts the same
-day, with the cutadapt step simplified for QIIME 2 2026.10 (not rerun), and
-both sections the UUID of their first imported artifact. -->
-
 None of this is part of the tutorial: it records how the artifacts the [tutorial](tutorial.md) downloads were produced, so that the same can be done for another data set.
 Every step is also in the provenance of the artifacts themselves.
 
