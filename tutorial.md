@@ -53,8 +53,8 @@ wget -O sample-metadata.qza "${D}1PJQOCPLgOJ_Jeb-_ZmEN1enFzqLhbH5S"
 wget -O 16S/asv-table.qza "${D}1-HH4892h693WAQ37YvrBjV_3P7xA3UgF"
 wget -O 16S/asv-sequences.qza "${D}1LzOioUEnzP4nbOsV9v75VGaqfgseagbi"
 wget -O wgs/wgs-subset-reads.qza "${D}1fkzsYoWAIeGOJDQrdqGcf5k5rNfoFR7E"
-wget -O reference/bac120_r232.tree 'https://data.gtdb.ecogenomic.org/releases/release232/232.0/bac120_r232.tree'
-wget -O reference/bac120_taxonomy_r232.tsv.gz 'https://data.gtdb.ecogenomic.org/releases/release232/232.0/bac120_taxonomy_r232.tsv.gz'
+wget -O reference/gtdb-r232-bac120-tree.qza "${D}1CqKOWDfh0nfQW_eoBGkzEVFziUsnQoUE"
+wget -O reference/gtdb-r232-bac120-taxonomy.qza "${D}11SsB4XNaVt7KiUy0w6jFW8PQnq3VLpM4"
 wget -O reference/gtdb-r232-ssu-sequences.qza 'https://zenodo.org/records/21619532/files/gtdb-r232.0-2026.7.0-reference-sequences.qza?download=1'
 wget -O reference/silva-144-v4-classifier.qza 'https://www.arb-silva.de/fileadmin/silva_databases/current/QIIME2/2026.7/SSU/V4-515f-806r/uniform/SILVA_144_SSURef_NR99_uniform_classifier_V4-515f-806r.qza'
 md5sum sample-metadata.qza 16S/*.qza wgs/*.qza reference/*
@@ -71,8 +71,8 @@ The md5 sums should match the table; the UUID identifies each artifact in proven
 | `16S/asv-sequences.qza` | `a4173850ea0e9cc3220cede19cec6a30` | `ce58ed07-5639-49d0-acdd-37a56f5a4476` |
 | `16S/asv-table.qza` | `c7313d6efe664c559104120d23291010` | `e02ea2d0-16a7-457b-8009-03ed2874216c` |
 | `wgs/wgs-subset-reads.qza` | `884d47f6948d010356cde49594238b3f` | `09901ee0-9bca-4825-b94a-20c953d97cef` |
-| `reference/bac120_r232.tree` | `a8b589ffabbf41ebd7e8ab45795b8e6a` | (imported below) |
-| `reference/bac120_taxonomy_r232.tsv.gz` | `807e3221f5553142eb0544ce3247d079` | (imported below) |
+| `reference/gtdb-r232-bac120-taxonomy.qza` | `db35824401f6fcec75ba91f2be94f6a3` | `0c811883-42ef-430e-89c5-9f29f9e3a6ff` |
+| `reference/gtdb-r232-bac120-tree.qza` | `302f40b1ff9bc872f01279a3a7a1dc2a` | `2ab4d0b8-967a-4c55-af04-863232a19fcf` |
 | `reference/gtdb-r232-ssu-sequences.qza` | `c005d9db391cb78280eadb935ad8cfe5` | `622d4617-31dc-40ee-931b-810724b40fcc` |
 | `reference/silva-144-v4-classifier.qza` | `683a71dcd81ce90d724add22d2ad4d0f` | `76237f8f-87e0-4d1e-93b9-970bb7603cf0` |
 
@@ -101,40 +101,6 @@ Both are imported from the files GTDB publishes.
 
 The tree goes through the `GTDBNewickFormat` import format of the `confluence` plugin: GTDB's tree ends in a quoted root label without a branch length (`'100:d__Bacteria'`), which UniFrac's parser cannot read, and the import drops that one label and changes nothing else.
 The rooting of the tree is recorded on the imported artifact as a Note annotation, which every artifact derived from it carries along: GTDB places the root arbitrarily and advises treating its reference trees as unrooted.
-
-> **TODO: Greg to review citations and text in annotation text.**
-
-```shell
-qiime tools import \
-  --type 'Phylogeny[Rooted]' \
-  --input-format GTDBNewickFormat \
-  --input-path reference/bac120_r232.tree \
-  --output-path reference/gtdb-r232-bac120-tree.qza
-
-qiime tools annotation-create \
-  --input-path reference/gtdb-r232-bac120-tree.qza \
-  --annotation-type Note \
-  --name rooting \
-  --text "This tree keeps the root of the GTDB r232 bac120 reference tree, \
-which GTDB places arbitrarily: in the distributed tree it sits on the branch \
-to the phylum Spirochaetota, splitting that branch into two equal halves. \
-GTDB advises that its reference trees should be treated as unrooted \
-(D. Parks, GTDB forum, 2021-07-12, \
-https://forum.gtdb.ecogenomic.org/t/root-of-bacterial-tree/161), and its \
-rank normalization averages over many plausible rootings because the rooting \
-of the bacterial tree remains controversial (Parks et al. 2018, Nat \
-Biotechnol 36:996, doi:10.1038/nbt.4229). The root is therefore not \
-biologically meaningful; results that depend on root placement should be \
-read with that in mind."
-
-gunzip -k reference/bac120_taxonomy_r232.tsv.gz
-
-qiime tools import \
-  --type 'FeatureData[Taxonomy]' \
-  --input-format HeaderlessTSVTaxonomyFormat \
-  --input-path reference/bac120_taxonomy_r232.tsv \
-  --output-path reference/gtdb-r232-bac120-taxonomy.qza
-```
 
 The metagenome reads are profiled with sylph through the `sylph` plugin (mosh-sylph), thin wrappers around sylph.
 The sylph database of the GTDB r232 species representatives is about 20 GB, and every action that reads a `.qza` file unzips it first.
