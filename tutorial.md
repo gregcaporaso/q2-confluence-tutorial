@@ -435,7 +435,8 @@ qiime confluence paired-report \
 ```
 
 On the tutorial data, collapsing the 97% genome table to genus gives 2,226 genera (1,483 seen by the amplicon profile only, 511 by both, 232 by the metagenome profile only) and the same picture as the genome space: weighted UniFrac does not separate the two profile types (PERMANOVA pseudo-F 1.6, p 0.18), while Bray-Curtis (3.0, p 0.002) does, and the random forest tells them apart (accuracy 0.9).
-An earlier version of this tutorial integrated at genus level with the amplicon features named by a GTDB classifier rather than mapped to genomes; on that route the two profile types separated by weighted UniFrac as well (pseudo-F 2.6, p 0.01), so the difference lies in how the amplicon features reach the genus level, not in the level itself.
+🔀 Mapping the ASVs to genomes is not the only way to reach a taxonomic level: the ASVs can instead be classified with the GTDB r232 classifier (from the same Zenodo record as the 16S reference sequences), and both profiles collapsed by taxonomy before they are integrated.
+On the tutorial data that approach agreed less well at genus, where weighted UniFrac separated the two profile types as well (pseudo-F 2.6, p 0.01), so how the amplicon features reach a taxonomic level matters more than the level itself.
 
 ## Searching for a taxon (optional)
 
