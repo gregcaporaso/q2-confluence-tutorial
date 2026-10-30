@@ -292,7 +292,7 @@ qiime tools make-report \
 
 Nothing up to this point needs paired samples.
 `integrate` renames every sample of every profile type to `<sample-id>-<key>` whether or not the other type has a sample of the same ID, so two studies with no sample IDs in common integrate just the same, and `original-sample-id` keeps the input ID.
-The merged relative table and the integrated metadata then go into any stock action that takes them: here Bray-Curtis and weighted UniFrac distances between all merged samples, a PERMANOVA of the profile types on each, their ordinations as PCoA scatter plots coloured by profile type (the PCoA result is metadata, so it merges with the integrated metadata on the command line), and a taxa bar plot of the merged table, which GTDB's taxonomy lets you collapse to any rank and which can be sorted and coloured by the integrated metadata.
+The merged relative table and the integrated metadata then go into any stock action that takes them: here Bray-Curtis and weighted UniFrac distances between all merged samples, a PERMANOVA of the profile types on the latter, its ordination as a PCoA scatter plot coloured by profile type (the PCoA result is metadata, so it merges with the integrated metadata on the command line), and a taxa bar plot of the merged table, which GTDB's taxonomy lets you collapse to any rank and which can be sorted and coloured by the integrated metadata.
 
 ```shell
 # run time estimate: < 1 minute
@@ -300,28 +300,6 @@ qiime diversity beta \
   --i-table genome/relative-table.qza \
   --p-metric braycurtis \
   --o-distance-matrix genome/bray-curtis.qza
-
-# run time estimate: < 1 minute
-qiime diversity beta-group-significance \
-  --i-distance-matrix genome/bray-curtis.qza \
-  --m-metadata-file genome/metadata.qza \
-  --m-metadata-column study-id \
-  --o-visualization genome/bray-curtis-study-id.qzv
-
-# run time estimate: < 1 minute
-qiime diversity pcoa \
-  --i-distance-matrix genome/bray-curtis.qza \
-  --o-pcoa genome/bray-curtis-pcoa.qza
-
-# run time estimate: < 1 minute
-qiime vizard scatterplot-2d \
-  --m-metadata-file genome/bray-curtis-pcoa.qza \
-  --m-metadata-file genome/metadata.qza \
-  --p-x-measure 'Axis 1' \
-  --p-y-measure 'Axis 2' \
-  --p-color-by study-id \
-  --p-title 'Bray-Curtis PCoA, GTDB genomes' \
-  --o-visualization genome/bray-curtis-pcoa.qzv
 
 # run time estimate: < 1 minute
 qiime diversity beta-phylogenetic \
@@ -362,14 +340,12 @@ qiime taxa barplot2 \
 # run time estimate: < 1 minute
 qiime tools make-report \
   --report-path downstream-report.qzv \
-  genome/bray-curtis-study-id.qzv \
-  genome/bray-curtis-pcoa.qzv \
   genome/weighted-unifrac-study-id.qzv \
   genome/weighted-unifrac-pcoa.qzv \
   genome/taxa-barplot.qzv
 ```
 
-`downstream-report.qzv` collects the five visualizations of this section in one report.
+`downstream-report.qzv` collects the three visualizations of this section in one report.
 
 The paired report below is what paired samples buy on top: it keeps only the samples both profile types cover, so the comparison is between two profiles of the same material rather than between two sets of samples.
 
