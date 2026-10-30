@@ -23,13 +23,13 @@ You can learn about [why](https://gut-to-soil-tutorial.readthedocs.io/en/2026.10
 Spoiler: it seems to work really well on human gut microbiomes, and only moderately well on soil microbiomes right now with some improvements in progress.
 
 Before you run the tutorial, you'll need to install QIIME 2, `q2-confluence`, and `mosh-sylph`.
-Find the instructions for doing that [here](CLAUDE ADD LINK - this should be a new install.md page as we're going to trim the README).
+Find the instructions for doing that [here](install.md).
 
 You can see how the tutorial data was prepared [here](data-preparation.md).
 
 **Note**: The prose in this tutorial is still a work in progress and is pretty sparse at the moment.
 
-At the bottom of this document [the known limitations](CLAUDE: add the link) of this workflow are described.
+At the bottom of this document [the known limitations](#workflow-limitations) of this workflow are described.
 
 ## Setup
 
@@ -433,8 +433,31 @@ On the tutorial data the search returns six rows: the three *Escherichia coli* c
 
 ## Workflow limitations
 
-CLAUDE: pull my content from the slides on this and add it here.
+### Reference coverage
+
+16S analysis can only identify the 88,481 bacterial species-representative genomes that are contained in the 16S reference, while metagenome analysis can identify any of the 189,801 bacterial genomes represented in the GTDB bacterial reference tree.
+Relatedness-based diversity metrics (e.g., UniFrac) help manage these differences by down-weighting differences between similar organisms across samples.
+
+The numbers of bacterial genomes and 16S rRNA sequences grow with each GTDB release (roughly annually):
+
+ * r202 (2021): 45,555 genomes; 31,319 (69%) have 16S references
+ * r207 (2022): 62,291 genomes; 38,474 (62%) have 16S references
+ * r214 (2023): 80,789 genomes; 46,891 (58%) have 16S references
+ * r220 (2024): 107,235 genomes; 58,102 (54%) have 16S references
+ * r226 (2025): 136,646 genomes; 72,862 (53%) have 16S references
+ * r232 (2026): 189,801 genomes; 88,481 (47%) have 16S references
 
 ⚠️ Two limitations of this mapping are worth knowing.
 Only about half of the bacterial species representatives of GTDB r232 have a 16S sequence in the reference (88,481 of 189,801), so an ASV whose genome is among the rest can only land on a relative's genome, at a lower threshold.
 And among references with identical V4 regions, vsearch returns the first one at or above the threshold rather than a best or a consensus hit (`cluster-features-closed-reference` does not expose vsearch's `maxaccepts`), so the particular genome an ASV lands on is arbitrary within such a group; relatedness-based diversity metrics (weighted UniFrac, here) control for that a bit, but the identity-based metrics (Bray-Curtis, here) do not.
+
+### Real-world testing
+
+This workflow has been assessed on one small (n=10) study with paired 16S and metagenome samples to date.
+We will evaluate it on the remaining samples from that study (pending sequencing, n=183 samples).
+
+### Sampling depth
+
+Direct control of uneven sampling depth (e.g., with rarefaction) has not been applied and is an unsolved problem at this time.
+For this reason, we recommend focusing only on abundance-weighted diversity metrics, such as weighted UniFrac and Bray-Curtis.
+Paired with the note above regarding reference coverage, weighted UniFrac is the recommended beta diversity metric for exploring integrated 16S and metagenome data.
