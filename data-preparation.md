@@ -180,7 +180,7 @@ mosh quality-control filter-reads-human-pangenome \
 qiime demux subsample-paired \
   --i-sequences reads-nohost.qza \
   --p-fraction 0.1 \
-  --o-subsampled-sequences wgs-subset-reads.qza
+  --o-subsampled-sequences metagenome-reads-10p.qza
 ```
 
 The human pangenome index downloads GRCh38 and the HPRC pangenome and takes hours the first time (on a 16-core server: 4 h to build at 50 GB peak, then 5 h 42 min to filter 393 million pairs at 58 GB peak, removing 3.8% of them); pass `--i-index human-pangenome-bowtie2.qza` on later runs.

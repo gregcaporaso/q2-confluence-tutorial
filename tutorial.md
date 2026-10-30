@@ -49,7 +49,7 @@ The `# run time estimate` above each command is its wall time, rounded to minute
 ```shell
 mkdir confluence-tutorial
 cd confluence-tutorial
-mkdir 16S wgs reference genome
+mkdir 16S metagenome reference genome
 ```
 
 ## Downloading the data
@@ -63,25 +63,25 @@ D='https://drive.usercontent.google.com/download?export=download&confirm=t&id='
 wget -O sample-metadata.qza "${D}1PJQOCPLgOJ_Jeb-_ZmEN1enFzqLhbH5S"
 wget -O 16S/asv-table.qza "${D}1-HH4892h693WAQ37YvrBjV_3P7xA3UgF"
 wget -O 16S/asv-sequences.qza "${D}1LzOioUEnzP4nbOsV9v75VGaqfgseagbi"
-wget -O wgs/wgs-subset-reads.qza "${D}1fkzsYoWAIeGOJDQrdqGcf5k5rNfoFR7E"
+wget -O metagenome/metagenome-reads-10p.qza "${D}1fkzsYoWAIeGOJDQrdqGcf5k5rNfoFR7E"
 wget -O reference/gtdb-r232-bac120-tree.qza "${D}1CqKOWDfh0nfQW_eoBGkzEVFziUsnQoUE"
 wget -O reference/gtdb-r232-bac120-taxonomy.qza "${D}11SsB4XNaVt7KiUy0w6jFW8PQnq3VLpM4"
 wget -O reference/gtdb-r232-ssu-sequences.qza 'https://zenodo.org/records/21619532/files/gtdb-r232.0-2026.7.0-reference-sequences.qza?download=1'
 wget -O reference/silva-144-v4-classifier.qza 'https://www.arb-silva.de/fileadmin/silva_databases/current/QIIME2/2026.7/SSU/V4-515f-806r/uniform/SILVA_144_SSURef_NR99_uniform_classifier_V4-515f-806r.qza'
-md5sum sample-metadata.qza 16S/*.qza wgs/*.qza reference/*
+md5sum sample-metadata.qza 16S/*.qza metagenome/*.qza reference/*
 ```
 
 > [!NOTE]
 > macOS has no `md5sum`; run `md5 -r` with the same arguments, which prints the sums in the same form.
 
-The md5 sums should match the table; the UUID identifies each artifact in provenance (`qiime tools peek sample-metadata.qza 16S/*.qza wgs/*.qza reference/*`).
+The md5 sums should match the table; the UUID identifies each artifact in provenance (`qiime tools peek sample-metadata.qza 16S/*.qza metagenome/*.qza reference/*`).
 
 | File | md5 | Artifact UUID |
 |---|---|---|
 | `sample-metadata.qza` | `8ed73161d2d70d9a9499d531401bd725` | `7d0ae7fb-1f89-4b1f-b475-ff6f0263d492` |
 | `16S/asv-sequences.qza` | `a4173850ea0e9cc3220cede19cec6a30` | `ce58ed07-5639-49d0-acdd-37a56f5a4476` |
 | `16S/asv-table.qza` | `c7313d6efe664c559104120d23291010` | `e02ea2d0-16a7-457b-8009-03ed2874216c` |
-| `wgs/wgs-subset-reads.qza` | `884d47f6948d010356cde49594238b3f` | `09901ee0-9bca-4825-b94a-20c953d97cef` |
+| `metagenome/metagenome-reads-10p.qza` | `884d47f6948d010356cde49594238b3f` | `09901ee0-9bca-4825-b94a-20c953d97cef` |
 | `reference/gtdb-r232-bac120-taxonomy.qza` | `db35824401f6fcec75ba91f2be94f6a3` | `0c811883-42ef-430e-89c5-9f29f9e3a6ff` |
 | `reference/gtdb-r232-bac120-tree.qza` | `302f40b1ff9bc872f01279a3a7a1dc2a` | `2ab4d0b8-967a-4c55-af04-863232a19fcf` |
 | `reference/gtdb-r232-ssu-sequences.qza` | `c005d9db391cb78280eadb935ad8cfe5` | `622d4617-31dc-40ee-931b-810724b40fcc` |
@@ -210,7 +210,7 @@ sylph sketches the reads once per sample; the sketches serve every profile or qu
 ```shell
 # run time estimate: 4 minutes
 qiime sylph sketch \
-  --i-reads wgs/wgs-subset-reads.qza \
+  --i-reads metagenome/metagenome-reads-10p.qza \
   --p-threads 16 \
   --use-cache cache \
   --o-sketches cache:sketches
@@ -228,15 +228,15 @@ qiime sylph profile \
   --i-database cache:sylph-gtdb-r232 \
   --p-threads 16 \
   --p-estimate-unknown \
-  --o-profile wgs/sylph-profile.qza
+  --o-profile metagenome/sylph-profile.qza
 
 # run time estimate: < 1 minute
 qiime sylph profile-to-tables \
-  --i-profile wgs/sylph-profile.qza \
+  --i-profile metagenome/sylph-profile.qza \
   --i-sketches cache:sketches \
-  --o-taxonomic-abundance wgs/sylph-taxonomic-abundance.qza \
-  --o-sequence-abundance wgs/sylph-sequence-abundance.qza \
-  --o-stats wgs/sylph-stats.qza
+  --o-taxonomic-abundance metagenome/sylph-taxonomic-abundance.qza \
+  --o-sequence-abundance metagenome/sylph-sequence-abundance.qza \
+  --o-stats metagenome/sylph-stats.qza
 ```
 
 The per-sample statistics are metadata and tabulate like any other; the study metadata is given last, so its columns follow the statistics in the table.
@@ -244,9 +244,9 @@ The per-sample statistics are metadata and tabulate like any other; the study me
 ```shell
 # run time estimate: < 1 minute
 qiime metadata tabulate \
-  --m-input-file wgs/sylph-stats.qza \
+  --m-input-file metagenome/sylph-stats.qza \
   --m-input-file sample-metadata.qza \
-  --o-visualization wgs/sylph-stats.qzv
+  --o-visualization metagenome/sylph-stats.qzv
 ```
 
 The sylph database holds the archaeal representatives too; as on the amplicon side, `integrate` drops them.
@@ -259,7 +259,7 @@ The two profiles enter as collections: each member is given as `key:path`, and t
 ```shell
 # run time estimate: < 1 minute
 qiime confluence summarize-inputs \
-  --i-tables amplicon:16S/genome-table.qza metagenome:wgs/sylph-taxonomic-abundance.qza \
+  --i-tables amplicon:16S/genome-table.qza metagenome:metagenome/sylph-taxonomic-abundance.qza \
   --i-tree reference/gtdb-r232-bac120-tree.qza \
   --i-metadata amplicon:sample-metadata.qza metagenome:sample-metadata.qza \
   --o-visualization genome/inputs-summary.qzv
@@ -276,7 +276,7 @@ On the tutorial data the amplicon profile keeps 3,577 of its 3,611 genomes and t
 ```shell
 # run time estimate: < 1 minute
 qiime confluence integrate \
-  --i-tables amplicon:16S/genome-table.qza metagenome:wgs/sylph-taxonomic-abundance.qza \
+  --i-tables amplicon:16S/genome-table.qza metagenome:metagenome/sylph-taxonomic-abundance.qza \
   --i-tree reference/gtdb-r232-bac120-tree.qza \
   --i-metadata amplicon:sample-metadata.qza metagenome:sample-metadata.qza \
   --o-integrated-table genome/relative-table.qza \
@@ -290,7 +290,7 @@ The summaries so far are collected into one report, `genome/upstream-report.qzv`
 qiime tools make-report \
   --report-path genome/upstream-report.qzv \
   16S/genome-table-summary.qzv \
-  wgs/sylph-stats.qzv \
+  metagenome/sylph-stats.qzv \
   genome/inputs-summary.qzv
 ```
 
@@ -425,24 +425,26 @@ Here the search is for *Escherichia coli*; the text matches every GTDB species c
 At effective coverage below about 0.1x the adjusted ANI and its 5 to 95 percentile interval overshoot (the 95th percentile can exceed 100); read such rows with the containment index and the naive ANI.
 
 ```shell
+mkdir genome/metagenome-containment-analysis
+
 # run time estimate: 1 minute
 qiime sylph query \
   --i-sketches cache:sketches \
   --i-database cache:sylph-gtdb-r232 \
   --p-threads 16 \
-  --o-query wgs/sylph-query.qza
+  --o-query genome/metagenome-containment-analysis/sylph-query.qza
 
 # run time estimate: < 1 minute
 qiime sylph query-to-metadata \
-  --i-query wgs/sylph-query.qza \
+  --i-query genome/metagenome-containment-analysis/sylph-query.qza \
   --i-taxonomy reference/gtdb-r232-bac120-taxonomy.qza \
   --p-targets 's__Escherichia coli' \
-  --o-query-metadata wgs/escherichia-coli-query.qza
+  --o-query-metadata genome/metagenome-containment-analysis/escherichia-coli-query.qza
 
 # run time estimate: < 1 minute
 qiime metadata tabulate \
-  --m-input-file wgs/escherichia-coli-query.qza \
-  --o-visualization wgs/escherichia-coli-query.qzv
+  --m-input-file genome/metagenome-containment-analysis/escherichia-coli-query.qza \
+  --o-visualization genome/metagenome-containment-analysis/escherichia-coli-query.qzv
 ```
 
 On the tutorial data the search returns six rows: the three *Escherichia coli* clusters of r232 (`s__Escherichia coli`, `coli_E` and `coli_F`), each found in the fresh excrement (1135D, adjusted ANI 94 to 98) and in the day-1 compost (DB47D, 94 to 99) at effective coverage of 0.06x to 0.18x, and in none of the eight later or soil samples: *E. coli* arrives with the feedstock and is gone from the compost by day 2.
