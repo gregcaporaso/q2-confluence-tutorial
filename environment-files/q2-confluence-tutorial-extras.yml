@@ -1,8 +1,7 @@
 # What the tutorial needs on top of the QIIME 2 2026.10 distribution
 # installed as https://install.qiime2.org says (the rachis-qiime2-2026.10
 # environment): sylph (the sylph plugin runs it) and the two plugins the
-# tutorial uses, installed from GitHub (main; the pins were dropped on
-# 2026-10-28 as the interfaces stabilized). Applied with
+# tutorial uses, installed from GitHub main. Applied with
 # `conda env update -n rachis-qiime2-2026.10 --file <this file>`
 # (install.md).
 channels:

@@ -30,7 +30,7 @@ The repository is nested inside the thermo-hec project (`~/0-projects/2026-09-16
 
  * The download table's md5s and UUIDs: the parent's `tutorial-data/README.md` for the study data and the two GTDB artifacts, the Zenodo record's file checksums for the SSU reference sequences, and SILVA's `.md5` file for the classifier.
  * The results sentences: @gregcaporaso's run of every command by hand on bacon on 2026-10-30 (QIIME 2 2026.10, q2-confluence 4177690, mosh-sylph 939a531), which matched bacon jobs 325 and 327 in every count and pseudo-F (the p-values are permutation estimates and vary by run).
- * The `# run time estimate` and `# peak memory estimate` comments: bacon job 327 (2026-10-30, this repository at 8a0b25a), whose trace in the parent's `bacon/tutorial/tutorial-327.err` stamps each command's start and whose `tutorial-327-rss.tsv` samples the run's summed RSS every 2 s; a command's values span its start to the next command's.
+ * The `# run time estimate` and `# peak memory estimate` comments and the Requirements section (whose finished-directory size of about 25 GB is from the parent's `bacon/_status/listing.txt`): bacon job 327 (2026-10-30, this repository at 8a0b25a), whose trace in the parent's `bacon/tutorial/tutorial-327.err` stamps each command's start and whose `tutorial-327-rss.tsv` samples the run's summed RSS every 2 s; a command's values span its start to the next command's.
    The summed RSS is an upper bound where workers share pages; commands that finish within the 2 s sampling interval (`tools peek`, `cache-create`, the first `make-report`) are written as `< 1 GB` without a sample.
    GNU time's maximum RSS in the job log (4.4 GB) is the largest single process and is not comparable.
  * The limitations section comes from the Limitations slide of the parent's deck (`figures/slides.yaml`).
@@ -45,9 +45,9 @@ The repository is nested inside the thermo-hec project (`~/0-projects/2026-09-16
 
 ## The site
 
- * GitHub Pages builds the site from `main` (root folder, no workflow) with Jekyll and the Cayman theme.
+ * GitHub Pages is to build the site at https://gregcaporaso.github.io/q2-confluence-tutorial/ from `main` (root folder, no workflow) with Jekyll and the Cayman theme; it is not enabled yet, and the steps to publish, with the decisions still open, are in the parent's `coordination/distribution.md`.
    `_config.yml` sets the theme and, as `description`, the notice shown under the title of every page; `_includes/head-custom.html` adds `<meta name="robots" content="noindex, nofollow">`; `index.md` is the landing page.
  * Pages are rendered without front matter, the first heading is the title, and links to `*.md` files become links to the rendered pages, so links work both on GitHub and on the site.
-   `LICENSE` and `CITATION.cff` are excluded; `README.md` is rendered only because `_config.yml` includes it.
+   `LICENSE`, `CITATION.cff` and `CLAUDE.md` are excluded; `README.md` is rendered only because `_config.yml` includes it.
  * The site stays unlisted until the data are published; only the two plugin READMEs link to it.
- * While the parent project's `coordination/README.md` lists a distribution session, it owns `index.md`, `_config.yml`, `_includes/`, `LICENSE` and `CITATION.cff`.
+ * The tutorial session owns the whole repository, site files included, since the distribution session closed on 2026-10-30.
