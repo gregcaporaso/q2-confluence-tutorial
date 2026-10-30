@@ -1,7 +1,7 @@
 # CLAUDE.md
 
-Repository-local instructions for the thermo-hec tutorial; the global `~/.claude/CLAUDE.md` also applies.
-The repository is nested inside the thermo-hec project (`~/0-projects/2026-09-16-thermo-hec-wgs-rna-1`), whose `CLAUDE.md` and memory hold the project context; git commands there use `git -C thermo-hec-tutorial`.
+Repository-local instructions for the q2-confluence tutorial (`gregcaporaso/q2-confluence-tutorial`; `thermo-hec-tutorial` until 2026-10-30); the global `~/.claude/CLAUDE.md` also applies.
+The repository is nested inside the thermo-hec project (`~/0-projects/2026-09-16-thermo-hec-wgs-rna-1`), whose `CLAUDE.md` and memory hold the project context; the checkout there is still the directory `thermo-hec-tutorial/` (the parent's `slurm/tutorial.sbatch`, `pull.sh` and `.gitignore` name it), so git commands there use `git -C thermo-hec-tutorial`.
 
 ## The pages
 

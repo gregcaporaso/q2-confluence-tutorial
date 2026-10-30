@@ -4,11 +4,11 @@
 Then add sylph and the two plugins to that environment with this repository's extras file:
 
 ```shell
-wget https://raw.githubusercontent.com/gregcaporaso/thermo-hec-tutorial/main/environment-files/thermo-hec-tutorial-extras.yml
+wget https://raw.githubusercontent.com/gregcaporaso/q2-confluence-tutorial/main/environment-files/q2-confluence-tutorial-extras.yml
 
 conda env update \
   -n rachis-qiime2-2026.10 \
-  --file thermo-hec-tutorial-extras.yml
+  --file q2-confluence-tutorial-extras.yml
 
 conda activate rachis-qiime2-2026.10
 

@@ -1,4 +1,4 @@
-# thermo-hec tutorial
+# q2-confluence tutorial
 
  * [Creating the environment](install.md)
  * [Integrating 16S and metagenome profiles: the tutorial](tutorial.md)

@@ -8,7 +8,7 @@
 # become links to the rendered pages. README.md is skipped by that rule unless
 # it is listed under `include`. CLAUDE.md (instructions for Claude sessions) is
 # excluded, or it would be rendered as a page.
-title: thermo-hec tutorial
+title: q2-confluence tutorial
 description: "NOTICE PLACEHOLDER: @gregcaporaso writes the one-line notice that the data are shared for evaluation and not yet published."
 theme: jekyll-theme-cayman
 include:
