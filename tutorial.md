@@ -174,7 +174,17 @@ qiime vsearch cluster-features-closed-reference \
   --o-clustered-table 16S/genome-table.qza \
   --o-clustered-sequences 16S/genome-sequences.qza \
   --o-unmatched-sequences 16S/unmatched-asvs.qza
+
+# run time estimate: < 1 minute
+qiime feature-table summarize \
+  --i-table 16S/genome-table.qza \
+  --m-metadata-file sample-metadata.qza \
+  --o-feature-frequencies 16S/genome-table-feature-frequencies.qza \
+  --o-sample-frequencies 16S/genome-table-sample-frequencies.qza \
+  --o-summary 16S/genome-table-summary.qzv
 ```
+
+`feature-table summarize` shows how many reads and genomes each sample keeps after the mapping.
 
 The identity threshold trades coverage for agreement.
 On the tutorial data, 97% keeps 75% of the reads (53% of the ASVs, 3,617 genomes), 99% keeps 55% (31%, 2,483 genomes) and 100% keeps 42% (18%, 1,671 genomes); the stricter the threshold, the closer the two profile types come in the comparison below (weighted UniFrac PERMANOVA pseudo-F by profile type 1.7 at 97%, 1.2 at 99% and 100%), because only ASVs whose genome is in the reference remain, and those genomes are what the metagenome profile can see as well.
@@ -267,6 +277,16 @@ qiime confluence integrate \
   --o-integrated-metadata genome/metadata.qza
 ```
 
+The summaries so far are collected into one report, `upstream-report.qzv`, with a tab for each; the paired report at the end does the same for the comparison.
+
+```shell
+# run time estimate: < 1 minute
+qiime tools make-report \
+  --report-path upstream-report.qzv \
+  16S/genome-table-summary.qzv \
+  inputs-summary.qzv
+```
+
 ## Comparing the profile types without paired samples
 
 Nothing up to this point needs paired samples.
@@ -315,7 +335,16 @@ qiime taxa barplot2 \
   --i-taxonomy reference/gtdb-r232-bac120-taxonomy.qza \
   --m-metadata-file genome/metadata.qza \
   --o-visualization genome/taxa-barplot.qzv
+
+# run time estimate: < 1 minute
+qiime tools make-report \
+  --report-path downstream-report.qzv \
+  genome/weighted-unifrac-study-id.qzv \
+  genome/weighted-unifrac-pcoa.qzv \
+  genome/taxa-barplot.qzv
 ```
+
+`downstream-report.qzv` collects the three visualizations of this section in one report.
 
 The paired report below is what paired samples buy on top: it keeps only the samples both profile types cover, so the comparison is between two profiles of the same material rather than between two sets of samples.
 
