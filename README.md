@@ -1,6 +1,6 @@
 # q2-confluence tutorial
 
-⚠️ This tutorial and the [rachis](https://rachis.org) plugins it uses are in early testing (alpha release) phase.
+This tutorial and the [rachis](https://rachis.org) plugins it uses are in early testing (alpha release) phase.
 Commands will almost certainly change.
 Be skeptical of results - testing is still in progress.
 
