@@ -63,13 +63,13 @@ md5sum sample-metadata.qza 16S/*.qza wgs/*.qza reference/*
 > [!NOTE]
 > macOS has no `md5sum`; run `md5 -r` with the same arguments, which prints the sums in the same form.
 
-The md5 sums should match the table; the UUID identifies each artifact in provenance (`qiime tools peek <file>`).
+The md5 sums should match the table; the UUID identifies each artifact in provenance (`qiime tools peek *.qza */*.qza`).
 
 | File | md5 | Artifact UUID |
 |---|---|---|
 | `sample-metadata.qza` | `8ed73161d2d70d9a9499d531401bd725` | `7d0ae7fb-1f89-4b1f-b475-ff6f0263d492` |
-| `16S/asv-table.qza` | `c7313d6efe664c559104120d23291010` | `e02ea2d0-16a7-457b-8009-03ed2874216c` |
 | `16S/asv-sequences.qza` | `a4173850ea0e9cc3220cede19cec6a30` | `ce58ed07-5639-49d0-acdd-37a56f5a4476` |
+| `16S/asv-table.qza` | `c7313d6efe664c559104120d23291010` | `e02ea2d0-16a7-457b-8009-03ed2874216c` |
 | `wgs/wgs-subset-reads.qza` | `884d47f6948d010356cde49594238b3f` | `09901ee0-9bca-4825-b94a-20c953d97cef` |
 | `reference/bac120_r232.tree` | `a8b589ffabbf41ebd7e8ab45795b8e6a` | (imported below) |
 | `reference/bac120_taxonomy_r232.tsv.gz` | `807e3221f5553142eb0544ce3247d079` | (imported below) |
