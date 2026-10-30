@@ -1,19 +1,39 @@
 # Integrating 16S and metagenome profiles: the tutorial
 
-🧬 This tutorial integrates a 16S rRNA amplicon profile and a metagenome profile of the same samples in one feature space: the genomes of one GTDB release.
-It uses the `confluence` plugin, the `sylph` plugin (mosh-sylph) for the metagenome profile, and stock QIIME 2 actions.
-It covers what you run on your own data: mapping the amplicon features to GTDB genomes, profiling the metagenome reads against the same genomes, integrating both, and comparing the two profile types on the samples they share.
-[How the tutorial data were prepared](data-preparation.md) is a separate page.
-The commands assume an environment with both plugins installed ([README](README.md)).
+🧬 This tutorial integrates a 16S rRNA amplicon profile and a metagenome profile of the same samples in one feature space: Genome Taxonomy Database (GTDB) genomes.
+It uses `q2-confluence` and `mosh-sylph`, two [`rachis`](https://rachis.org) plugins, expanding on [QIIME 2](https://qiime2.org) 2026.10.
+If you're new to QIIME 2, I recommend reading [*Getting Started with QIIME 2*](https://amplicon-docs.qiime2.org/en/stable/explanations/getting-started/) (about 10 minutes) to familiarize yourself with some of the jargon that will pop up here.
+The [`rachis` glossary](https://news.rachis.org/en/latest/glossary/) may also be helpful.
 
-<!-- @gregcaporaso, reminder for the prose: the choice of the 10% read subset was made at genus level (bacon job 308 versus jobs 300 to 307: weighted UniFrac pseudo-F 2.61 against 2.62, Bray-Curtis 3.21 against 3.20, while the presence-based metrics and the feature counts move because sylph detects fewer genomes at this depth); the genome-space numbers below are from the subset only (bacon job 318). -->
+**All `.qza` and `.qzv` files used in this tutorial can be viewed with [`rachis-view`](https://view.rachis.org).**
 
-<!-- @gregcaporaso, reminder for the prose: explain why a reader's numbers differ slightly from the ones shown. The PERMANOVA p-values are permutation estimates and the random forest draws its folds and trees afresh each run, so p-values wobble in the third decimal and the accuracy by a sample or two; the pseudo-F values and the feature summary are deterministic. No random seed is set on purpose: copied commands would reuse it. -->
+The data used in this tutorial is real data from a currently unpublished microbiome study that is ongoing in the [Caporaso Lab](http://caplab.dev).
+Please consider it available only for use with this tutorial as we work toward publication of that project.
 
-## Working directory
+The tutorial starts with:
+ * sample metadtata describing the 10 samples that are used in the tutorial
+ * a 16S rRNA ASV table and ASV sequences for those 10 samples
+ * metagenomic reads  for those 10 samples
+
+Both the 16S and metagenome data are from the same samples, which allows us to directly assess how well the two different data types integrate.
+The premise is that if the integration is working well, when we look at results like an ordination performed on the integrated 16S and metagenome data, we should see the biology driving the patterns in the PCoA, not the sequencing approach.
+The 10 samples span what we call the "gut-to-soil" axis: the transition of human-gut-like microbiomes to soil-like microbiomes through the processing of human excrement composting (HEC).
+You can learn about [why](https://gut-to-soil-tutorial.readthedocs.io/en/2026.10/why/) we are interested in HEC here, but for the purpose of this tutorial all you need to know is that both human-gut-like microbiomes to soil-like microbiomes are represented in the data, so it allows for assessment of how well we should expect this integration to work on both data types.
+Spoiler: it seems to work really well on human gut microbiomes, and only moderately well on soil microbiomes right now with some improvements in progress.
+
+Before you run the tutorial, you'll need to install QIIME 2, `q2-confluence`, and `mosh-sylph`.
+Find the instructions for doing that [here](CLAUDE ADD LINK - this should be a new install.md page as we're going to trim the README).
+
+You can see how the tutorial data was prepared [here](data-preparation.md).
+
+**Note**: The prose in this tutorial is still a work in progress and is pretty sparse at the moment.
+
+At the bottom of this document [the known limitations](CLAUDE: add the link) of this workflow are described.
+
+## Setup
 
 📁 Create a directory for the tutorial and change into it; every file below is written there.
-The amplicon, metagenome, reference and integration files get a subdirectory each, because QIIME 2 does not create the directory of an output.
+
 ⏱️ The `# run time estimate` above each command is its wall time, rounded to minutes, in a run of this page on a 16-core Linux server with QIIME 2 2026.10 (2026-10-28).
 
 ```shell
@@ -23,9 +43,6 @@ mkdir 16S metagenome reference genome
 ```
 
 ## Downloading the data
-
-📦 Every file the tutorial uses: the study data (the sample metadata as an `ImmutableMetadata` artifact, the ASV table and sequences, the 10% subset of the metagenome reads, 4.8 GB) and the reference data: the GTDB r232 bacterial tree and genome taxonomy, imported from GTDB's files and hosted with the study data ([how](data-preparation.md#reference)), and, each from its publisher, the GTDB r232 16S reference sequences from the rachis Zenodo record (the data the GTDB classifier of that record was trained on) and the SILVA 144 V4 classifier from SILVA.
-The sylph database is fetched by an action below, not by `wget`.
 
 ```shell
 # run time estimate: 3 minutes for the downloads together, most of it the 4.8 GB reads (depends on the connection)
@@ -38,13 +55,19 @@ wget -O reference/gtdb-r232-bac120-tree.qza "${D}1CqKOWDfh0nfQW_eoBGkzEVFziUsnQo
 wget -O reference/gtdb-r232-bac120-taxonomy.qza "${D}11SsB4XNaVt7KiUy0w6jFW8PQnq3VLpM4"
 wget -O reference/gtdb-r232-ssu-sequences.qza 'https://zenodo.org/records/21619532/files/gtdb-r232.0-2026.7.0-reference-sequences.qza?download=1'
 wget -O reference/silva-144-v4-classifier.qza 'https://www.arb-silva.de/fileadmin/silva_databases/current/QIIME2/2026.7/SSU/V4-515f-806r/uniform/SILVA_144_SSURef_NR99_uniform_classifier_V4-515f-806r.qza'
+
 md5sum sample-metadata.qza 16S/*.qza metagenome/*.qza reference/*
 ```
 
 > [!NOTE]
 > 🍎 macOS has no `md5sum`; run `md5 -r` with the same arguments, which prints the sums in the same form.
 
-The md5 sums should match the table; the UUID identifies each artifact in provenance (`qiime tools peek sample-metadata.qza 16S/*.qza metagenome/*.qza reference/*`).
+The md5 sums and UUIDs should uniquely identifies artifacts.
+To list the artifact UUIDs, run:
+
+```shell
+qiime tools peek sample-metadata.qza 16S/*.qza metagenome/*.qza reference/*
+```
 
 | File | md5 | Artifact UUID |
 |---|---|---|
@@ -59,8 +82,8 @@ The md5 sums should match the table; the UUID identifies each artifact in proven
 
 ## Sample metadata
 
-🗂️ The sample metadata of the ten tutorial samples: bin location, sample type, composting time point and core temperature in °C (both empty for the two samples that were not composting, the fresh excrement and the soil), and the sample UUID.
-It is provided as an `ImmutableMetadata` artifact, `sample-metadata.qza`, which any action that takes metadata accepts in place of a TSV.
+🗂️ The sample metadata of the ten tutorial samples: bin identifier (location), sample type, composting time point and core temperature in °C (both empty for the two samples that were not composting, the fresh excrement and the soil), and the sample UUID.
+It is provided as an `ImmutableMetadata` artifact.
 
 ```shell
 # run time estimate: < 1 minute
@@ -70,31 +93,22 @@ qiime metadata tabulate \
 ```
 
 > [!TIP]
-> For your own data, import the sample metadata TSV into an `ImmutableMetadata` artifact once (the import command is on the [data preparation page](data-preparation.md#sample-metadata)) and pass the artifact everywhere the TSV would go.
+> For your own data, you can use sample metadata as a `.tsv` file ([format reference](https://use.qiime2.org/en/latest/references/metadata/)) or by importing it into an `ImmutableMetadata` artifact once (the import command is on the [data preparation page](data-preparation.md#sample-metadata)).
 > The artifact has a UUID, so provenance records which version of the metadata each result was made from; a TSV passed directly is recorded only by its contents.
 > Either way, the metadata contents are written into the provenance of every downstream result, so a metadata file must not hold anything that cannot travel with the artifacts.
-> Metadata in QIIME 2, including the artifact form, is described in the [metadata reference](https://use.qiime2.org/en/latest/references/metadata/).
+> Metadata in QIIME 2, including the artifact form, is described in the .
 
 ## Reference data
 
-📚 Both profile types are placed on the genomes of GTDB r232: the amplicon features by closed-reference clustering against the 16S sequences of the GTDB species representatives, the metagenome reads by sylph against the same genomes.
+📚 Both profile types are integrated into the common feature space of GTDB genomes (GTDB r232 is used in this tutorial).
+The amplicon features (ASVs) by closed-reference clustering against the 16S sequences of the GTDB species representatives, and the metagenome reads by sylph against the same genomes.
 GTDB's bacterial tree is the phylogeny, and GTDB's genome taxonomy names the genomes.
-Both were imported from the files GTDB publishes into the two artifacts downloaded above; the commands are on the [data preparation page](data-preparation.md#reference), where they serve for another GTDB release with its file names.
-
-🌳 The tree was imported through the `GTDBNewickFormat` import format of the `confluence` plugin: GTDB's tree ends in a quoted root label without a branch length (`'100:d__Bacteria'`), which UniFrac's parser cannot read, and the import drops that one label and changes nothing else.
-The rooting of the tree is recorded on the artifact as a Note annotation, which every artifact derived from it carries along: GTDB places the root arbitrarily and advises treating its reference trees as unrooted.
-`qiime tools annotation-fetch --input-path reference/gtdb-r232-bac120-tree.qza --name rooting --verbose` prints the note.
+GTDB file preparation is discussed on the [data preparation page](data-preparation.md#reference).
 
 The metagenome reads are profiled with sylph through the `sylph` plugin (mosh-sylph), thin wrappers around sylph.
 The sylph database of the GTDB r232 species representatives is about 20 GB, and every action that reads a `.qza` file unzips it first.
 An [artifact cache](https://use.qiime2.org/en/stable/tutorials/use-the-artifact-cache/) keeps artifacts unzipped under a key, referenced as `cache:key` in place of a file path, so the large artifacts are written once and never zipped or unzipped again.
-The commands below keep the database and the read sketches in a cache called `cache` inside the tutorial directory and pass `--use-cache cache` to the actions that write them; the tutorial's own data stays in `.qza` files, with its provenance.
-`fetch-database` downloads the authors' pre-built database.
-
-The plugin accepts only sylph's two-stage database format (`.syl2db`), which the sylph authors publish for GTDB r226 and r232; those are the releases `fetch-database` offers.
-[GlobDB](https://globdb.org) publishes sylph databases for its r226 and r232 releases as well, but in the single-stage format so far; `fetch-database` will offer them when two-stage builds become available.
-Until then, a GlobDB database can be used by downloading it, converting it with `sylph convert-db-two-screen`, and importing the result (`qiime tools import --type SylphTwoStageDatabase --input-format SylphTwoStageDatabaseFormat`); its genomes are not NCBI assemblies, so `profile-to-tables` below would run with `--p-no-gtdb-ids`, and the taxonomy and tree would be GlobDB's.
-The [mosh-sylph README](https://github.com/gregcaporaso/mosh-sylph#types-and-formats) has the commands.
+The commands below keep the database and the read sketches in a cache called `cache` inside the tutorial directory and pass `--use-cache cache` to the actions that write them.
 
 ```shell
 # run time estimate: < 1 minute
@@ -110,7 +124,7 @@ qiime sylph fetch-database \
 ## Amplicon data
 
 🧪 The amplicon side starts from the denoised ASV table and sequences of the ten samples ([how](data-preparation.md#amplicon-data)).
-The SILVA classifier is used only to find organelle (mitochondria, chloroplasts) and other eukaryotic sequences, which the GTDB reference cannot name; they are removed with the SILVA taxonomy, and the ASV sequences are restricted to the features that remain, which closed-reference clustering requires.
+The SILVA classifier is used to find and remove organelle (mitochondria, chloroplasts) and other eukaryotic sequences, which the GTDB reference does not name; they are removed with the SILVA taxonomy, and the ASV sequences are restricted to the features that remain, which closed-reference clustering requires.
 
 ```shell
 # run time estimate: < 1 minute
@@ -139,6 +153,8 @@ qiime feature-table filter-seqs \
 The clustered table is keyed by GTDB genome accessions (`RS_GCF_...`, `GB_GCA_...`), the same IDs as GTDB's tree and taxonomy and as the metagenome table below.
 ASVs with no reference at the threshold are returned as the unmatched sequences and leave the analysis.
 
+⚖️ The identity threshold is a target for optimization, and it may also be worth exploring other approaches for doing this mapping (there are many).
+
 ```shell
 # run time estimate: < 1 minute
 qiime vsearch cluster-features-closed-reference \
@@ -162,19 +178,12 @@ qiime feature-table summarize \
 
 `feature-table summarize` shows how many reads and genomes each sample keeps after the mapping.
 
-⚖️ The identity threshold trades coverage for agreement.
-On the tutorial data, 97% keeps 75% of the reads (54% of the ASVs, 3,611 genomes), 99% keeps 55% (31%, 2,483 genomes) and 100% keeps 42% (18%, 1,671 genomes); the stricter the threshold, the closer the two profile types come in the comparison below (weighted UniFrac PERMANOVA pseudo-F by profile type 1.7 at 97%, 1.2 at 99% and 100%), because only ASVs whose genome is in the reference remain, and those genomes are what the metagenome profile can see as well.
-The tutorial uses 97% to keep more of the data; raise the threshold for a stricter comparison.
-
-⚠️ Two limitations of this mapping are worth knowing.
-Only about half of the bacterial species representatives of GTDB r232 have a 16S sequence in the reference (88,481 of 189,801), so an ASV whose genome is among the rest can only land on a relative's genome, at a lower threshold.
-And among references with identical V4 regions, vsearch returns the first one at or above the threshold rather than a best or a consensus hit (`cluster-features-closed-reference` does not expose vsearch's `maxaccepts`), so the particular genome an ASV lands on is arbitrary within such a group; the phylogenetic metrics below tolerate that, the presence-based ones do not.
-
-The reference holds archaeal genomes too; `integrate` below drops them, because they are not tips of the bacterial tree, and records how many features each source lost.
+No taxonomy or phylogenetic reconstruction step is needed: the genome IDs are those of GTDB's taxonomy and tree.
 
 ## Metagenome data
 
 🦠 The metagenome side starts from paired-end reads that are already trimmed, free of control samples and human reads, and subsampled to 10% ([how](data-preparation.md#metagenome-data)).
+
 sylph sketches the reads once per sample; the sketches serve every profile or query against any database, so they go into the cache too.
 
 ```shell
@@ -187,9 +196,8 @@ qiime sylph sketch \
 ```
 
 `profile` runs sylph profile against the database; `--p-estimate-unknown` asks sylph to estimate, per sample, the share of reads from no genome in the database.
-Reading `cache:` inputs needs no extra option; `--use-cache` above mattered only where an output was written into the cache, so that the action built it there instead of in the default temporary cache.
-`profile-to-tables` turns the profile into QIIME 2 tables keyed by GTDB genome ID: the share of each detected genome corrected for genome size (the taxonomic abundance, the measure to integrate), the share of reads (the sequence abundance), and per-sample statistics (genomes detected, median ANI, unknown share).
-No taxonomy step is needed: the genome IDs are those of GTDB's taxonomy and tree.
+
+`profile-to-tables` turns the profile into QIIME 2 tables keyed by GTDB genome ID.
 
 ```shell
 # run time estimate: 1 minute
@@ -209,7 +217,7 @@ qiime sylph profile-to-tables \
   --o-stats metagenome/sylph-stats.qza
 ```
 
-The per-sample statistics are metadata and tabulate like any other; the study metadata is given last, so its columns follow the statistics in the table.
+The per-sample statistics are sample metadata and can be tabulated as such.
 
 ```shell
 # run time estimate: < 1 minute
@@ -219,12 +227,13 @@ qiime metadata tabulate \
   --o-visualization metagenome/sylph-stats.qzv
 ```
 
-The sylph database holds the archaeal representatives too; as on the amplicon side, `integrate` drops them.
+No taxonomy or phylogenetic reconstruction step is needed: the genome IDs are those of GTDB's taxonomy and tree.
 
 ## Integration
 
 🔗 The two profiles enter as collections: each member is given as `key:path`, and the key names the profile type in every output.
 `summarize-inputs` takes the inputs of `integrate` and shows, before anything is merged, which sample IDs the profiles and the metadata share and how many genomes of each profile are tips of the tree.
+Any genome ids that are present in a table but not the tree are dropped (at this time, this includes all archaea).
 
 ```shell
 # run time estimate: < 1 minute
@@ -235,13 +244,10 @@ qiime confluence summarize-inputs \
   --o-visualization genome/inputs-summary.qzv
 ```
 
-`integrate` keeps, in each profile, the genomes that are tips of the tree (`phylogeny filter-table`; the archaeal genomes go here), renormalizes the rest to proportions and merges the profiles.
-Nothing is collapsed: the feature space is the genomes themselves, and a taxonomic level is a separate step ([last section](#a-taxonomic-level-instead-of-genomes)).
-No taxonomy is built: GTDB's taxonomy artifact names every genome of the merged table and goes straight into the actions below.
-Merged samples are named `<sample-id>-<key>`; the integrated metadata records `original-sample-id`, `study-id`, the source's `features-before` and `features-after` the tree filter and their quotient `features-kept-share`, beside the study metadata.
-The metadata is given per profile type, under the table's key; one study profiled twice goes in under both keys.
+Samples are named `<sample-id>-<key>` to avoid collisions of sample ids.
+The integrated metadata records `original-sample-id`, `study-id`, as well as the source's number of `features-before` and `features-after` the tree filter and their quotient `features-kept-share`, beside the study metadata.
+The metadata is given per profile type, under the table's key; one study profiled twice (as in the tutorial data) goes in under both keys.
 A profile that loses more than a tenth of its features to the tree filter raises a warning naming the likely causes (archaea against the bacterial tree, or a reference release mismatch); the counts are in the metadata either way.
-On the tutorial data the amplicon profile keeps 3,577 of its 3,611 genomes and the metagenome profile 1,313 of 1,322 (the nine archaea), so no warning is raised.
 
 ```shell
 # run time estimate: < 1 minute
@@ -253,7 +259,8 @@ qiime confluence integrate \
   --o-integrated-metadata genome/metadata.qza
 ```
 
-📊 The summaries so far are collected into one report, `genome/upstream-report.qzv`, with a tab for each; the paired report at the end does the same for the comparison.
+📊 The summaries so far are collected into one report, `genome/upstream-report.qzv`, with a tab for each.
+**Remember that you can view this, and all `.qza` and `.qzv` files used in this tutorial, with [`rachis-view`](https://view.rachis.org).**
 
 ```shell
 # run time estimate: < 1 minute
@@ -263,6 +270,8 @@ qiime tools make-report \
   metagenome/sylph-stats.qzv \
   genome/inputs-summary.qzv
 ```
+
+** GREG TO CONTINUE HERE WITH REVIEW **
 
 ## Comparing the profile types without paired samples
 
@@ -314,6 +323,8 @@ qiime tools make-report \
   genome/weighted-unifrac-pcoa.qzv \
   genome/taxa-barplot.qzv
 ```
+
+<!-- @gregcaporaso, reminder for the prose: explain why a reader's numbers differ slightly from the ones shown. The PERMANOVA p-values are permutation estimates and the random forest draws its folds and trees afresh each run, so p-values wobble in the third decimal and the accuracy by a sample or two; the pseudo-F values and the feature summary are deterministic. No random seed is set on purpose: copied commands would reuse it. -->
 
 📊 `genome/downstream-report.qzv` collects the three visualizations of this section in one report.
 
@@ -419,3 +430,11 @@ qiime metadata tabulate \
 
 On the tutorial data the search returns six rows: the three *Escherichia coli* clusters of r232 (`s__Escherichia coli`, `coli_E` and `coli_F`), each found in the fresh excrement (1135D, adjusted ANI 94 to 98) and in the day-1 compost (DB47D, 94 to 99) at effective coverage of 0.06x to 0.18x, and in none of the eight later or soil samples: *E. coli* arrives with the feedstock and is gone from the compost by day 2.
 ⚠️ `query-to-metadata` fails when no genome matches the targets, so a search for an organism that is absent from every sample stops here rather than tabulating an empty table.
+
+## Worflow limitations
+
+CLAUDE: pull my content from the slides on this and add it here.
+
+⚠️ Two limitations of this mapping are worth knowing.
+Only about half of the bacterial species representatives of GTDB r232 have a 16S sequence in the reference (88,481 of 189,801), so an ASV whose genome is among the rest can only land on a relative's genome, at a lower threshold.
+And among references with identical V4 regions, vsearch returns the first one at or above the threshold rather than a best or a consensus hit (`cluster-features-closed-reference` does not expose vsearch's `maxaccepts`), so the particular genome an ASV lands on is arbitrary within such a group; relatedness-based diversity metrics (weighted UniFrac, here) control for that a bit, the identity-based metrics (Bray-Curtis, here) do not.
