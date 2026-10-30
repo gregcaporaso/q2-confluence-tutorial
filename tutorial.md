@@ -11,14 +11,15 @@ The data used in this tutorial is real data from a currently unpublished microbi
 Please consider it available only for use with this tutorial as we work toward publication of that project.
 
 The tutorial starts with:
- * sample metadtata describing the 10 samples that are used in the tutorial
+
+ * sample metadata describing the 10 samples that are used in the tutorial
  * a 16S rRNA ASV table and ASV sequences for those 10 samples
- * metagenomic reads  for those 10 samples
+ * metagenomic reads for those 10 samples
 
 Both the 16S and metagenome data are from the same samples, which allows us to directly assess how well the two different data types integrate.
 The premise is that if the integration is working well, when we look at results like an ordination performed on the integrated 16S and metagenome data, we should see the biology driving the patterns in the PCoA, not the sequencing approach.
 The 10 samples span what we call the "gut-to-soil" axis: the transition of human-gut-like microbiomes to soil-like microbiomes through the processing of human excrement composting (HEC).
-You can learn about [why](https://gut-to-soil-tutorial.readthedocs.io/en/2026.10/why/) we are interested in HEC here, but for the purpose of this tutorial all you need to know is that both human-gut-like microbiomes to soil-like microbiomes are represented in the data, so it allows for assessment of how well we should expect this integration to work on both data types.
+You can learn about [why](https://gut-to-soil-tutorial.readthedocs.io/en/2026.10/why/) we are interested in HEC here, but for the purpose of this tutorial all you need to know is that both human-gut-like and soil-like microbiomes are represented in the data, so it allows for assessment of how well we should expect this integration to work on both data types.
 Spoiler: it seems to work really well on human gut microbiomes, and only moderately well on soil microbiomes right now with some improvements in progress.
 
 Before you run the tutorial, you'll need to install QIIME 2, `q2-confluence`, and `mosh-sylph`.
@@ -62,7 +63,7 @@ md5sum sample-metadata.qza 16S/*.qza metagenome/*.qza reference/*
 > [!NOTE]
 > 🍎 macOS has no `md5sum`; run `md5 -r` with the same arguments, which prints the sums in the same form.
 
-The md5 sums and UUIDs should uniquely identifies artifacts.
+The md5 sums and UUIDs should uniquely identify artifacts.
 To list the artifact UUIDs, run:
 
 ```shell
@@ -96,12 +97,11 @@ qiime metadata tabulate \
 > For your own data, you can use sample metadata as a `.tsv` file ([format reference](https://use.qiime2.org/en/latest/references/metadata/)) or by importing it into an `ImmutableMetadata` artifact once (the import command is on the [data preparation page](data-preparation.md#sample-metadata)).
 > The artifact has a UUID, so provenance records which version of the metadata each result was made from; a TSV passed directly is recorded only by its contents.
 > Either way, the metadata contents are written into the provenance of every downstream result, so a metadata file must not hold anything that cannot travel with the artifacts.
-> Metadata in QIIME 2, including the artifact form, is described in the .
 
 ## Reference data
 
 📚 Both profile types are integrated into the common feature space of GTDB genomes (GTDB r232 is used in this tutorial).
-The amplicon features (ASVs) by closed-reference clustering against the 16S sequences of the GTDB species representatives, and the metagenome reads by sylph against the same genomes.
+The amplicon features (ASVs) are mapped by closed-reference clustering against the 16S sequences of the GTDB species representatives, and the metagenome reads by sylph against the same genomes.
 GTDB's bacterial tree is the phylogeny, and GTDB's genome taxonomy names the genomes.
 GTDB file preparation is discussed on the [data preparation page](data-preparation.md#reference).
 
@@ -233,7 +233,7 @@ No taxonomy or phylogenetic reconstruction step is needed: the genome IDs are th
 
 🔗 The two profiles enter as collections: each member is given as `key:path`, and the key names the profile type in every output.
 `summarize-inputs` takes the inputs of `integrate` and shows, before anything is merged, which sample IDs the profiles and the metadata share and how many genomes of each profile are tips of the tree.
-Any genome ids that are present in a table but not the tree are dropped (at this time, this includes all archaea).
+Any genome IDs that are present in a table but not the tree are dropped (at this time, this includes all archaea).
 
 ```shell
 # run time estimate: < 1 minute
@@ -244,7 +244,7 @@ qiime confluence summarize-inputs \
   --o-visualization genome/inputs-summary.qzv
 ```
 
-Samples are named `<sample-id>-<key>` to avoid collisions of sample ids.
+Samples are named `<sample-id>-<key>` to avoid collisions of sample IDs.
 The integrated metadata records `original-sample-id`, `study-id`, as well as the source's number of `features-before` and `features-after` the tree filter and their quotient `features-kept-share`, beside the study metadata.
 The metadata is given per profile type, under the table's key; one study profiled twice (as in the tutorial data) goes in under both keys.
 A profile that loses more than a tenth of its features to the tree filter raises a warning naming the likely causes (archaea against the bacterial tree, or a reference release mismatch); the counts are in the metadata either way.
@@ -431,10 +431,10 @@ qiime metadata tabulate \
 On the tutorial data the search returns six rows: the three *Escherichia coli* clusters of r232 (`s__Escherichia coli`, `coli_E` and `coli_F`), each found in the fresh excrement (1135D, adjusted ANI 94 to 98) and in the day-1 compost (DB47D, 94 to 99) at effective coverage of 0.06x to 0.18x, and in none of the eight later or soil samples: *E. coli* arrives with the feedstock and is gone from the compost by day 2.
 ⚠️ `query-to-metadata` fails when no genome matches the targets, so a search for an organism that is absent from every sample stops here rather than tabulating an empty table.
 
-## Worflow limitations
+## Workflow limitations
 
 CLAUDE: pull my content from the slides on this and add it here.
 
 ⚠️ Two limitations of this mapping are worth knowing.
 Only about half of the bacterial species representatives of GTDB r232 have a 16S sequence in the reference (88,481 of 189,801), so an ASV whose genome is among the rest can only land on a relative's genome, at a lower threshold.
-And among references with identical V4 regions, vsearch returns the first one at or above the threshold rather than a best or a consensus hit (`cluster-features-closed-reference` does not expose vsearch's `maxaccepts`), so the particular genome an ASV lands on is arbitrary within such a group; relatedness-based diversity metrics (weighted UniFrac, here) control for that a bit, the identity-based metrics (Bray-Curtis, here) do not.
+And among references with identical V4 regions, vsearch returns the first one at or above the threshold rather than a best or a consensus hit (`cluster-features-closed-reference` does not expose vsearch's `maxaccepts`), so the particular genome an ASV lands on is arbitrary within such a group; relatedness-based diversity metrics (weighted UniFrac, here) control for that a bit, but the identity-based metrics (Bray-Curtis, here) do not.
