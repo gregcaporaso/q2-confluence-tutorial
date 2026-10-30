@@ -1,0 +1,19 @@
+# GitHub Pages configuration (deployed from the main branch, root folder; no
+# workflow). Every page is rendered with the Cayman theme's default layout;
+# the theme shows `description` under the title on every page, which is where
+# the notice that the data are unpublished goes. The robots meta tag that keeps
+# the site out of search engines is in _includes/head-custom.html. GitHub
+# Pages' default plugins do the rest: Markdown files without front matter are
+# rendered, the first heading is the page title, and links to `*.md` files
+# become links to the rendered pages. README.md is skipped by that rule unless
+# it is listed under `include`. CLAUDE.md (instructions for Claude sessions) is
+# excluded, or it would be rendered as a page.
+title: thermo-hec tutorial
+description: "NOTICE PLACEHOLDER: @gregcaporaso writes the one-line notice that the data are shared for evaluation and not yet published."
+theme: jekyll-theme-cayman
+include:
+  - README.md
+exclude:
+  - LICENSE
+  - CITATION.cff
+  - CLAUDE.md
