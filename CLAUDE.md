@@ -43,14 +43,14 @@ The repository is nested inside the thermo-hec project (`~/0-projects/2026-09-16
  * The collection keys are `amplicon` and `metagenome`, so `amplicon:16S/...` differs from its directory: rachis-cli requires every collection key on the command line to be a Python identifier (letters, digits and underscores, no leading digit, no hyphen; `str.isidentifier()` in `rachis_cli/click/option.py`, `_split_and_validate_input_keys`), and `16S` is not one (bacon job 326 failed on it).
    The Artifact API has no such rule, so the plugins' tests do not catch it.
  * Hosted file names match the page's; `metagenome-reads-10p.qza` is the 10% read subset.
- * `README.md` stays minimal, modeled on q2-confluence's: title, alpha warning, one paragraph linking the site and the pages, the forum, and an AI disclosure dated as of its last update (keep it current).
+ * `README.md` stays minimal, modeled on q2-confluence's: title, the navigation line, alpha warning, one paragraph linking the site and the pages, the forum, and an AI disclosure dated as of its last update (keep it current).
 
 ## The site
 
  * GitHub Pages builds the site at https://gregcaporaso.github.io/q2-confluence-tutorial/ from `main` (root folder, no workflow) with Jekyll; live since 2026-10-30, when the repository went public (the record and the verification commands are in the parent's `coordination/distribution.md`).
    The theme is Primer, GitHub's plain Markdown look, chosen by @gregcaporaso over Cayman and over a MyST site like gut-to-soil's (which would need an Actions workflow, could not carry the robots tag, and would not render the `> [!NOTE]` boxes).
    `_config.yml` sets the theme, the `title` that Primer shows as a link home above every page but the landing page, and the notice as `description`, which Primer does not show on the page; `_includes/head-custom.html` adds `<meta name="robots" content="noindex, nofollow">`.
- * In place of a sidebar, `install.md`, `tutorial.md` and `data-preparation.md` carry a navigation line under their titles (Overview, Installation, Tutorial, Data preparation; the current page in bold, not linked); a new page gets the line and is added to the others'. The README's own paragraph links the pages.
+ * In place of a sidebar, every page carries a navigation line under its title (README, Installation, Tutorial, Data preparation; the current page in bold, not linked); a new page gets the line and is added to the others'.
  * `README.md` is the landing page, so readers see its alpha warning: there is no `index.md` (removed 2026-10-30 at @gregcaporaso's choice), and GitHub Pages' `jekyll-readme-index` renders the README as the index.
    Its "Read it at gregcaporaso.github.io/..." link then points at the page itself, which is harmless.
  * Pages are rendered without front matter, the first heading is the title, and links to `*.md` files become links to the rendered pages, so links work both on GitHub and on the site.

@@ -1,5 +1,7 @@
 # q2-confluence tutorial
 
+**README** · [Installation](install.md) · [Tutorial](tutorial.md) · [Data preparation](data-preparation.md)
+
 This tutorial and the [rachis](https://rachis.org) [plugins](https://news.rachis.org/en/latest/glossary/#term-plugin) it uses are in early testing (alpha release) phase.
 Commands will almost certainly change.
 Be skeptical of results - testing is still in progress.
