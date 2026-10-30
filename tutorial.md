@@ -284,6 +284,7 @@ The summaries so far are collected into one report, `upstream-report.qzv`, with 
 qiime tools make-report \
   --report-path upstream-report.qzv \
   16S/genome-table-summary.qzv \
+  wgs/sylph-stats.qzv \
   inputs-summary.qzv
 ```
 
