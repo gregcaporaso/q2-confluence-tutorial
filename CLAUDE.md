@@ -7,7 +7,7 @@ The repository is nested inside the thermo-hec project (`~/0-projects/2026-09-16
 
  * Every `shell` code block of `tutorial.md` is a command a reader runs, in order, in the directory the first block creates.
    The parent project's `slurm/tutorial.sbatch` extracts those blocks and runs them verbatim on bacon as the test of the page, so a block that only illustrates something does not belong on that page.
-   A full run downloads about 25 GB (most of it the sylph database) and took 32 min at 4.4 GB peak memory on a 16-core server (bacon job 325).
+   A full run downloads about 25 GB (19 GB of it the sylph database) and took 31 min on a 16-core server (bacon job 327); its peak memory, summed over a command's processes, is 14 GB in `classify-sklearn` with 8 jobs and about 5 GB without it.
  * A change inside a shell block is a command change: the page passes again only after a bacon run of a tarball of this repository at that commit (the parent's coordinator ships it).
    Text outside the shell blocks changes without a rerun.
  * `tutorial.sbatch`'s `READS` option replaces the line `wget -O metagenome/metagenome-reads-10p.qza ...` literally, so renaming that file means changing the script too.
@@ -28,8 +28,10 @@ The repository is nested inside the thermo-hec project (`~/0-projects/2026-09-16
 ## Where the numbers come from
 
  * The download table's md5s and UUIDs: the parent's `tutorial-data/README.md` for the study data and the two GTDB artifacts, the Zenodo record's file checksums for the SSU reference sequences, and SILVA's `.md5` file for the classifier.
- * The results sentences: @gregcaporaso's run of every command by hand on bacon on 2026-10-30 (QIIME 2 2026.10, q2-confluence 4177690, mosh-sylph 939a531), which matched bacon job 325.
- * The `# run time estimate` comments: the per-command start times of bacon job 325 (2026-10-28).
+ * The results sentences: @gregcaporaso's run of every command by hand on bacon on 2026-10-30 (QIIME 2 2026.10, q2-confluence 4177690, mosh-sylph 939a531), which matched bacon jobs 325 and 327 in every count and pseudo-F (the p-values are permutation estimates and vary by run).
+ * The `# run time estimate` and `# peak memory estimate` comments: bacon job 327 (2026-10-30, this repository at 8a0b25a), whose trace in the parent's `bacon/tutorial/tutorial-327.err` stamps each command's start and whose `tutorial-327-rss.tsv` samples the run's summed RSS every 2 s; a command's values span its start to the next command's.
+   The summed RSS is an upper bound where workers share pages; commands that finish within the 2 s sampling interval (`tools peek`, `cache-create`, the first `make-report`) are written as `< 1 GB` without a sample.
+   GNU time's maximum RSS in the job log (4.4 GB) is the largest single process and is not comparable.
  * The limitations section comes from the Limitations slide of the parent's deck (`figures/slides.yaml`).
 
 ## Layout

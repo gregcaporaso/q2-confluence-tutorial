@@ -35,7 +35,7 @@ At the bottom of this document [the known limitations](#workflow-limitations) of
 
 📁 Create a directory for the tutorial and change into it; every file below is written there.
 
-⏱️ The `# run time estimate` above each command is its wall time, rounded to minutes, in a run of this page on a 16-core Linux server with QIIME 2 2026.10 (2026-10-28).
+⏱️ The `# run time estimate` and `# peak memory estimate` above each command are its wall time, rounded to minutes, and its peak memory, summed over its processes, in a run of this page on a 16-core Linux server with QIIME 2 2026.10 (2026-10-30).
 
 ```shell
 mkdir confluence-tutorial
@@ -47,6 +47,7 @@ mkdir 16S metagenome reference genome
 
 ```shell
 # run time estimate: 3 minutes for the downloads together, most of it the 4.8 GB reads (depends on the connection)
+# peak memory estimate: < 1 GB
 D='https://drive.usercontent.google.com/download?export=download&confirm=t&id='
 wget -O sample-metadata.qza "${D}1PJQOCPLgOJ_Jeb-_ZmEN1enFzqLhbH5S"
 wget -O 16S/asv-table.qza "${D}1-HH4892h693WAQ37YvrBjV_3P7xA3UgF"
@@ -67,6 +68,8 @@ The md5 sums and UUIDs should uniquely identify artifacts.
 To list the artifact UUIDs, run:
 
 ```shell
+# run time estimate: < 1 minute
+# peak memory estimate: < 1 GB
 qiime tools peek sample-metadata.qza 16S/*.qza metagenome/*.qza reference/*
 ```
 
@@ -88,6 +91,7 @@ It is provided as an `ImmutableMetadata` artifact.
 
 ```shell
 # run time estimate: < 1 minute
+# peak memory estimate: about 1 GB
 qiime metadata tabulate \
   --m-input-file sample-metadata.qza \
   --o-visualization sample-metadata.qzv
@@ -112,9 +116,11 @@ The commands below keep the database and the read sketches in a cache called `ca
 
 ```shell
 # run time estimate: < 1 minute
+# peak memory estimate: < 1 GB
 qiime tools cache-create --cache cache
 
 # run time estimate: 9 minutes
+# peak memory estimate: about 5 GB
 qiime sylph fetch-database \
   --p-release 232 \
   --use-cache cache \
@@ -128,6 +134,7 @@ The SILVA classifier is used to find and remove organelle (mitochondria, chlorop
 
 ```shell
 # run time estimate: < 1 minute
+# peak memory estimate: about 14 GB with --p-n-jobs 8; it grows with the number of jobs
 qiime feature-classifier classify-sklearn \
   --i-classifier reference/silva-144-v4-classifier.qza \
   --i-reads 16S/asv-sequences.qza \
@@ -135,6 +142,7 @@ qiime feature-classifier classify-sklearn \
   --o-classification 16S/asv-taxonomy-silva.qza
 
 # run time estimate: < 1 minute
+# peak memory estimate: about 1 GB
 qiime taxa filter-table \
   --i-table 16S/asv-table.qza \
   --i-taxonomy 16S/asv-taxonomy-silva.qza \
@@ -143,6 +151,7 @@ qiime taxa filter-table \
   --o-filtered-table 16S/asv-table-noorganelles.qza
 
 # run time estimate: < 1 minute
+# peak memory estimate: about 1 GB
 qiime feature-table filter-seqs \
   --i-data 16S/asv-sequences.qza \
   --i-table 16S/asv-table-noorganelles.qza \
@@ -157,6 +166,7 @@ ASVs with no reference at the threshold are returned as the unmatched sequences 
 
 ```shell
 # run time estimate: < 1 minute
+# peak memory estimate: about 2 GB
 qiime vsearch cluster-features-closed-reference \
   --i-sequences 16S/asv-sequences-noorganelles.qza \
   --i-table 16S/asv-table-noorganelles.qza \
@@ -168,6 +178,7 @@ qiime vsearch cluster-features-closed-reference \
   --o-unmatched-sequences 16S/unmatched-asvs.qza
 
 # run time estimate: < 1 minute
+# peak memory estimate: about 1 GB
 qiime feature-table summarize \
   --i-table 16S/genome-table.qza \
   --m-metadata-file sample-metadata.qza \
@@ -188,6 +199,7 @@ sylph sketches the reads once per sample; the sketches serve every profile or qu
 
 ```shell
 # run time estimate: 4 minutes
+# peak memory estimate: about 2 GB
 qiime sylph sketch \
   --i-reads metagenome/metagenome-reads-10p.qza \
   --p-threads 16 \
@@ -201,6 +213,7 @@ qiime sylph sketch \
 
 ```shell
 # run time estimate: 1 minute
+# peak memory estimate: about 5 GB
 qiime sylph profile \
   --i-sketches cache:sketches \
   --i-database cache:sylph-gtdb-r232 \
@@ -209,6 +222,7 @@ qiime sylph profile \
   --o-profile metagenome/sylph-profile.qza
 
 # run time estimate: < 1 minute
+# peak memory estimate: about 1 GB
 qiime sylph profile-to-tables \
   --i-profile metagenome/sylph-profile.qza \
   --i-sketches cache:sketches \
@@ -221,6 +235,7 @@ The per-sample statistics are sample metadata and can be tabulated as such.
 
 ```shell
 # run time estimate: < 1 minute
+# peak memory estimate: about 1 GB
 qiime metadata tabulate \
   --m-input-file metagenome/sylph-stats.qza \
   --m-input-file sample-metadata.qza \
@@ -237,6 +252,7 @@ Any genome IDs that are present in a table but not the tree are dropped (at this
 
 ```shell
 # run time estimate: < 1 minute
+# peak memory estimate: about 1 GB
 qiime confluence summarize-inputs \
   --i-tables amplicon:16S/genome-table.qza metagenome:metagenome/sylph-taxonomic-abundance.qza \
   --i-tree reference/gtdb-r232-bac120-tree.qza \
@@ -251,6 +267,7 @@ A profile that loses more than a tenth of its features to the tree filter raises
 
 ```shell
 # run time estimate: < 1 minute
+# peak memory estimate: about 1 GB
 qiime confluence integrate \
   --i-tables amplicon:16S/genome-table.qza metagenome:metagenome/sylph-taxonomic-abundance.qza \
   --i-tree reference/gtdb-r232-bac120-tree.qza \
@@ -264,6 +281,7 @@ qiime confluence integrate \
 
 ```shell
 # run time estimate: < 1 minute
+# peak memory estimate: < 1 GB
 qiime tools make-report \
   --report-path genome/upstream-report.qzv \
   16S/genome-table-summary.qzv \
@@ -281,6 +299,7 @@ The merged relative table and the integrated metadata then go into any stock act
 
 ```shell
 # run time estimate: < 1 minute
+# peak memory estimate: about 1 GB
 qiime diversity beta-phylogenetic \
   --i-table genome/relative-table.qza \
   --i-phylogeny reference/gtdb-r232-bac120-tree.qza \
@@ -288,6 +307,7 @@ qiime diversity beta-phylogenetic \
   --o-distance-matrix genome/weighted-unifrac.qza
 
 # run time estimate: < 1 minute
+# peak memory estimate: about 1 GB
 qiime diversity beta-group-significance \
   --i-distance-matrix genome/weighted-unifrac.qza \
   --m-metadata-file genome/metadata.qza \
@@ -295,11 +315,13 @@ qiime diversity beta-group-significance \
   --o-visualization genome/weighted-unifrac-study-id.qzv
 
 # run time estimate: < 1 minute
+# peak memory estimate: about 1 GB
 qiime diversity pcoa \
   --i-distance-matrix genome/weighted-unifrac.qza \
   --o-pcoa genome/weighted-unifrac-pcoa.qza
 
 # run time estimate: < 1 minute
+# peak memory estimate: about 1 GB
 qiime vizard scatterplot-2d \
   --m-metadata-file genome/weighted-unifrac-pcoa.qza \
   --m-metadata-file genome/metadata.qza \
@@ -310,6 +332,7 @@ qiime vizard scatterplot-2d \
   --o-visualization genome/weighted-unifrac-pcoa.qzv
 
 # run time estimate: < 1 minute
+# peak memory estimate: about 1 GB
 qiime taxa barplot2 \
   --i-table genome/relative-table.qza \
   --i-taxonomy reference/gtdb-r232-bac120-taxonomy.qza \
@@ -317,6 +340,7 @@ qiime taxa barplot2 \
   --o-visualization genome/taxa-barplot.qzv
 
 # run time estimate: < 1 minute
+# peak memory estimate: < 1 GB
 qiime tools make-report \
   --report-path genome/downstream-report.qzv \
   genome/weighted-unifrac-study-id.qzv \
@@ -336,6 +360,7 @@ The paired report below is what paired samples buy on top: it keeps only the sam
 
 ```shell
 # run time estimate: 1 minute
+# peak memory estimate: about 1 GB
 qiime confluence paired-report \
   --i-table genome/relative-table.qza \
   --i-tree reference/gtdb-r232-bac120-tree.qza \
@@ -365,6 +390,7 @@ The paired report then runs as above, at genus.
 mkdir genus
 
 # run time estimate: < 1 minute
+# peak memory estimate: about 1 GB
 qiime taxa collapse \
   --i-table genome/relative-table.qza \
   --i-taxonomy reference/gtdb-r232-bac120-taxonomy.qza \
@@ -372,6 +398,7 @@ qiime taxa collapse \
   --o-collapsed-table genus/relative-table.qza
 
 # run time estimate: < 1 minute
+# peak memory estimate: about 2 GB
 qiime confluence gtdb-tree-collapse \
   --i-tree reference/gtdb-r232-bac120-tree.qza \
   --i-taxonomy reference/gtdb-r232-bac120-taxonomy.qza \
@@ -380,6 +407,7 @@ qiime confluence gtdb-tree-collapse \
   --o-collapse-log genus/gtdb-r232-genus-tree-collapse-log.qza
 
 # run time estimate: 1 minute
+# peak memory estimate: about 1 GB
 qiime confluence paired-report \
   --i-table genus/relative-table.qza \
   --i-tree genus/gtdb-r232-genus-tree.qza \
@@ -409,6 +437,7 @@ At effective coverage below about 0.1x the adjusted ANI and its 5 to 95 percenti
 mkdir genome/metagenome-containment-analysis
 
 # run time estimate: 1 minute
+# peak memory estimate: about 5 GB
 qiime sylph query \
   --i-sketches cache:sketches \
   --i-database cache:sylph-gtdb-r232 \
@@ -416,6 +445,7 @@ qiime sylph query \
   --o-query genome/metagenome-containment-analysis/sylph-query.qza
 
 # run time estimate: < 1 minute
+# peak memory estimate: about 1 GB
 qiime sylph query-to-metadata \
   --i-query genome/metagenome-containment-analysis/sylph-query.qza \
   --i-taxonomy reference/gtdb-r232-bac120-taxonomy.qza \
@@ -423,6 +453,7 @@ qiime sylph query-to-metadata \
   --o-query-metadata genome/metagenome-containment-analysis/escherichia-coli-query.qza
 
 # run time estimate: < 1 minute
+# peak memory estimate: about 1 GB
 qiime metadata tabulate \
   --m-input-file genome/metagenome-containment-analysis/escherichia-coli-query.qza \
   --o-visualization genome/metagenome-containment-analysis/escherichia-coli-query.qzv
