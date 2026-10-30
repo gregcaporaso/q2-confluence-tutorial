@@ -61,7 +61,7 @@ qiime confluence gtdb-tree-collapse \
 
 ## Amplicon data
 
-To prepare your own amplicon data, we recommend the [gut-to-soil tutorial](https://amplicon-docs.qiime2.org/en/stable/tutorials/gut-to-soil/), the standard [QIIME 2](https://news.rachis.org/en/latest/glossary/#term-qiime-2) walk-through from sequencing reads to the ASV table and ASV sequences that this tutorial starts from.
+To prepare your own amplicon data, we recommend the [gut-to-soil tutorial](https://amplicon-docs.qiime2.org/en/stable/tutorials/gut-to-soil/), the standard [QIIME 2](https://news.rachis.org/en/latest/glossary/#term-qiime-2) walk-through from sequencing reads to the ASV table and ASV sequences that this tutorial starts from and beyond.
 
 The tutorial's amplicons are of the 16S rRNA V4 region (primers 515F/806R), sequenced on a paired-end Illumina run of 199 [samples](https://news.rachis.org/en/latest/glossary/#term-sample).
 The reads were imported into QIIME 2 (the tutorial's 16S artifacts descend from the imported artifact, UUID `c25c70e1-0209-4b88-bfec-db2f815808be`).
