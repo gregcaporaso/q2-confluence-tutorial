@@ -292,15 +292,9 @@ qiime tools make-report \
 
 Nothing up to this point needs paired samples.
 `integrate` renames every sample of every profile type to `<sample-id>-<key>` whether or not the other type has a sample of the same ID, so two studies with no sample IDs in common integrate just the same, and `original-sample-id` keeps the input ID.
-The merged relative table and the integrated metadata then go into any stock action that takes them: here Bray-Curtis and weighted UniFrac distances between all merged samples, a PERMANOVA of the profile types on the latter, its ordination as a PCoA scatter plot coloured by profile type (the PCoA result is metadata, so it merges with the integrated metadata on the command line), and a taxa bar plot of the merged table, which GTDB's taxonomy lets you collapse to any rank and which can be sorted and coloured by the integrated metadata.
+The merged relative table and the integrated metadata then go into any stock action that takes them: here weighted UniFrac distances between all merged samples, a PERMANOVA of the profile types on them, their ordination as a PCoA scatter plot coloured by profile type (the PCoA result is metadata, so it merges with the integrated metadata on the command line), and a taxa bar plot of the merged table, which GTDB's taxonomy lets you collapse to any rank and which can be sorted and coloured by the integrated metadata.
 
 ```shell
-# run time estimate: < 1 minute
-qiime diversity beta \
-  --i-table genome/relative-table.qza \
-  --p-metric braycurtis \
-  --o-distance-matrix genome/bray-curtis.qza
-
 # run time estimate: < 1 minute
 qiime diversity beta-phylogenetic \
   --i-table genome/relative-table.qza \
