@@ -38,6 +38,7 @@ The commands assume an environment with both plugins installed ([README](README.
 
 Create a directory for the tutorial and change into it; every file below is written there.
 The amplicon, metagenome, reference and integration files get a subdirectory each, because QIIME 2 does not create the directory of an output.
+The `# run time estimate` above each command is its wall time, rounded to minutes, in a run of this page on a 16-core Linux server with QIIME 2 2026.10 (2026-10-28).
 
 ```shell
 mkdir confluence-tutorial
@@ -51,6 +52,7 @@ Every file the tutorial uses: the study data (the sample metadata as an `Immutab
 The sylph database is fetched by an action below, not by `wget`.
 
 ```shell
+# run time estimate: 3 minutes for the downloads together, most of it the 4.8 GB reads (depends on the connection)
 D='https://drive.usercontent.google.com/download?export=download&confirm=t&id='
 wget -O sample-metadata.qza "${D}1PJQOCPLgOJ_Jeb-_ZmEN1enFzqLhbH5S"
 wget -O 16S/asv-table.qza "${D}1-HH4892h693WAQ37YvrBjV_3P7xA3UgF"
@@ -85,6 +87,7 @@ The sample metadata of the ten tutorial samples: bin location, sample type, comp
 It is provided as an `ImmutableMetadata` artifact, `sample-metadata.qza`, which any action that takes metadata accepts in place of a TSV.
 
 ```shell
+# run time estimate: < 1 minute
 qiime metadata tabulate \
   --m-input-file sample-metadata.qza \
   --o-visualization sample-metadata.qzv
@@ -118,8 +121,10 @@ Until then, a GlobDB database can be used by downloading it, converting it with 
 The [mosh-sylph README](https://github.com/gregcaporaso/mosh-sylph#types-and-formats) has the commands.
 
 ```shell
+# run time estimate: < 1 minute
 qiime tools cache-create --cache cache
 
+# run time estimate: 9 minutes
 qiime sylph fetch-database \
   --p-release 232 \
   --use-cache cache \
@@ -132,12 +137,14 @@ The amplicon side starts from the denoised ASV table and sequences of the ten sa
 The SILVA classifier is used only to find organelle (mitochondria, chloroplasts) and other eukaryotic sequences, which the GTDB reference cannot name; they are removed with the SILVA taxonomy, and the ASV sequences are restricted to the features that remain, which closed-reference clustering requires.
 
 ```shell
+# run time estimate: < 1 minute
 qiime feature-classifier classify-sklearn \
   --i-classifier reference/silva-144-v4-classifier.qza \
   --i-reads 16S/asv-sequences.qza \
   --p-n-jobs 8 \
   --o-classification 16S/asv-taxonomy-silva.qza
 
+# run time estimate: < 1 minute
 qiime taxa filter-table \
   --i-table 16S/asv-table.qza \
   --i-taxonomy 16S/asv-taxonomy-silva.qza \
@@ -145,6 +152,7 @@ qiime taxa filter-table \
   --p-mode contains \
   --o-filtered-table 16S/asv-table-noorganelles.qza
 
+# run time estimate: < 1 minute
 qiime feature-table filter-seqs \
   --i-data 16S/asv-sequences.qza \
   --i-table 16S/asv-table-noorganelles.qza \
@@ -156,6 +164,7 @@ The clustered table is keyed by GTDB genome accessions (`RS_GCF_...`, `GB_GCA_..
 ASVs with no reference at the threshold are returned as the unmatched sequences and leave the analysis.
 
 ```shell
+# run time estimate: < 1 minute
 qiime vsearch cluster-features-closed-reference \
   --i-sequences 16S/asv-sequences-noorganelles.qza \
   --i-table 16S/asv-table-noorganelles.qza \
@@ -183,6 +192,7 @@ The metagenome side starts from paired-end reads that are already trimmed, free 
 sylph sketches the reads once per sample; the sketches serve every profile or query against any database, so they go into the cache too.
 
 ```shell
+# run time estimate: 4 minutes
 qiime sylph sketch \
   --i-reads wgs/wgs-subset-reads.qza \
   --p-threads 16 \
@@ -196,6 +206,7 @@ Reading `cache:` inputs needs no extra option; `--use-cache` above mattered only
 No taxonomy step is needed: the genome IDs are those of GTDB's taxonomy and tree.
 
 ```shell
+# run time estimate: 1 minute
 qiime sylph profile \
   --i-sketches cache:sketches \
   --i-database cache:sylph-gtdb-r232 \
@@ -203,6 +214,7 @@ qiime sylph profile \
   --p-estimate-unknown \
   --o-profile wgs/sylph-profile.qza
 
+# run time estimate: < 1 minute
 qiime sylph profile-to-tables \
   --i-profile wgs/sylph-profile.qza \
   --i-sketches cache:sketches \
@@ -214,6 +226,7 @@ qiime sylph profile-to-tables \
 The per-sample statistics are metadata and tabulate like any other; the study metadata is given last, so its columns follow the statistics in the table.
 
 ```shell
+# run time estimate: < 1 minute
 qiime metadata tabulate \
   --m-input-file wgs/sylph-stats.qza \
   --m-input-file sample-metadata.qza \
@@ -228,6 +241,7 @@ The two profiles enter as collections: each member is given as `key:path`, and t
 `summarize-inputs` takes the inputs of `integrate` and shows, before anything is merged, which sample IDs the profiles and the metadata share and how many genomes of each profile are tips of the tree.
 
 ```shell
+# run time estimate: < 1 minute
 qiime confluence summarize-inputs \
   --i-tables amplicon:16S/genome-table.qza metagenome:wgs/sylph-taxonomic-abundance.qza \
   --i-tree reference/gtdb-r232-bac120-tree.qza \
@@ -244,6 +258,7 @@ A profile that loses more than a tenth of its features to the tree filter raises
 On the tutorial data the amplicon profile keeps 3,577 of its 3,611 genomes and the metagenome profile 1,313 of 1,322 (the nine archaea), so no warning is raised.
 
 ```shell
+# run time estimate: < 1 minute
 qiime confluence integrate \
   --i-tables amplicon:16S/genome-table.qza metagenome:wgs/sylph-taxonomic-abundance.qza \
   --i-tree reference/gtdb-r232-bac120-tree.qza \
@@ -259,27 +274,32 @@ Nothing up to this point needs paired samples.
 The merged relative table and the integrated metadata then go into any stock action that takes them: here Bray-Curtis and weighted UniFrac distances between all merged samples, a PERMANOVA of the profile types on the latter, its ordination as a PCoA scatter plot coloured by profile type (the PCoA result is metadata, so it merges with the integrated metadata on the command line), and a taxa bar plot of the merged table, which GTDB's taxonomy lets you collapse to any rank and which can be sorted and coloured by the integrated metadata.
 
 ```shell
+# run time estimate: < 1 minute
 qiime diversity beta \
   --i-table genome/relative-table.qza \
   --p-metric braycurtis \
   --o-distance-matrix genome/bray-curtis.qza
 
+# run time estimate: < 1 minute
 qiime diversity beta-phylogenetic \
   --i-table genome/relative-table.qza \
   --i-phylogeny reference/gtdb-r232-bac120-tree.qza \
   --p-metric weighted_unifrac \
   --o-distance-matrix genome/weighted-unifrac.qza
 
+# run time estimate: < 1 minute
 qiime diversity beta-group-significance \
   --i-distance-matrix genome/weighted-unifrac.qza \
   --m-metadata-file genome/metadata.qza \
   --m-metadata-column study-id \
   --o-visualization genome/weighted-unifrac-study-id.qzv
 
+# run time estimate: < 1 minute
 qiime diversity pcoa \
   --i-distance-matrix genome/weighted-unifrac.qza \
   --o-pcoa genome/weighted-unifrac-pcoa.qza
 
+# run time estimate: < 1 minute
 qiime vizard scatterplot-2d \
   --m-metadata-file genome/weighted-unifrac-pcoa.qza \
   --m-metadata-file genome/metadata.qza \
@@ -289,6 +309,7 @@ qiime vizard scatterplot-2d \
   --p-title 'Weighted UniFrac PCoA, GTDB genomes' \
   --o-visualization genome/weighted-unifrac-pcoa.qzv
 
+# run time estimate: < 1 minute
 qiime taxa barplot2 \
   --i-table genome/relative-table.qza \
   --i-taxonomy reference/gtdb-r232-bac120-taxonomy.qza \
@@ -303,6 +324,7 @@ The paired report below is what paired samples buy on top: it keeps only the sam
 On the samples both profile types cover, `paired-report` computes Bray-Curtis and weighted UniFrac on the proportions as they are (no rarefaction, so no presence-based metric), with PERMANOVA by profile type and a PCoA scatter plot for each; a random forest classifying the profile type with nested cross-validation; and a per-feature summary, tabulated over every genome with its taxonomy beside it and also returned as metadata.
 
 ```shell
+# run time estimate: 1 minute
 qiime confluence paired-report \
   --i-table genome/relative-table.qza \
   --i-tree reference/gtdb-r232-bac120-tree.qza \
@@ -331,12 +353,14 @@ The paired report then runs as above, at genus.
 ```shell
 mkdir genus
 
+# run time estimate: < 1 minute
 qiime taxa collapse \
   --i-table genome/relative-table.qza \
   --i-taxonomy reference/gtdb-r232-bac120-taxonomy.qza \
   --p-level 6 \
   --o-collapsed-table genus/relative-table.qza
 
+# run time estimate: < 1 minute
 qiime confluence gtdb-tree-collapse \
   --i-tree reference/gtdb-r232-bac120-tree.qza \
   --i-taxonomy reference/gtdb-r232-bac120-taxonomy.qza \
@@ -344,6 +368,7 @@ qiime confluence gtdb-tree-collapse \
   --o-collapsed-tree genus/gtdb-r232-genus-tree.qza \
   --o-collapse-log genus/gtdb-r232-genus-tree-collapse-log.qza
 
+# run time estimate: 1 minute
 qiime confluence paired-report \
   --i-table genus/relative-table.qza \
   --i-tree genus/gtdb-r232-genus-tree.qza \
@@ -370,18 +395,21 @@ Here the search is for *Escherichia coli*; the text matches every GTDB species c
 At effective coverage below about 0.1x the adjusted ANI and its 5 to 95 percentile interval overshoot (the 95th percentile can exceed 100); read such rows with the containment index and the naive ANI.
 
 ```shell
+# run time estimate: 1 minute
 qiime sylph query \
   --i-sketches cache:sketches \
   --i-database cache:sylph-gtdb-r232 \
   --p-threads 16 \
   --o-query wgs/sylph-query.qza
 
+# run time estimate: < 1 minute
 qiime sylph query-to-metadata \
   --i-query wgs/sylph-query.qza \
   --i-taxonomy reference/gtdb-r232-bac120-taxonomy.qza \
   --p-targets 's__Escherichia coli' \
   --o-query-metadata wgs/escherichia-coli-query.qza
 
+# run time estimate: < 1 minute
 qiime metadata tabulate \
   --m-input-file wgs/escherichia-coli-query.qza \
   --o-visualization wgs/escherichia-coli-query.qzv
