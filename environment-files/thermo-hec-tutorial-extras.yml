@@ -3,8 +3,8 @@
 # environment): sylph (the sylph plugin runs it) and the two plugins the
 # tutorial uses, installed from GitHub (main; the pins were dropped on
 # 2026-10-28 as the interfaces stabilized). Applied with
-# `conda env update -n rachis-qiime2-2026.10 --file <this file>` (README,
-# "Create the environment").
+# `conda env update -n rachis-qiime2-2026.10 --file <this file>`
+# (install.md).
 # Both plugin repositories are private at the time of writing, so the pip
 # installs below need GitHub credentials until they are made public.
 channels:
