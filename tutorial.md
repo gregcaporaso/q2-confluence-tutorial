@@ -31,6 +31,18 @@ You can see how the tutorial data was prepared [here](data-preparation.md).
 
 At the bottom of this document [the known limitations](#workflow-limitations) of this workflow are described.
 
+## Requirements
+
+** GREG TO REVIEW: this section was drafted by Claude from the run of this page on bacon on 2026-10-30 (job 327). **
+
+💻 The tutorial was tested on a 16-core Linux server, where all of its commands together took about 30 minutes, about 11 of them downloading the data and the sylph database.
+You'll need:
+
+ * **Memory**: about 14 GB for `classify-sklearn`, which runs with `--p-n-jobs 8` and whose memory grows with the number of jobs; lower `--p-n-jobs` if you have less.
+   Every other command needs about 5 GB or less, most of them about 1 GB.
+ * **CPUs**: the sylph commands run with `--p-threads 16`, and `classify-sklearn`, `cluster-features-closed-reference` and `paired-report` with 8 jobs or threads; with fewer cores, lower those values, and the commands take longer.
+ * **Disk space and downloads**: about 25 GB is downloaded (19 GB of it the sylph database, 4.5 GB the metagenome reads), the finished tutorial directory takes about 25 GB, and QIIME 2 writes temporary files beyond that while it runs.
+
 ## Setup
 
 📁 Create a directory for the tutorial and change into it; every file below is written there.

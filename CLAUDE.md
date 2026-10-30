@@ -20,6 +20,7 @@ The repository is nested inside the thermo-hec project (`~/0-projects/2026-09-16
  * The text of the pages was drafted by Claude; @gregcaporaso is rewriting it (from 2026-10-30).
    Sessions fix commands and proof-read; they change text only when asked.
  * In @gregcaporaso's edits, `CLAUDE:` marks a request to Claude (do it and remove the note) and `GREG ...` marks their own place in a review (leave it).
+   Text Claude drafts at their request carries a `** GREG TO REVIEW: ... **` line, which they remove once they have reviewed it (the Requirements section of `tutorial.md`, 2026-10-30).
    The `@gregcaporaso, reminder for the prose` HTML comment in `tutorial.md` is a note for the rewrite; the pages hold no other comments (history lives in git).
  * Emoji open a sentence of running text, about one per section, with the same emoji for the same thing on all pages (🧪 the 16S data, 🦠 the metagenome, 🌳 the tree, 🏷️ a taxonomic level, 🗂️ the metadata, 📊 a report, ⚠️ a caveat).
    Never in headings, whose anchors are link targets (GitHub and the Pages site would each drop the emoji and slug the rest differently), and never in shell blocks, which are commands.
