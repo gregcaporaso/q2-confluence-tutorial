@@ -65,7 +65,7 @@ To prepare your own amplicon data, we recommend the [gut-to-soil tutorial](https
 
 The tutorial's amplicons are of the 16S rRNA V4 region (primers 515F/806R), sequenced on a paired-end Illumina run of 199 [samples](https://news.rachis.org/en/latest/glossary/#term-sample).
 The reads were imported into QIIME 2 (the tutorial's 16S artifacts descend from the imported artifact, UUID `c25c70e1-0209-4b88-bfec-db2f815808be`).
-Cutadapt removed the PCR primers, which are not part of the sequenced organisms' DNA, and the runs of G that two-colour Illumina chemistry writes where the signal runs out.
+Cutadapt removed the PCR primers, which are not part of the sequenced organisms' DNA, and the runs of G that two-color Illumina chemistry writes where the signal runs out.
 DADA2 then corrected sequencing errors, joined the read pairs, removed chimeras, and counted the resulting amplicon sequence variants (ASVs) in each sample.
 Finally, the sequencing run's [sample IDs](https://news.rachis.org/en/latest/glossary/#term-sample-identifier) were replaced with the study's, and the table and sequences were restricted to the ten samples that also have metagenome data.
 The provenance of the hosted artifacts records every step with its [parameters](https://news.rachis.org/en/latest/glossary/#term-parameter).

@@ -29,7 +29,7 @@ You can see how the tutorial data was prepared [here](data-preparation.md).
 
 **Note**: The prose in this tutorial is still a work in progress and is pretty sparse at the moment.
 
-At the bottom of this document [the known limitations](#workflow-limitations) of this workflow are described.
+Near the end of this document [the known limitations](#workflow-limitations) of this workflow are described.
 
 ## Requirements
 
@@ -119,7 +119,7 @@ The amplicon features (ASVs) are mapped by closed-reference clustering against t
 GTDB's bacterial tree is the phylogeny, and GTDB's genome taxonomy names the genomes.
 GTDB file preparation is discussed on the [data preparation page](data-preparation.md#reference).
 
-The metagenome reads are profiled with sylph through the `sylph` plugin (mosh-sylph), thin wrappers around sylph.
+The metagenome reads are profiled with sylph through the `sylph` plugin (mosh-sylph), a thin wrapper around sylph.
 The sylph database of the GTDB r232 species representatives is about 20 GB, and every [action](https://news.rachis.org/en/latest/glossary/#term-action) that reads a `.qza` file unzips it first.
 An [artifact cache](https://use.qiime2.org/en/stable/tutorials/use-the-artifact-cache/) keeps artifacts unzipped under a key, referenced as `cache:key` in place of a file path, so the large artifacts are written once and never zipped or unzipped again.
 The commands below keep the database and the read sketches in a cache called `cache` inside the tutorial directory and pass `--use-cache cache` to the actions that write them.
@@ -305,7 +305,7 @@ Now, we integrate the amplicon and metagenome tables into one relative abundance
 
 `integrate` renames every sample of every profile type to `<sample-id>-<key>`.
 The merged relative table and the integrated metadata then go into any stock action that takes them.
-Here, after integration, as an example we compute weighted UniFrac distances between all samples, a PERMANOVA of the profile types based on the weighted UniFrac distances, their ordination as a PCoA scatter plot coloured by profile type (the PCoA result is metadata, so it merges with the integrated metadata on the command line), and a taxa bar plot of the merged table, which GTDB's taxonomy lets you collapse to any rank and which can be sorted and coloured by the integrated metadata.
+Here, after integration, as an example we compute weighted UniFrac distances between all samples, a PERMANOVA of the profile types based on the weighted UniFrac distances, their ordination as a PCoA scatter plot colored by profile type (the PCoA result is metadata, so it merges with the integrated metadata on the command line), and a taxa bar plot of the merged table, which GTDB's taxonomy lets you collapse to any rank and which can be sorted and colored by the integrated metadata.
 
 ```shell
 # run time estimate: < 1 minute
@@ -360,14 +360,14 @@ qiime tools make-report \
 
 `genome/downstream-report.qzv` collects the three [visualizations](https://news.rachis.org/en/latest/glossary/#term-visualization) of this section in one report.
 
-When you're simply integrating your own samples for analysis you're done at this point.
-When you have paired samples (i.e., the same samples sequenced with both 16S and metagenomics) you can continue on to the next step to assess how well they align with each other.
+When you're simply integrating your own samples for analysis, you're done at this point.
+When you have paired samples (i.e., the same samples sequenced with both 16S and metagenomics), you can continue on to the next step to assess how well they align with each other.
 
 ## Paired-sample report
 
 On the samples both profile types cover, `paired-report` computes Bray-Curtis and weighted UniFrac on the proportions as they are, with PERMANOVA by profile type and a PCoA scatter plot for each; a random forest classifying the profile type with nested cross-validation; and a per-feature summary, tabulated over every genome with its taxonomy beside it and also returned as metadata.
 
-Normalizing the sequencing depth (e.g., with [rarefaction](https://news.rachis.org/en/latest/glossary/#term-rarefaction) is not worked out done yet (see [the known limitations](#workflow-limitations) section below).
+Normalizing the sequencing depth (e.g., with [rarefaction](https://news.rachis.org/en/latest/glossary/#term-rarefaction)) is not worked out yet (see [the known limitations](#workflow-limitations) section below).
 
 ```shell
 # run time estimate: 1 minute
@@ -444,7 +444,7 @@ Because both comparisons are at genus level, the difference comes from how the A
 ## Have fun! ⛷️
 
 Ok, that's it for the tutorial for now!
-Don't forget to read the [the known limitations](#workflow-limitations) section below.
+Don't forget to read [the known limitations](#workflow-limitations) section below.
 
 Reach out to @gregcaporaso if you have questions, suggestions, or if you notice anything strange!
 
