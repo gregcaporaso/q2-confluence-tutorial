@@ -4,5 +4,6 @@ title: "q2-confluence tutorial: integrating 16S and metagenome profiles in the f
 authors:
   - family-names: Caporaso
     given-names: Greg
+    orcid: "https://orcid.org/0000-0002-8865-1670"
 repository-code: "https://github.com/gregcaporaso/q2-confluence-tutorial"
 license: BSD-3-Clause
