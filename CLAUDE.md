@@ -18,6 +18,8 @@ The repository is nested inside the thermo-hec project (`~/0-projects/2026-09-16
  * The text of both pages was drafted by Claude; @gregcaporaso is rewriting it (from 2026-10-30).
    Sessions fix commands and proof-read; they change text only when asked.
  * The two `@gregcaporaso, reminder for the prose` HTML comments in `tutorial.md` are notes for that rewrite; the pages hold no other comments (history lives in git).
+ * Emoji open a sentence of running text, about one per section, with the same emoji for the same thing on both pages (🧪 the 16S data, 🦠 the metagenome, 🌳 the tree, 🏷️ a taxonomic level, 🗂️ the metadata, 📊 a report, ⚠️ a caveat).
+   Never in headings, whose anchors are link targets (GitHub and the Pages site would each drop the emoji and slug the rest differently), and never in shell blocks, which are commands.
  * Linked anchors: `data-preparation.md#reference`, `#amplicon-data`, `#metagenome-data` and `#sample-metadata`, and `tutorial.md#a-taxonomic-level-instead-of-genomes`; renaming one of those headings means updating its links.
 
 ## Where the numbers come from

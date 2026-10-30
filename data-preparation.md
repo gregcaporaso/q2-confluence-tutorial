@@ -1,11 +1,11 @@
 # How the tutorial data were prepared
 
-None of this is part of the tutorial: it records how the artifacts the [tutorial](tutorial.md) downloads were produced, so that the same can be done for another data set.
+📝 None of this is part of the tutorial: it records how the artifacts the [tutorial](tutorial.md) downloads were produced, so that the same can be done for another data set.
 Every step is also in the provenance of the artifacts themselves.
 
 ## Reference
 
-Two reference artifacts are hosted with the study data: GTDB's r232 bacterial tree and genome taxonomy, imported from the files GTDB publishes with the commands below.
+🌳 Two reference artifacts are hosted with the study data: GTDB's r232 bacterial tree and genome taxonomy, imported from the files GTDB publishes with the commands below.
 The other references are not re-hosted: the tutorial fetches the GTDB r232 16S reference sequences from the rachis Zenodo record (the training data of that record's GTDB classifier), the SILVA 144 V4 uniform classifier from SILVA, and the sylph database from the sylph authors with the `sylph` plugin's `fetch-database`.
 
 The tree is imported through the `confluence` plugin's `GTDBNewickFormat`, which drops the quoted root label without a branch length that GTDB's Newick file ends in (`'100:d__Bacteria'`), because UniFrac's parser aborts on it; the GTDB file itself is unchanged and its md5 is in the artifact's provenance.
@@ -47,7 +47,7 @@ qiime tools import \
   --output-path gtdb-r232-bac120-taxonomy.qza
 ```
 
-For an analysis at a taxonomic level rather than in the genome space (the merged table collapsed with `taxa collapse`), the tree is collapsed once per release and level with `gtdb-tree-collapse`, on the tree imported as above; on r232 each collapse takes about ten seconds (34,834 genera, 6,048 families).
+🏷️ For an analysis at a taxonomic level rather than in the genome space (the merged table collapsed with `taxa collapse`), the tree is collapsed once per release and level with `gtdb-tree-collapse`, on the tree imported as above; on r232 each collapse takes about ten seconds (34,834 genera, 6,048 families).
 Each collapse log is feature metadata keyed by the collapsed tip names: the node's name in the GTDB tree, the number of genomes it stands for and their accessions (`qiime metadata tabulate` views it).
 
 ```shell
@@ -61,7 +61,7 @@ qiime confluence gtdb-tree-collapse \
 
 ## Amplicon data
 
-The 16S rRNA V4 amplicons (515F/806R) of the study were sequenced on a paired-end Illumina run of 199 samples.
+🧪 The 16S rRNA V4 amplicons (515F/806R) of the study were sequenced on a paired-end Illumina run of 199 samples.
 The reads were imported from the run's Casava 1.8 fastq directory into the artifact the tutorial's 16S artifacts descend from (UUID `c25c70e1-0209-4b88-bfec-db2f815808be`), primer-trimmed with cutadapt, denoised with DADA2, renamed to the study's sample IDs and restricted to the ten samples with a metagenome profile.
 For your own demultiplexed paired-end fastq files, [fq-manifestor](https://gregcaporaso.github.io/fq-manifestor-web/) builds the manifest file from which `qiime tools import` makes such a `demux.qza` (the metagenome reads below were imported that way); `demux summarize` shows the read counts and the per-position quality from which DADA2's truncation lengths are chosen.
 
@@ -77,7 +77,7 @@ qiime demux summarize \
   --o-visualization 16S-demux.qzv
 ```
 
-One cutadapt pass removes the primers from the 5' end of each read and trims the poly-G tails that two-colour Illumina chemistry writes where the signal runs out (`--p-nextseq-trim 1`: trailing Gs and bases below quality 1, leaving quality filtering to DADA2).
+✂️ One cutadapt pass removes the primers from the 5' end of each read and trims the poly-G tails that two-colour Illumina chemistry writes where the signal runs out (`--p-nextseq-trim 1`: trailing Gs and bases below quality 1, leaving quality filtering to DADA2).
 DADA2 then discards every read shorter than its truncation length, so reads that were mostly G leave there.
 The primers' reverse complements are not searched at the 3' end, because the reads are truncated at 240 bases, before the far primer at the end of the V4 insert of about 253 bases.
 The trimming statistics give, per sample, the share of reads in which a primer was found; a low share points at the wrong primers or at reads from which the sequencing provider already removed them.
@@ -128,12 +128,12 @@ qiime feature-table filter-seqs \
 ```
 
 The hosted artifacts were made in April 2026 with three cutadapt passes that their provenance records: the primers, with their reverse complements as 3' adapters (`--p-times 2`); the same again with `--p-nextseq-trim 1`; and a pass discarding reads that contain nine Gs in a row (`--p-anywhere-f`/`-r GGGGGGGGG --p-discard-trimmed`).
-The single pass above is meant to do the same work but has not been run on these data, so its DADA2 output would differ slightly from the hosted artifacts.
+⚠️ The single pass above is meant to do the same work but has not been run on these data, so its DADA2 output would differ slightly from the hosted artifacts.
 The organelle filter and the closed-reference clustering are part of the tutorial, because they are what a reader runs on their own data; the Bacteria filter that preceded `integrate` until 2026-10-23 is gone, since `integrate` keeps only the genomes that are tips of the tree.
 
 ## Metagenome data
 
-The metagenome reads of the same ten samples were imported from a fastq manifest (which [fq-manifestor](https://gregcaporaso.github.io/fq-manifestor-web/) makes) into the artifact the tutorial's reads descend from (UUID `ecb81f0a-0a5a-4dec-a2cb-44ee28e53940`), trimmed with fastp, cleared of the run's control samples, cleared of human reads with the MOSHPIT human pangenome filter, and subsampled to 10%.
+🦠 The metagenome reads of the same ten samples were imported from a fastq manifest (which [fq-manifestor](https://gregcaporaso.github.io/fq-manifestor-web/) makes) into the artifact the tutorial's reads descend from (UUID `ecb81f0a-0a5a-4dec-a2cb-44ee28e53940`), trimmed with fastp, cleared of the run's control samples, cleared of human reads with the MOSHPIT human pangenome filter, and subsampled to 10%.
 The subset holds 2.4 to 4.8 million read pairs per sample (median 4.1 million); at that depth the sylph profile is indistinguishable from the full depth by weighted and unweighted UniFrac.
 The hosted reads artifact carries the provenance of every step.
 
@@ -168,11 +168,11 @@ qiime demux subsample-paired \
   --o-subsampled-sequences metagenome-reads-10p.qza
 ```
 
-The human pangenome index downloads GRCh38 and the HPRC pangenome and takes hours the first time (on a 16-core server: 4 h to build at 50 GB peak, then 5 h 42 min to filter 393 million pairs at 58 GB peak, removing 3.8% of them); pass `--i-index human-pangenome-bowtie2.qza` on later runs.
+⏳ The human pangenome index downloads GRCh38 and the HPRC pangenome and takes hours the first time (on a 16-core server: 4 h to build at 50 GB peak, then 5 h 42 min to filter 393 million pairs at 58 GB peak, removing 3.8% of them); pass `--i-index human-pangenome-bowtie2.qza` on later runs.
 
 ## Sample metadata
 
-The study's sample sheet was reduced to the ten tutorial samples and to five columns, renamed in kebab-case: `bin-location`, `sample-type`, `composting-time-point` and `core-temp-c` (the compost core temperature in °C; both are empty for the two samples that were not composting, the fresh excrement and the soil) and `sample-uuid`.
+🗂️ The study's sample sheet was reduced to the ten tutorial samples and to five columns, renamed in kebab-case: `bin-location`, `sample-type`, `composting-time-point` and `core-temp-c` (the compost core temperature in °C; both are empty for the two samples that were not composting, the fresh excrement and the soil) and `sample-uuid`.
 The table is hosted as an `ImmutableMetadata` artifact, imported from the TSV; the artifact is what the tutorial downloads and passes to every action that takes metadata.
 
 ```shell
