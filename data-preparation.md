@@ -1,5 +1,7 @@
 # How the tutorial data were prepared
 
+[Overview](README.md) · [Installation](install.md) · [Tutorial](tutorial.md) · **Data preparation**
+
 None of this is part of the tutorial: it records how the [artifacts](https://news.rachis.org/en/latest/glossary/#term-artifact) the [tutorial](tutorial.md) downloads were produced, so that the same can be done for another data set.
 Every step is also in the [provenance](https://news.rachis.org/en/latest/glossary/#term-data-provenance) of the artifacts themselves.
 

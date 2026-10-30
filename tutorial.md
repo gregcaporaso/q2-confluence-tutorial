@@ -1,5 +1,7 @@
 # Integrating 16S and metagenome profiles: the tutorial
 
+[Overview](README.md) · [Installation](install.md) · **Tutorial** · [Data preparation](data-preparation.md)
+
 This tutorial integrates a 16S rRNA amplicon profile and a metagenome profile of the same [samples](https://news.rachis.org/en/latest/glossary/#term-sample) in one [feature](https://news.rachis.org/en/latest/glossary/#term-feature) space: Genome Taxonomy Database (GTDB) genomes.
 It uses `q2-confluence` and `mosh-sylph`, two [`rachis`](https://rachis.org) [plugins](https://news.rachis.org/en/latest/glossary/#term-plugin), expanding on [QIIME 2](https://qiime2.org) 2026.10.
 If you're new to QIIME 2, I recommend reading [*Getting Started with QIIME 2*](https://amplicon-docs.qiime2.org/en/stable/explanations/getting-started/) (about 10 minutes) to familiarize yourself with some of the jargon that will pop up here.

@@ -1,16 +1,19 @@
 # GitHub Pages configuration (deployed from the main branch, root folder; no
-# workflow). Every page is rendered with the Cayman theme's default layout;
-# the theme shows `description` under the title on every page, which is where
-# the notice that the data are unpublished goes. The robots meta tag that keeps
-# the site out of search engines is in _includes/head-custom.html. GitHub
-# Pages' default plugins do the rest: Markdown files without front matter are
-# rendered, the first heading is the page title, links to `*.md` files become
-# links to the rendered pages, and README.md is the landing page because there
-# is no index.md (jekyll-readme-index). CLAUDE.md (instructions for Claude
-# sessions) is excluded, or it would be rendered as a page.
+# workflow). Every page is rendered with the Primer theme's default layout,
+# GitHub's own plain Markdown look: it shows `title` as a link to the landing
+# page above every other page, and uses `description` (the notice that the data
+# are unpublished) only as the pages' meta description, not on the page. The
+# pages link each other in a line under their titles, in place of a sidebar.
+# The robots meta tag that keeps the site out of search engines is in
+# _includes/head-custom.html. GitHub Pages' default plugins do the rest:
+# Markdown files without front matter are rendered, the first heading is the
+# page title, links to `*.md` files become links to the rendered pages, and
+# README.md is the landing page because there is no index.md
+# (jekyll-readme-index). CLAUDE.md (instructions for Claude sessions) is
+# excluded, or it would be rendered as a page.
 title: q2-confluence tutorial
 description: "Data are shared for evaluation and not yet published."
-theme: jekyll-theme-cayman
+theme: jekyll-theme-primer
 exclude:
   - LICENSE
   - CITATION.cff

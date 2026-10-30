@@ -47,8 +47,10 @@ The repository is nested inside the thermo-hec project (`~/0-projects/2026-09-16
 
 ## The site
 
- * GitHub Pages is to build the site at https://gregcaporaso.github.io/q2-confluence-tutorial/ from `main` (root folder, no workflow) with Jekyll and the Cayman theme; it is not enabled yet, and the steps to publish, with the decisions still open, are in the parent's `coordination/distribution.md`.
-   `_config.yml` sets the theme and, as `description`, the notice shown under the title of every page; `_includes/head-custom.html` adds `<meta name="robots" content="noindex, nofollow">`.
+ * GitHub Pages builds the site at https://gregcaporaso.github.io/q2-confluence-tutorial/ from `main` (root folder, no workflow) with Jekyll; live since 2026-10-30, when the repository went public (the record and the verification commands are in the parent's `coordination/distribution.md`).
+   The theme is Primer, GitHub's plain Markdown look, chosen by @gregcaporaso over Cayman and over a MyST site like gut-to-soil's (which would need an Actions workflow, could not carry the robots tag, and would not render the `> [!NOTE]` boxes).
+   `_config.yml` sets the theme, the `title` that Primer shows as a link home above every page but the landing page, and the notice as `description`, which Primer does not show on the page; `_includes/head-custom.html` adds `<meta name="robots" content="noindex, nofollow">`.
+ * In place of a sidebar, `install.md`, `tutorial.md` and `data-preparation.md` carry a navigation line under their titles (Overview, Installation, Tutorial, Data preparation; the current page in bold, not linked); a new page gets the line and is added to the others'. The README's own paragraph links the pages.
  * `README.md` is the landing page, so readers see its alpha warning: there is no `index.md` (removed 2026-10-30 at @gregcaporaso's choice), and GitHub Pages' `jekyll-readme-index` renders the README as the index.
    Its "Read it at gregcaporaso.github.io/..." link then points at the page itself, which is harmless.
  * Pages are rendered without front matter, the first heading is the title, and links to `*.md` files become links to the rendered pages, so links work both on GitHub and on the site.
