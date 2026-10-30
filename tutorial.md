@@ -49,7 +49,7 @@ The sylph database is fetched by an action below, not by `wget`.
 
 ```shell
 D='https://drive.usercontent.google.com/download?export=download&confirm=t&id='
-wget -O study-metadata.qza "${D}1PJQOCPLgOJ_Jeb-_ZmEN1enFzqLhbH5S"
+wget -O sample-metadata.qza "${D}1PJQOCPLgOJ_Jeb-_ZmEN1enFzqLhbH5S"
 wget -O 16S/asv-table.qza "${D}1-HH4892h693WAQ37YvrBjV_3P7xA3UgF"
 wget -O 16S/asv-sequences.qza "${D}1LzOioUEnzP4nbOsV9v75VGaqfgseagbi"
 wget -O wgs/wgs-subset-reads.qza "${D}1fkzsYoWAIeGOJDQrdqGcf5k5rNfoFR7E"
@@ -57,14 +57,14 @@ wget -O reference/bac120_r232.tree 'https://data.gtdb.ecogenomic.org/releases/re
 wget -O reference/bac120_taxonomy_r232.tsv.gz 'https://data.gtdb.ecogenomic.org/releases/release232/232.0/bac120_taxonomy_r232.tsv.gz'
 wget -O reference/gtdb-r232-ssu-sequences.qza 'https://zenodo.org/records/21619532/files/gtdb-r232.0-2026.7.0-reference-sequences.qza?download=1'
 wget -O reference/silva-144-v4-classifier.qza 'https://www.arb-silva.de/fileadmin/silva_databases/current/QIIME2/2026.7/SSU/V4-515f-806r/uniform/SILVA_144_SSURef_NR99_uniform_classifier_V4-515f-806r.qza'
-md5sum study-metadata.qza 16S/*.qza wgs/*.qza reference/*
+md5sum sample-metadata.qza 16S/*.qza wgs/*.qza reference/*
 ```
 
 The md5 sums should match the table; the UUID identifies each artifact in provenance (`qiime tools peek <file>`).
 
 | File | md5 | Artifact UUID |
 |---|---|---|
-| `study-metadata.qza` | `8ed73161d2d70d9a9499d531401bd725` | `7d0ae7fb-1f89-4b1f-b475-ff6f0263d492` |
+| `sample-metadata.qza` | `8ed73161d2d70d9a9499d531401bd725` | `7d0ae7fb-1f89-4b1f-b475-ff6f0263d492` |
 | `16S/asv-table.qza` | `c7313d6efe664c559104120d23291010` | `e02ea2d0-16a7-457b-8009-03ed2874216c` |
 | `16S/asv-sequences.qza` | `a4173850ea0e9cc3220cede19cec6a30` | `ce58ed07-5639-49d0-acdd-37a56f5a4476` |
 | `wgs/wgs-subset-reads.qza` | `884d47f6948d010356cde49594238b3f` | `09901ee0-9bca-4825-b94a-20c953d97cef` |
@@ -76,11 +76,11 @@ The md5 sums should match the table; the UUID identifies each artifact in proven
 ## Sample metadata
 
 The sample metadata of the ten tutorial samples: bin location, sample type, composting time point and core temperature in °C (both empty for the two samples that were not composting, the fresh excrement and the soil), and the sample UUID.
-It is provided as an `ImmutableMetadata` artifact, `study-metadata.qza`, which any action that takes metadata accepts in place of a TSV.
+It is provided as an `ImmutableMetadata` artifact, `sample-metadata.qza`, which any action that takes metadata accepts in place of a TSV.
 
 ```shell
 qiime metadata tabulate \
-  --m-input-file study-metadata.qza \
+  --m-input-file sample-metadata.qza \
   --o-visualization sample-metadata.qzv
 ```
 
@@ -243,7 +243,7 @@ The per-sample statistics are metadata and tabulate like any other; the study me
 ```shell
 qiime metadata tabulate \
   --m-input-file wgs/sylph-stats.qza \
-  --m-input-file study-metadata.qza \
+  --m-input-file sample-metadata.qza \
   --o-visualization wgs/sylph-stats.qzv
 ```
 
@@ -258,7 +258,7 @@ The two profiles enter as collections: each member is given as `key:path`, and t
 qiime confluence summarize-inputs \
   --i-tables amplicon:16S/genome-table.qza metagenome:wgs/sylph-taxonomic-abundance.qza \
   --i-tree reference/gtdb-r232-bac120-tree.qza \
-  --i-metadata amplicon:study-metadata.qza metagenome:study-metadata.qza \
+  --i-metadata amplicon:sample-metadata.qza metagenome:sample-metadata.qza \
   --o-visualization inputs-summary.qzv
 ```
 
@@ -274,7 +274,7 @@ On the tutorial data the amplicon profile keeps 3,577 of its 3,611 genomes and t
 qiime confluence integrate \
   --i-tables amplicon:16S/genome-table.qza metagenome:wgs/sylph-taxonomic-abundance.qza \
   --i-tree reference/gtdb-r232-bac120-tree.qza \
-  --i-metadata amplicon:study-metadata.qza metagenome:study-metadata.qza \
+  --i-metadata amplicon:sample-metadata.qza metagenome:sample-metadata.qza \
   --o-integrated-table genome/relative-table.qza \
   --o-integrated-metadata genome/metadata.qza
 ```
