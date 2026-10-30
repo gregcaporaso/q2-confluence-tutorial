@@ -16,5 +16,3 @@ qiime dev refresh-cache
 qiime confluence --help
 qiime sylph --help
 ```
-
-Both plugin repositories are public; the download of the extras file needs GitHub credentials while this repository is private.
