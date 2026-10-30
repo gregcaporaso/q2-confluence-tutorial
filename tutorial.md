@@ -60,6 +60,9 @@ wget -O reference/silva-144-v4-classifier.qza 'https://www.arb-silva.de/fileadmi
 md5sum sample-metadata.qza 16S/*.qza wgs/*.qza reference/*
 ```
 
+> [!NOTE]
+> macOS has no `md5sum`; run `md5 -r` with the same arguments, which prints the sums in the same form.
+
 The md5 sums should match the table; the UUID identifies each artifact in provenance (`qiime tools peek <file>`).
 
 | File | md5 | Artifact UUID |
