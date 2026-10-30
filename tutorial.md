@@ -1,18 +1,18 @@
 # Integrating 16S and metagenome profiles: the tutorial
 
-This tutorial integrates a 16S rRNA amplicon profile and a metagenome profile of the same samples in one feature space: Genome Taxonomy Database (GTDB) genomes.
-It uses `q2-confluence` and `mosh-sylph`, two [`rachis`](https://rachis.org) plugins, expanding on [QIIME 2](https://qiime2.org) 2026.10.
+This tutorial integrates a 16S rRNA amplicon profile and a metagenome profile of the same [samples](https://news.rachis.org/en/latest/glossary/#term-sample) in one [feature](https://news.rachis.org/en/latest/glossary/#term-feature) space: Genome Taxonomy Database (GTDB) genomes.
+It uses `q2-confluence` and `mosh-sylph`, two [`rachis`](https://rachis.org) [plugins](https://news.rachis.org/en/latest/glossary/#term-plugin), expanding on [QIIME 2](https://qiime2.org) 2026.10.
 If you're new to QIIME 2, I recommend reading [*Getting Started with QIIME 2*](https://amplicon-docs.qiime2.org/en/stable/explanations/getting-started/) (about 10 minutes) to familiarize yourself with some of the jargon that will pop up here.
 The [`rachis` glossary](https://news.rachis.org/en/latest/glossary/) may also be helpful.
 
-**All `.qza` and `.qzv` files used in this tutorial can be viewed with [`rachis-view`](https://view.rachis.org).**
+**All [`.qza`](https://news.rachis.org/en/latest/glossary/#term-qza) and [`.qzv`](https://news.rachis.org/en/latest/glossary/#term-qzv) files used in this tutorial can be viewed with [`rachis-view`](https://view.rachis.org).**
 
 The data used in this tutorial is real data from a currently unpublished microbiome study that is ongoing in the [Caporaso Lab](http://caplab.dev).
 Please consider it available only for use with this tutorial as we work toward publication of that project.
 
 The tutorial starts with:
 
- * sample metadata describing the 10 samples that are used in the tutorial
+ * [sample metadata](https://news.rachis.org/en/latest/glossary/#term-sample-metadata) describing the 10 samples that are used in the tutorial
  * a 16S rRNA ASV table and ASV sequences for those 10 samples
  * metagenomic reads for those 10 samples
 
@@ -76,7 +76,7 @@ md5sum sample-metadata.qza 16S/*.qza metagenome/*.qza reference/*
 > [!NOTE]
 > macOS has no `md5sum`; run `md5 -r` with the same arguments, which prints the sums in the same form.
 
-The md5 sums and UUIDs should uniquely identify artifacts.
+The md5 sums and UUIDs should uniquely identify [artifacts](https://news.rachis.org/en/latest/glossary/#term-artifact).
 To list the artifact UUIDs, run:
 
 ```shell
@@ -110,8 +110,8 @@ qiime metadata tabulate \
 ```
 
 > [!TIP]
-> For your own data, you can use sample metadata as a `.tsv` file ([format reference](https://use.qiime2.org/en/latest/references/metadata/)) or by importing it into an `ImmutableMetadata` artifact once (the import command is on the [data preparation page](data-preparation.md#sample-metadata)).
-> The artifact has a UUID, so provenance records which version of the metadata each result was made from; a TSV passed directly is recorded only by its contents.
+> For your own data, you can use sample metadata as a `.tsv` file ([format reference](https://use.qiime2.org/en/latest/references/metadata/)) or by [importing](https://news.rachis.org/en/latest/glossary/#term-import) it into an `ImmutableMetadata` artifact once (the import command is on the [data preparation page](data-preparation.md#sample-metadata)).
+> The artifact has a UUID, so [provenance](https://news.rachis.org/en/latest/glossary/#term-data-provenance) records which version of the [metadata](https://news.rachis.org/en/latest/glossary/#term-metadata) each [result](https://news.rachis.org/en/latest/glossary/#term-result) was made from; a TSV passed directly is recorded only by its contents.
 > Either way, the metadata contents are written into the provenance of every downstream result, so a metadata file must not hold anything that cannot travel with the artifacts.
 
 ## Reference data
@@ -122,7 +122,7 @@ GTDB's bacterial tree is the phylogeny, and GTDB's genome taxonomy names the gen
 GTDB file preparation is discussed on the [data preparation page](data-preparation.md#reference).
 
 The metagenome reads are profiled with sylph through the `sylph` plugin (mosh-sylph), thin wrappers around sylph.
-The sylph database of the GTDB r232 species representatives is about 20 GB, and every action that reads a `.qza` file unzips it first.
+The sylph database of the GTDB r232 species representatives is about 20 GB, and every [action](https://news.rachis.org/en/latest/glossary/#term-action) that reads a `.qza` file unzips it first.
 An [artifact cache](https://use.qiime2.org/en/stable/tutorials/use-the-artifact-cache/) keeps artifacts unzipped under a key, referenced as `cache:key` in place of a file path, so the large artifacts are written once and never zipped or unzipped again.
 The commands below keep the database and the read sketches in a cache called `cache` inside the tutorial directory and pass `--use-cache cache` to the actions that write them.
 
@@ -258,8 +258,8 @@ No taxonomy or phylogenetic reconstruction step is needed: the genome IDs are th
 
 ## Integration
 
-The two profiles enter as collections: each member is given as `key:path`, and the key names the profile type in every output.
-`summarize-inputs` takes the inputs of `integrate` and shows, before anything is merged, which sample IDs the profiles and the metadata share and how many genomes of each profile are tips of the tree.
+The two profiles enter as [collections](https://news.rachis.org/en/latest/glossary/#term-collection): each member is given as `key:path`, and the key names the profile type in every output.
+`summarize-inputs` takes the inputs of `integrate` and shows, before anything is merged, which [sample IDs](https://news.rachis.org/en/latest/glossary/#term-sample-identifier) the profiles and the metadata share and how many genomes of each profile are tips of the tree.
 Any genome IDs that are present in a table but not the tree are dropped (at this time, this includes all archaea).
 
 ```shell
@@ -362,13 +362,13 @@ qiime tools make-report \
 
 <!-- @gregcaporaso, reminder for the prose: explain why a reader's numbers differ slightly from the ones shown. The PERMANOVA p-values are permutation estimates and the random forest draws its folds and trees afresh each run, so p-values wobble in the third decimal and the accuracy by a sample or two; the pseudo-F values and the feature summary are deterministic. No random seed is set on purpose: copied commands would reuse it. -->
 
-`genome/downstream-report.qzv` collects the three visualizations of this section in one report.
+`genome/downstream-report.qzv` collects the three [visualizations](https://news.rachis.org/en/latest/glossary/#term-visualization) of this section in one report.
 
 The paired report below is what paired samples buy on top: it keeps only the samples both profile types cover, so the comparison is between two profiles of the same material rather than between two sets of samples.
 
 ## Paired-sample report
 
-On the samples both profile types cover, `paired-report` computes Bray-Curtis and weighted UniFrac on the proportions as they are (no rarefaction, so no presence-based metric), with PERMANOVA by profile type and a PCoA scatter plot for each; a random forest classifying the profile type with nested cross-validation; and a per-feature summary, tabulated over every genome with its taxonomy beside it and also returned as metadata.
+On the samples both profile types cover, `paired-report` computes Bray-Curtis and weighted UniFrac on the proportions as they are (no [rarefaction](https://news.rachis.org/en/latest/glossary/#term-rarefaction), so no presence-based metric), with PERMANOVA by profile type and a PCoA scatter plot for each; a random forest classifying the profile type with nested cross-validation; and a per-feature summary, tabulated over every genome with its taxonomy beside it and also returned as metadata.
 
 ```shell
 # run time estimate: 1 minute
@@ -395,7 +395,7 @@ On the tutorial data at 97%, weighted UniFrac does not separate the two profile 
 The genome space is one choice of feature space; the same integrated data can be compared at a taxonomic level instead.
 `taxa collapse` sums the merged table within each taxon of GTDB's taxonomy (level 6 is genus with the seven GTDB ranks, 5 family), and `gtdb-tree-collapse` collapses the imported GTDB tree to the same rank, with one tip per taxon named like the collapsed features, so the two still match; its log records which genomes each tip stands for.
 The collapse takes about ten seconds on r232 and keeps GTDB's bootstrap and taxon labels on the remaining internal nodes.
-The integrated metadata is unchanged, because collapsing touches features, not samples, and the collapsed feature IDs are the taxonomy strings themselves, so the report needs no taxonomy.
+The integrated metadata is unchanged, because collapsing touches features, not samples, and the collapsed [feature IDs](https://news.rachis.org/en/latest/glossary/#term-feature-identifier) are the taxonomy strings themselves, so the report needs no taxonomy.
 The paired report then runs as above, at genus.
 
 ```shell
@@ -502,6 +502,6 @@ We will evaluate it on the remaining samples from that study (pending sequencing
 
 ### Sampling depth
 
-Direct control of uneven sampling depth (e.g., with rarefaction) has not been applied and is an unsolved problem at this time.
+Direct control of [uneven sampling depth](https://news.rachis.org/en/latest/glossary/#term-even-sampling-depth) (e.g., with rarefaction) has not been applied and is an unsolved problem at this time.
 For this reason, we recommend focusing only on abundance-weighted diversity metrics, such as weighted UniFrac and Bray-Curtis.
 Paired with the note above regarding reference coverage, weighted UniFrac is the recommended beta diversity metric for exploring integrated 16S and metagenome data.

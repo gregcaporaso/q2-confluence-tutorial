@@ -1,10 +1,10 @@
 # q2-confluence tutorial
 
-This tutorial and the [rachis](https://rachis.org) plugins it uses are in early testing (alpha release) phase.
+This tutorial and the [rachis](https://rachis.org) [plugins](https://news.rachis.org/en/latest/glossary/#term-plugin) it uses are in early testing (alpha release) phase.
 Commands will almost certainly change.
 Be skeptical of results - testing is still in progress.
 
-This repository holds the source of a tutorial that integrates 16S rRNA amplicon and metagenome profiles of the same samples in the feature space of one GTDB release's genomes, with the [q2-confluence](https://github.com/gregcaporaso/q2-confluence) and [mosh-sylph](https://github.com/gregcaporaso/mosh-sylph) plugins for QIIME 2.
+This repository holds the source of a tutorial that integrates 16S rRNA amplicon and metagenome profiles of the same [samples](https://news.rachis.org/en/latest/glossary/#term-sample) in the [feature](https://news.rachis.org/en/latest/glossary/#term-feature) space of one GTDB release's genomes, with the [q2-confluence](https://github.com/gregcaporaso/q2-confluence) and [mosh-sylph](https://github.com/gregcaporaso/mosh-sylph) plugins for [QIIME 2](https://news.rachis.org/en/latest/glossary/#term-qiime-2).
 
 Read it at [gregcaporaso.github.io/q2-confluence-tutorial](https://gregcaporaso.github.io/q2-confluence-tutorial/): [create the environment](install.md), then work through [the tutorial](tutorial.md); [how the tutorial data were prepared](data-preparation.md) is a separate page.
 
