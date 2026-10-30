@@ -10,7 +10,10 @@ artifacts' provenance. 2026-10-21: the reference section shrank when the
 tutorial moved to the genome space; the GTDB tree and taxonomy are now
 imported on the tutorial page itself, and no collapsed tree is hosted.
 2026-10-30: the imported tree and taxonomy are hosted with the study data
-and their import is recorded here (@gregcaporaso's decision). -->
+and their import is recorded here (@gregcaporaso's decision). The amplicon
+section gained the commands from the import to the hosted artifacts the same
+day, with the cutadapt step simplified for QIIME 2 2026.10 (not rerun), and
+both sections the UUID of their first imported artifact. -->
 
 None of this is part of the tutorial: it records how the artifacts the [tutorial](tutorial.md) downloads were produced, so that the same can be done for another data set.
 Every step is also in the provenance of the artifacts themselves.
@@ -73,13 +76,79 @@ qiime confluence gtdb-tree-collapse \
 
 ## Amplicon data
 
-The 16S rRNA V4 amplicons (515F/806R) of the study were sequenced on an Illumina run of 199 samples and denoised with DADA2 in the QIIME 2 amplicon distribution, giving the ASV table and the ASV sequences.
-The tutorial artifacts are those outputs restricted to the ten samples with a metagenome profile (`feature-table filter-samples` and `filter-seqs`; the step is in their provenance).
+The 16S rRNA V4 amplicons (515F/806R) of the study were sequenced on a paired-end Illumina run of 199 samples.
+The reads were imported from the run's Casava 1.8 fastq directory into the artifact the tutorial's 16S artifacts descend from (UUID `c25c70e1-0209-4b88-bfec-db2f815808be`), primer-trimmed with cutadapt, denoised with DADA2, renamed to the study's sample IDs and restricted to the ten samples with a metagenome profile.
+For your own demultiplexed paired-end fastq files, [fq-manifestor](https://gregcaporaso.github.io/fq-manifestor-web/) builds the manifest file from which `qiime tools import` makes such a `demux.qza` (the metagenome reads below were imported that way); `demux summarize` shows the read counts and the per-position quality from which DADA2's truncation lengths are chosen.
+
+```shell
+qiime tools import \
+  --type 'SampleData[PairedEndSequencesWithQuality]' \
+  --input-format CasavaOneEightSingleLanePerSampleDirFmt \
+  --input-path 16S-fastq/ \
+  --output-path 16S-demux.qza
+
+qiime demux summarize \
+  --i-data 16S-demux.qza \
+  --o-visualization 16S-demux.qzv
+```
+
+One cutadapt pass removes the primers from the 5' end of each read and trims the poly-G tails that two-colour Illumina chemistry writes where the signal runs out (`--p-nextseq-trim 1`: trailing Gs and bases below quality 1, leaving quality filtering to DADA2).
+DADA2 then discards every read shorter than its truncation length, so reads that were mostly G leave there.
+The primers' reverse complements are not searched at the 3' end, because the reads are truncated at 240 bases, before the far primer at the end of the V4 insert of about 253 bases.
+The trimming statistics give, per sample, the share of reads in which a primer was found; a low share points at the wrong primers or at reads from which the sequencing provider already removed them.
+
+```shell
+qiime cutadapt trim-paired \
+  --i-demultiplexed-sequences 16S-demux.qza \
+  --p-front-f GTGCCAGCMGCCGCGGTAA \
+  --p-front-r GGACTACHVGGGTWTCTAAT \
+  --p-nextseq-trim 1 \
+  --p-cores 16 \
+  --o-trimmed-sequences 16S-trimmed.qza \
+  --o-stats 16S-trimming-stats.qza
+
+qiime metadata tabulate \
+  --m-input-file 16S-trimming-stats.qza \
+  --o-visualization 16S-trimming-stats.qzv
+
+qiime dada2 denoise-paired \
+  --i-demultiplexed-seqs 16S-trimmed.qza \
+  --p-trunc-len-f 240 \
+  --p-trunc-len-r 240 \
+  --p-n-threads 0 \
+  --o-table 16S-table-run-ids.qza \
+  --o-representative-sequences 16S-asv-sequences-all.qza \
+  --o-denoising-stats 16S-denoising-stats.qza \
+  --o-base-transition-stats 16S-base-transition-stats.qza
+```
+
+The run's sample IDs carry a `CLINICAL_16S-` prefix (`CLINICAL_16S-1135D`); `rename-ids` maps them to the study's IDs with a two-column table (`id`, `new_id`) of the 199 samples, and the ten tutorial samples are then kept with the sample metadata of the [last section](#sample-metadata).
+
+```shell
+qiime feature-table rename-ids \
+  --i-table 16S-table-run-ids.qza \
+  --m-metadata-file 16S-sample-ids.tsv \
+  --m-metadata-column new_id \
+  --o-renamed-table 16S-table-all.qza
+
+qiime feature-table filter-samples \
+  --i-table 16S-table-all.qza \
+  --m-metadata-file sample-metadata.tsv \
+  --o-filtered-table 16S-asv-table.qza
+
+qiime feature-table filter-seqs \
+  --i-data 16S-asv-sequences-all.qza \
+  --i-table 16S-asv-table.qza \
+  --o-filtered-data 16S-asv-sequences.qza
+```
+
+The hosted artifacts were made in April 2026 with three cutadapt passes that their provenance records: the primers, with their reverse complements as 3' adapters (`--p-times 2`); the same again with `--p-nextseq-trim 1`; and a pass discarding reads that contain nine Gs in a row (`--p-anywhere-f`/`-r GGGGGGGGG --p-discard-trimmed`).
+The single pass above is meant to do the same work but has not been run on these data, so its DADA2 output would differ slightly from the hosted artifacts.
 The organelle filter and the closed-reference clustering are part of the tutorial, because they are what a reader runs on their own data; the Bacteria filter that preceded `integrate` until 2026-10-23 is gone, since `integrate` keeps only the genomes that are tips of the tree.
 
 ## Metagenome data
 
-The metagenome reads of the same ten samples were imported from a fastq manifest, trimmed with fastp, cleared of the run's control samples, cleared of human reads with the MOSHPIT human pangenome filter, and subsampled to 10%.
+The metagenome reads of the same ten samples were imported from a fastq manifest (which [fq-manifestor](https://gregcaporaso.github.io/fq-manifestor-web/) makes) into the artifact the tutorial's reads descend from (UUID `ecb81f0a-0a5a-4dec-a2cb-44ee28e53940`), trimmed with fastp, cleared of the run's control samples, cleared of human reads with the MOSHPIT human pangenome filter, and subsampled to 10%.
 The subset holds 2.4 to 4.8 million read pairs per sample (median 4.1 million); at that depth the sylph profile is indistinguishable from the full depth by weighted and unweighted UniFrac.
 The hosted reads artifact carries the provenance of every step.
 
