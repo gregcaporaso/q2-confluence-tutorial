@@ -61,75 +61,16 @@ qiime confluence gtdb-tree-collapse \
 
 ## Amplicon data
 
-🧪 The 16S rRNA V4 amplicons (515F/806R) of the study were sequenced on a paired-end Illumina run of 199 samples.
-The reads were imported from the run's Casava 1.8 fastq directory into the artifact the tutorial's 16S artifacts descend from (UUID `c25c70e1-0209-4b88-bfec-db2f815808be`), primer-trimmed with cutadapt, denoised with DADA2, renamed to the study's sample IDs and restricted to the ten samples with a metagenome profile.
-For your own demultiplexed paired-end fastq files, [fq-manifestor](https://gregcaporaso.github.io/fq-manifestor-web/) builds the manifest file from which `qiime tools import` makes such a `demux.qza` (the metagenome reads below were imported that way); `demux summarize` shows the read counts and the per-position quality from which DADA2's truncation lengths are chosen.
+🧪 To prepare your own amplicon data, we recommend the [gut-to-soil tutorial](https://amplicon-docs.qiime2.org/en/stable/tutorials/gut-to-soil/), the standard QIIME 2 walk-through from sequencing reads to the ASV table and ASV sequences that this tutorial starts from.
 
-```shell
-qiime tools import \
-  --type 'SampleData[PairedEndSequencesWithQuality]' \
-  --input-format CasavaOneEightSingleLanePerSampleDirFmt \
-  --input-path 16S-fastq/ \
-  --output-path 16S-demux.qza
+The tutorial's amplicons are of the 16S rRNA V4 region (primers 515F/806R), sequenced on a paired-end Illumina run of 199 samples.
+The reads were imported into QIIME 2 (the tutorial's 16S artifacts descend from the imported artifact, UUID `c25c70e1-0209-4b88-bfec-db2f815808be`).
+Cutadapt removed the PCR primers, which are not part of the sequenced organisms' DNA, and the runs of G that two-colour Illumina chemistry writes where the signal runs out.
+DADA2 then corrected sequencing errors, joined the read pairs, removed chimeras, and counted the resulting amplicon sequence variants (ASVs) in each sample.
+Finally, the sequencing run's sample IDs were replaced with the study's, and the table and sequences were restricted to the ten samples that also have metagenome data.
+The provenance of the hosted artifacts records every step with its parameters.
 
-qiime demux summarize \
-  --i-data 16S-demux.qza \
-  --o-visualization 16S-demux.qzv
-```
-
-✂️ One cutadapt pass removes the primers from the 5' end of each read and trims the poly-G tails that two-colour Illumina chemistry writes where the signal runs out (`--p-nextseq-trim 1`: trailing Gs and bases below quality 1, leaving quality filtering to DADA2).
-DADA2 then discards every read shorter than its truncation length, so reads that were mostly G leave there.
-The primers' reverse complements are not searched at the 3' end, because the reads are truncated at 240 bases, before the far primer at the end of the V4 insert of about 253 bases.
-The trimming statistics give, per sample, the share of reads in which a primer was found; a low share points at the wrong primers or at reads from which the sequencing provider already removed them.
-
-```shell
-qiime cutadapt trim-paired \
-  --i-demultiplexed-sequences 16S-demux.qza \
-  --p-front-f GTGCCAGCMGCCGCGGTAA \
-  --p-front-r GGACTACHVGGGTWTCTAAT \
-  --p-nextseq-trim 1 \
-  --p-cores 16 \
-  --o-trimmed-sequences 16S-trimmed.qza \
-  --o-stats 16S-trimming-stats.qza
-
-qiime metadata tabulate \
-  --m-input-file 16S-trimming-stats.qza \
-  --o-visualization 16S-trimming-stats.qzv
-
-qiime dada2 denoise-paired \
-  --i-demultiplexed-seqs 16S-trimmed.qza \
-  --p-trunc-len-f 240 \
-  --p-trunc-len-r 240 \
-  --p-n-threads 0 \
-  --o-table 16S-table-run-ids.qza \
-  --o-representative-sequences 16S-asv-sequences-all.qza \
-  --o-denoising-stats 16S-denoising-stats.qza \
-  --o-base-transition-stats 16S-base-transition-stats.qza
-```
-
-The run's sample IDs carry a `CLINICAL_16S-` prefix (`CLINICAL_16S-1135D`); `rename-ids` maps them to the study's IDs with a two-column table (`id`, `new_id`) of the 199 samples, and the ten tutorial samples are then kept with the sample metadata of the [last section](#sample-metadata).
-
-```shell
-qiime feature-table rename-ids \
-  --i-table 16S-table-run-ids.qza \
-  --m-metadata-file 16S-sample-ids.tsv \
-  --m-metadata-column new_id \
-  --o-renamed-table 16S-table-all.qza
-
-qiime feature-table filter-samples \
-  --i-table 16S-table-all.qza \
-  --m-metadata-file sample-metadata.tsv \
-  --o-filtered-table 16S-asv-table.qza
-
-qiime feature-table filter-seqs \
-  --i-data 16S-asv-sequences-all.qza \
-  --i-table 16S-asv-table.qza \
-  --o-filtered-data 16S-asv-sequences.qza
-```
-
-The hosted artifacts were made in April 2026 with three cutadapt passes that their provenance records: the primers, with their reverse complements as 3' adapters (`--p-times 2`); the same again with `--p-nextseq-trim 1`; and a pass discarding reads that contain nine Gs in a row (`--p-anywhere-f`/`-r GGGGGGGGG --p-discard-trimmed`).
-⚠️ The single pass above is meant to do the same work but has not been run on these data, so its DADA2 output would differ slightly from the hosted artifacts.
-The organelle filter and the closed-reference clustering are part of the tutorial, because they are what a reader runs on their own data; the Bacteria filter that preceded `integrate` until 2026-10-23 is gone, since `integrate` keeps only the genomes that are tips of the tree.
+Removing organelle sequences and mapping the ASVs to GTDB genomes are part of the tutorial itself, because you would run them on your own data.
 
 ## Metagenome data
 

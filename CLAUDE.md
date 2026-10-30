@@ -13,7 +13,7 @@ The repository is nested inside the thermo-hec project (`~/0-projects/2026-09-16
  * `tutorial.sbatch`'s `READS` option replaces the line `wget -O metagenome/metagenome-reads-10p.qza ...` literally, so renaming that file means changing the script too.
  * `install.md` holds the environment commands; nothing runs them except a person building the environment.
  * `data-preparation.md` records how the hosted artifacts were made and is never extracted or run.
-   Its single-pass cutadapt step has not been run (it needs the 16S demux artifact `c25c70e1-0209-4b88-bfec-db2f815808be`).
+   Its amplicon section describes the steps in prose and sends readers to the gut-to-soil tutorial for their own data, by @gregcaporaso's choice (2026-10-30): that tutorial is QIIME 2's standard amplicon walk-through, and this page should not keep a second, lesser version of it.
 
 ## Prose
 
