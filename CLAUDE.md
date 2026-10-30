@@ -46,8 +46,10 @@ The repository is nested inside the thermo-hec project (`~/0-projects/2026-09-16
 ## The site
 
  * GitHub Pages is to build the site at https://gregcaporaso.github.io/q2-confluence-tutorial/ from `main` (root folder, no workflow) with Jekyll and the Cayman theme; it is not enabled yet, and the steps to publish, with the decisions still open, are in the parent's `coordination/distribution.md`.
-   `_config.yml` sets the theme and, as `description`, the notice shown under the title of every page; `_includes/head-custom.html` adds `<meta name="robots" content="noindex, nofollow">`; `index.md` is the landing page.
+   `_config.yml` sets the theme and, as `description`, the notice shown under the title of every page; `_includes/head-custom.html` adds `<meta name="robots" content="noindex, nofollow">`.
+ * `README.md` is the landing page, so readers see its alpha warning: there is no `index.md` (removed 2026-10-30 at @gregcaporaso's choice), and GitHub Pages' `jekyll-readme-index` renders the README as the index.
+   Its "Read it at gregcaporaso.github.io/..." link then points at the page itself, which is harmless.
  * Pages are rendered without front matter, the first heading is the title, and links to `*.md` files become links to the rendered pages, so links work both on GitHub and on the site.
-   `LICENSE`, `CITATION.cff` and `CLAUDE.md` are excluded; `README.md` is rendered only because `_config.yml` includes it.
+   `LICENSE`, `CITATION.cff` and `CLAUDE.md` are excluded.
  * The site stays unlisted until the data are published; only the two plugin READMEs link to it.
  * The tutorial session owns the whole repository, site files included, since the distribution session closed on 2026-10-30.

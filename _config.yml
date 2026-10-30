@@ -4,15 +4,13 @@
 # the notice that the data are unpublished goes. The robots meta tag that keeps
 # the site out of search engines is in _includes/head-custom.html. GitHub
 # Pages' default plugins do the rest: Markdown files without front matter are
-# rendered, the first heading is the page title, and links to `*.md` files
-# become links to the rendered pages. README.md is skipped by that rule unless
-# it is listed under `include`. CLAUDE.md (instructions for Claude sessions) is
-# excluded, or it would be rendered as a page.
+# rendered, the first heading is the page title, links to `*.md` files become
+# links to the rendered pages, and README.md is the landing page because there
+# is no index.md (jekyll-readme-index). CLAUDE.md (instructions for Claude
+# sessions) is excluded, or it would be rendered as a page.
 title: q2-confluence tutorial
 description: "Data are shared for evaluation and not yet published."
 theme: jekyll-theme-cayman
-include:
-  - README.md
 exclude:
   - LICENSE
   - CITATION.cff
