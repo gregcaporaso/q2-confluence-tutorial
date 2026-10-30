@@ -262,7 +262,7 @@ qiime confluence summarize-inputs \
   --i-tables amplicon:16S/genome-table.qza metagenome:wgs/sylph-taxonomic-abundance.qza \
   --i-tree reference/gtdb-r232-bac120-tree.qza \
   --i-metadata amplicon:sample-metadata.qza metagenome:sample-metadata.qza \
-  --o-visualization inputs-summary.qzv
+  --o-visualization genome/inputs-summary.qzv
 ```
 
 `integrate` keeps, in each profile, the genomes that are tips of the tree (`phylogeny filter-table`; the archaeal genomes go here), renormalizes the rest to proportions and merges the profiles.
@@ -283,15 +283,15 @@ qiime confluence integrate \
   --o-integrated-metadata genome/metadata.qza
 ```
 
-The summaries so far are collected into one report, `upstream-report.qzv`, with a tab for each; the paired report at the end does the same for the comparison.
+The summaries so far are collected into one report, `genome/upstream-report.qzv`, with a tab for each; the paired report at the end does the same for the comparison.
 
 ```shell
 # run time estimate: < 1 minute
 qiime tools make-report \
-  --report-path upstream-report.qzv \
+  --report-path genome/upstream-report.qzv \
   16S/genome-table-summary.qzv \
   wgs/sylph-stats.qzv \
-  inputs-summary.qzv
+  genome/inputs-summary.qzv
 ```
 
 ## Comparing the profile types without paired samples
@@ -339,13 +339,13 @@ qiime taxa barplot2 \
 
 # run time estimate: < 1 minute
 qiime tools make-report \
-  --report-path downstream-report.qzv \
+  --report-path genome/downstream-report.qzv \
   genome/weighted-unifrac-study-id.qzv \
   genome/weighted-unifrac-pcoa.qzv \
   genome/taxa-barplot.qzv
 ```
 
-`downstream-report.qzv` collects the three visualizations of this section in one report.
+`genome/downstream-report.qzv` collects the three visualizations of this section in one report.
 
 The paired report below is what paired samples buy on top: it keeps only the samples both profile types cover, so the comparison is between two profiles of the same material rather than between two sets of samples.
 
