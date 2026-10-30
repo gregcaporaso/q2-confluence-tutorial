@@ -34,7 +34,9 @@ The repository is nested inside the thermo-hec project (`~/0-projects/2026-09-16
 
 ## Layout
 
- * The tutorial directory holds `16S/`, `metagenome/`, `reference/`, `genome/` (the integration, the reports, and `genome/metagenome-containment-analysis/` for the optional taxon search), `genus/` and `cache/`; the collection keys `16S` and `metagenome` match the directories.
+ * The tutorial directory holds `16S/`, `metagenome/`, `reference/`, `genome/` (the integration, the reports, and `genome/metagenome-containment-analysis/` for the optional taxon search), `genus/` and `cache/`.
+ * The collection keys are `amplicon` and `metagenome`, so `amplicon:16S/...` differs from its directory: rachis-cli requires every collection key on the command line to be a Python identifier (letters, digits and underscores, no leading digit, no hyphen; `str.isidentifier()` in `rachis_cli/click/option.py`, `_split_and_validate_input_keys`), and `16S` is not one (bacon job 326 failed on it).
+   The Artifact API has no such rule, so the plugins' tests do not catch it.
  * Hosted file names match the page's; `metagenome-reads-10p.qza` is the 10% read subset.
  * `README.md` stays minimal, modeled on q2-confluence's: title, alpha warning, one paragraph linking the site and the pages, the forum, and an AI disclosure dated as of its last update (keep it current).
 

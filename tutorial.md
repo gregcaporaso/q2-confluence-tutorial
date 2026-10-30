@@ -238,9 +238,9 @@ Any genome IDs that are present in a table but not the tree are dropped (at this
 ```shell
 # run time estimate: < 1 minute
 qiime confluence summarize-inputs \
-  --i-tables 16S:16S/genome-table.qza metagenome:metagenome/sylph-taxonomic-abundance.qza \
+  --i-tables amplicon:16S/genome-table.qza metagenome:metagenome/sylph-taxonomic-abundance.qza \
   --i-tree reference/gtdb-r232-bac120-tree.qza \
-  --i-metadata 16S:sample-metadata.qza metagenome:sample-metadata.qza \
+  --i-metadata amplicon:sample-metadata.qza metagenome:sample-metadata.qza \
   --o-visualization genome/inputs-summary.qzv
 ```
 
@@ -252,9 +252,9 @@ A profile that loses more than a tenth of its features to the tree filter raises
 ```shell
 # run time estimate: < 1 minute
 qiime confluence integrate \
-  --i-tables 16S:16S/genome-table.qza metagenome:metagenome/sylph-taxonomic-abundance.qza \
+  --i-tables amplicon:16S/genome-table.qza metagenome:metagenome/sylph-taxonomic-abundance.qza \
   --i-tree reference/gtdb-r232-bac120-tree.qza \
-  --i-metadata 16S:sample-metadata.qza metagenome:sample-metadata.qza \
+  --i-metadata amplicon:sample-metadata.qza metagenome:sample-metadata.qza \
   --o-integrated-table genome/relative-table.qza \
   --o-integrated-metadata genome/metadata.qza
 ```
