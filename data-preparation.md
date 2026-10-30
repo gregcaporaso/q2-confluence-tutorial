@@ -8,17 +8,21 @@ slurm/tutorial.sbatch never extracts this page. The subsetting of the
 amplicon data to the ten tutorial samples is not shown: it is in the
 artifacts' provenance. 2026-10-21: the reference section shrank when the
 tutorial moved to the genome space; the GTDB tree and taxonomy are now
-imported on the tutorial page itself, and no collapsed tree is hosted. -->
+imported on the tutorial page itself, and no collapsed tree is hosted.
+2026-10-30: the imported tree and taxonomy are hosted with the study data
+and their import is recorded here (@gregcaporaso's decision). -->
 
 None of this is part of the tutorial: it records how the artifacts the [tutorial](tutorial.md) downloads were produced, so that the same can be done for another data set.
 Every step is also in the provenance of the artifacts themselves.
 
 ## Reference
 
-No reference artifact is re-hosted: the tutorial fetches GTDB's r232 bacterial tree and genome taxonomy from GTDB and imports them itself, the GTDB r232 16S reference sequences from the rachis Zenodo record (the training data of that record's GTDB classifier), the SILVA 144 V4 uniform classifier from SILVA, and the sylph database from the sylph authors with the `sylph` plugin's `fetch-database`.
+Two reference artifacts are hosted with the study data: GTDB's r232 bacterial tree and genome taxonomy, imported from the files GTDB publishes with the commands below.
+The other references are not re-hosted: the tutorial fetches the GTDB r232 16S reference sequences from the rachis Zenodo record (the training data of that record's GTDB classifier), the SILVA 144 V4 uniform classifier from SILVA, and the sylph database from the sylph authors with the `sylph` plugin's `fetch-database`.
 
 The tree is imported through the `confluence` plugin's `GTDBNewickFormat`, which drops the quoted root label without a branch length that GTDB's Newick file ends in (`'100:d__Bacteria'`), because UniFrac's parser aborts on it; the GTDB file itself is unchanged and its md5 is in the artifact's provenance.
-The rooting of the tree is documented on the imported artifact with a Note annotation (the command is on the tutorial page), which every artifact derived from it carries along; `qiime tools annotation-list --input-path <artifact>` shows it and `qiime tools annotation-fetch --name rooting --verbose` prints its text.
+The rooting of the tree is documented on the imported artifact with a Note annotation (`annotation-create` below), which every artifact derived from it carries along; `qiime tools annotation-list --input-path <artifact>` shows it and `qiime tools annotation-fetch --input-path <artifact> --name rooting --verbose` prints its text.
+The hosted artifacts were made on 2026-10-30 from GTDB files with md5 `a8b589ffabbf41ebd7e8ab45795b8e6a` (`bac120_r232.tree`) and `807e3221f5553142eb0544ce3247d079` (`bac120_taxonomy_r232.tsv.gz`); the taxonomy artifact's provenance records the md5 of the unzipped file, `4d42e137959485d57e8589bdf1b4c347`.
 
 ```shell
 wget 'https://data.gtdb.ecogenomic.org/releases/release232/232.0/bac120_r232.tree'

@@ -17,9 +17,12 @@ it is, the uncollapsed GTDB tree imported through GTDBNewickFormat, and no
 sylph-tax step. 2026-10-23: integrate filters every source to the tips
 of the tree itself (no Bacteria filters, no SSU taxonomy download), takes
 no taxonomy and keys the metadata per source; GTDB's taxonomy artifact
-serves every downstream action. The md5s and UUIDs in the download table come from
-tutorial-data/README.md in the parent project, from the Zenodo record's file
-checksums, from SILVA's .md5 file and from the GTDB files' local copies. -->
+serves every downstream action. 2026-10-30: the GTDB tree and taxonomy are
+downloaded as artifacts hosted with the study data (made by @gregcaporaso's
+run of this page on bacon); their import moved to data-preparation.md. The
+md5s and UUIDs in the download table come from tutorial-data/README.md in
+the parent project, from the Zenodo record's file checksums, from SILVA's
+.md5 file and, for the two GTDB artifacts, from the uploaded files. -->
 
 This tutorial integrates a 16S rRNA amplicon profile and a metagenome profile of the same samples in one feature space: the genomes of one GTDB release.
 It uses the `confluence` plugin, the `sylph` plugin (mosh-sylph) for the metagenome profile, and stock QIIME 2 actions.
@@ -44,7 +47,7 @@ mkdir 16S wgs reference genome
 
 ## Downloading the data
 
-Every file the tutorial uses: the study data (the sample metadata as an `ImmutableMetadata` artifact, the ASV table and sequences, the 10% subset of the metagenome reads, 4.8 GB) and the reference data, each from its publisher (the GTDB r232 bacterial tree and genome taxonomy from GTDB; the GTDB r232 16S reference sequences from the rachis Zenodo record, the data the GTDB classifier of that record was trained on; the SILVA 144 V4 classifier from SILVA).
+Every file the tutorial uses: the study data (the sample metadata as an `ImmutableMetadata` artifact, the ASV table and sequences, the 10% subset of the metagenome reads, 4.8 GB) and the reference data: the GTDB r232 bacterial tree and genome taxonomy, imported from GTDB's files and hosted with the study data ([how](data-preparation.md#reference)), and, each from its publisher, the GTDB r232 16S reference sequences from the rachis Zenodo record (the data the GTDB classifier of that record was trained on) and the SILVA 144 V4 classifier from SILVA.
 The sylph database is fetched by an action below, not by `wget`.
 
 ```shell
@@ -97,10 +100,11 @@ qiime metadata tabulate \
 
 Both profile types are placed on the genomes of GTDB r232: the amplicon features by closed-reference clustering against the 16S sequences of the GTDB species representatives, the metagenome reads by sylph against the same genomes.
 GTDB's bacterial tree is the phylogeny, and GTDB's genome taxonomy names the genomes.
-Both are imported from the files GTDB publishes.
+Both were imported from the files GTDB publishes into the two artifacts downloaded above; the commands are on the [data preparation page](data-preparation.md#reference), where they serve for another GTDB release with its file names.
 
-The tree goes through the `GTDBNewickFormat` import format of the `confluence` plugin: GTDB's tree ends in a quoted root label without a branch length (`'100:d__Bacteria'`), which UniFrac's parser cannot read, and the import drops that one label and changes nothing else.
-The rooting of the tree is recorded on the imported artifact as a Note annotation, which every artifact derived from it carries along: GTDB places the root arbitrarily and advises treating its reference trees as unrooted.
+The tree was imported through the `GTDBNewickFormat` import format of the `confluence` plugin: GTDB's tree ends in a quoted root label without a branch length (`'100:d__Bacteria'`), which UniFrac's parser cannot read, and the import drops that one label and changes nothing else.
+The rooting of the tree is recorded on the artifact as a Note annotation, which every artifact derived from it carries along: GTDB places the root arbitrarily and advises treating its reference trees as unrooted.
+`qiime tools annotation-fetch --input-path reference/gtdb-r232-bac120-tree.qza --name rooting --verbose` prints the note.
 
 The metagenome reads are profiled with sylph through the `sylph` plugin (mosh-sylph), thin wrappers around sylph.
 The sylph database of the GTDB r232 species representatives is about 20 GB, and every action that reads a `.qza` file unzips it first.
