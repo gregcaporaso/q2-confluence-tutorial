@@ -1,0 +1,11 @@
+---
+---
+
+// The Primer theme's stylesheet, plus one rule: hide the layout's footer
+// ("This site is open source. Improve this page."), which Primer shows on
+// every page of a public repository with a license.
+@import "{{ site.theme }}";
+
+.footer {
+  display: none;
+}
