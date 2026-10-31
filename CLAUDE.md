@@ -1,14 +1,14 @@
 # CLAUDE.md
 
 Repository-local instructions for the q2-confluence tutorial (`gregcaporaso/q2-confluence-tutorial`; `thermo-hec-tutorial` until 2026-10-30); the global `~/.claude/CLAUDE.md` also applies.
-The repository is nested inside the thermo-hec project (`~/0-projects/2026-09-16-thermo-hec-wgs-rna-1`), whose `CLAUDE.md` and memory hold the project context; the checkout there is still the directory `thermo-hec-tutorial/` (the parent's `slurm/tutorial.sbatch`, `pull.sh` and `.gitignore` name it), so git commands there use `git -C thermo-hec-tutorial`.
+The repository is nested inside the thermo-hec project (`~/0-projects/2026-09-16-thermo-hec-wgs-rna-1`), whose `CLAUDE.md` and memory hold the project context; the checkout there is the directory `q2-confluence-tutorial/` (`thermo-hec-tutorial/` until 2026-10-30; the parent's `slurm/tutorial.sbatch`, `pull.sh` and `.gitignore` name it), so git commands there use `git -C q2-confluence-tutorial`.
 
 ## The pages
 
  * Every `shell` code block of `tutorial.md` is a command a reader runs, in order, in the directory the first block creates.
    The parent project's `slurm/tutorial.sbatch` extracts those blocks and runs them verbatim on bacon as the test of the page, so a block that only illustrates something does not belong on that page.
    A full run downloads about 25 GB (19 GB of it the sylph database) and took 31 min on a 16-core server (bacon job 327); its peak memory, summed over a command's processes, is 14 GB in `classify-sklearn` with 8 jobs and about 5 GB without it.
- * A change inside a shell block is a command change: the page passes again only after a bacon run of a tarball of this repository at that commit (the parent's coordinator ships it).
+ * A change inside a shell block is a command change: the page passes again only after a bacon run of the parent's `slurm/tutorial.sbatch` with bacon's clone of this repository pulled to that commit (`git -C q2-confluence-tutorial pull` there; a tarball of the commit until 2026-10-30, and job 329 was the first run from the clone).
    Text outside the shell blocks changes without a rerun.
  * `tutorial.sbatch`'s `READS` option replaces the line `wget -O metagenome/metagenome-reads-10p.qza ...` literally, so renaming that file means changing the script too.
  * `install.md` holds the environment commands; nothing runs them except a person building the environment.
@@ -23,7 +23,7 @@ The repository is nested inside the thermo-hec project (`~/0-projects/2026-09-16
  * In @gregcaporaso's edits, `CLAUDE:` marks a request to Claude (do it and remove the note) and `GREG ...` marks their own place in a review (leave it).
    Text Claude drafts at their request carries a `** GREG TO REVIEW: ... **` line, which they remove once they have reviewed it (the Requirements section of `tutorial.md`, 2026-10-30).
    The `@gregcaporaso, reminder for the prose` HTML comment in `tutorial.md` is a note for the rewrite; the pages hold no other comments (history lives in git).
- * Claude adds no emoji to the pages: @gregcaporaso tried them and dropped them (2026-10-30); the one in the closing heading is theirs and stays.
+ * Claude adds no emoji to the pages: @gregcaporaso tried them and dropped them (2026-10-30); the ones they add themselves stay (the tutorial's closing heading, and the ⚠️ on the README's alpha warning since 2026-10-31).
  * The first mention on each published page of a term in the [rachis glossary](https://news.rachis.org/en/latest/glossary/) links to its entry (`https://news.rachis.org/en/latest/glossary/#term-<slug>`, lowercase slugs; the site is built with mystmd); only mentions in the rachis sense, never in headings or code, and a first mention already linked elsewhere (rachis.org, qiime2.org, view.rachis.org) keeps its link.
    Ask @gregcaporaso before a linking pass over their prose, as the global `CLAUDE.md` says.
  * Linked anchors: `data-preparation.md#reference`, `#amplicon-data`, `#metagenome-data` and `#sample-metadata`, and `tutorial.md#workflow-limitations`; renaming one of those headings means updating its links.
@@ -43,9 +43,9 @@ The repository is nested inside the thermo-hec project (`~/0-projects/2026-09-16
  * The collection keys are `amplicon` and `metagenome`, so `amplicon:16S/...` differs from its directory: rachis-cli requires every collection key on the command line to be a Python identifier (letters, digits and underscores, no leading digit, no hyphen; `str.isidentifier()` in `rachis_cli/click/option.py`, `_split_and_validate_input_keys`), and `16S` is not one (bacon job 326 failed on it).
    The Artifact API has no such rule, so the plugins' tests do not catch it.
  * Hosted file names match the page's; `metagenome-reads-10p.qza` is the 10% read subset.
- * `README.md` stays minimal, modeled on q2-confluence's: title, the navigation line, alpha warning, one paragraph linking the pages, the site and the source (worded to read well both on GitHub and as the site's landing page), the forum, and an AI disclosure dated as of its last update (keep it current).
-   The photo `assets/musee-des-confluences.jpg` (@gregcaporaso's, 2026-10-31; a 640 px wide JPEG of their 976 px PNG, 84 KB against 1.8 MB) sits to the right of the body text as `<img align="right" width="30%">`, the one layout that works both on GitHub, which strips `style` and `class` attributes, and on the site, whose Primer CSS pads `img[align=right]` as GitHub's does; `<br clear="right">` before `## AI disclosure` keeps the disclosure below the photo.
-   At 30% the photo is about as tall as the text in both GitHub's README column and the site's wider one (25% suits the site alone, 40% neither); 640 px covers its widest display, about 300 CSS px, at 2x.
+ * `README.md` stays minimal, modeled on q2-confluence's: title, the navigation line, alpha warning, what the tutorial does, a paragraph linking the pages (its data-preparation sentence cites QIIME 2 and MOSHPIT, @gregcaporaso's addition of 2026-10-31), one linking the site and the source (worded to read well both on GitHub and as the site's landing page), the forum, and an AI disclosure dated as of its last update (keep it current).
+   The photo `assets/musee-des-confluences.jpg` (@gregcaporaso's, 2026-10-31; a 640 px wide JPEG of their 976 px PNG, 84 KB against 1.8 MB) sits to the right of the body text as `<img align="right" width="33%">`, the one layout that works both on GitHub, which strips `style` and `class` attributes, and on the site, whose Primer CSS pads `img[align=right]` as GitHub's does; `<br clear="right">` before `## AI disclosure` keeps the disclosure below the photo.
+   @gregcaporaso chose 33% from renders at 25%, 30%, 33% and 40%: the photo is about as tall as the text in GitHub's README column and a little taller in the site's wider one (40% ran well past the text in both); 640 px covers its widest display, about 320 CSS px, at 2x.
 
 ## The site
 

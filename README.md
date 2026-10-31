@@ -2,7 +2,7 @@
 
 **README** · [Installation](install.md) · [Tutorial](tutorial.md) · [Data preparation](data-preparation.md)
 
-<img src="assets/musee-des-confluences.jpg" align="right" width="30%" alt="View through the steel and glass frame of the Musée des Confluences, Lyon, France, over the river below">
+<img src="assets/musee-des-confluences.jpg" align="right" width="33%" alt="View through the steel and glass frame of the Musée des Confluences, Lyon, France, over the river below">
 
 ⚠️ This tutorial and the [rachis](https://rachis.org) [plugins](https://news.rachis.org/en/latest/glossary/#term-plugin) it uses are in early testing (alpha release) phase.
 Commands will almost certainly change.
