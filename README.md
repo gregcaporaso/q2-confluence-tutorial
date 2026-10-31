@@ -2,6 +2,8 @@
 
 **README** · [Installation](install.md) · [Tutorial](tutorial.md) · [Data preparation](data-preparation.md)
 
+<img src="assets/musee-des-confluences.jpg" align="right" width="30%" alt="View through the steel and glass frame of the Musée des Confluences, Lyon, France, over the river below">
+
 This tutorial and the [rachis](https://rachis.org) [plugins](https://news.rachis.org/en/latest/glossary/#term-plugin) it uses are in early testing (alpha release) phase.
 Commands will almost certainly change.
 Be skeptical of results - testing is still in progress.
@@ -12,6 +14,8 @@ Start by [creating the environment](install.md), then work through [the tutorial
 The tutorial is published at [gregcaporaso.github.io/q2-confluence-tutorial](https://gregcaporaso.github.io/q2-confluence-tutorial/), and its source is at [github.com/gregcaporaso/q2-confluence-tutorial](https://github.com/gregcaporaso/q2-confluence-tutorial).
 
 Questions and bug reports should be directed to the [QIIME 2 Forum](https://forum.qiime2.org).
+
+<br clear="right">
 
 ## AI disclosure
 

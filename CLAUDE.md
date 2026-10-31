@@ -44,6 +44,8 @@ The repository is nested inside the thermo-hec project (`~/0-projects/2026-09-16
    The Artifact API has no such rule, so the plugins' tests do not catch it.
  * Hosted file names match the page's; `metagenome-reads-10p.qza` is the 10% read subset.
  * `README.md` stays minimal, modeled on q2-confluence's: title, the navigation line, alpha warning, one paragraph linking the pages, the site and the source (worded to read well both on GitHub and as the site's landing page), the forum, and an AI disclosure dated as of its last update (keep it current).
+   The photo `assets/musee-des-confluences.jpg` (@gregcaporaso's, 2026-10-31; a 640 px wide JPEG of their 976 px PNG, 84 KB against 1.8 MB) sits to the right of the body text as `<img align="right" width="30%">`, the one layout that works both on GitHub, which strips `style` and `class` attributes, and on the site, whose Primer CSS pads `img[align=right]` as GitHub's does; `<br clear="right">` before `## AI disclosure` keeps the disclosure below the photo.
+   At 30% the photo is about as tall as the text in both GitHub's README column and the site's wider one (25% suits the site alone, 40% neither); 640 px covers its widest display, about 300 CSS px, at 2x.
 
 ## The site
 
