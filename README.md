@@ -10,7 +10,7 @@ Be skeptical of results - testing is still in progress.
 
 The tutorial integrates 16S rRNA amplicon and metagenome profiles of the same [samples](https://news.rachis.org/en/latest/glossary/#term-sample) in the [feature](https://news.rachis.org/en/latest/glossary/#term-feature) space of one GTDB release's genomes, with the [q2-confluence](https://github.com/gregcaporaso/q2-confluence) and [mosh-sylph](https://github.com/gregcaporaso/mosh-sylph) plugins for [QIIME 2](https://news.rachis.org/en/latest/glossary/#term-qiime-2).
 
-Start by [creating the environment](install.md).
+Start by [installing](install.md).
 Then work through [the tutorial](tutorial.md).
 A separate page describes [how the tutorial data were prepared](data-preparation.md) with QIIME 2 [(Bolyen *et al.* (2019))](https://doi.org/10.1038/s41587-019-0209-9) (for amplicon data) and MOSHPIT [(Ziemski *et al.* (2026))](https://doi.org/10.1016/j.xgen.2026.101366) (for metagenome data).
 
